@@ -10,18 +10,26 @@ from working perturbation the extension of the previous phenotype. """
 
 
 PATH = "C:\\Venca - soubory\\Škola\\Sybila\\Models\\Budding yeast cell cycle (Orlando).aeon"
-OSCILLATION = False
-SIZE = None
-ROBUSTNESS = 0.01
+#"C:\\Venca - soubory\\Škola\\Sybila\\Models\\model_complete_all_general.aeon"
+
 PHENOTYPE = [("CLN3", True)]
+OSCILLATION = False
+SIZE = 100
+ROBUSTNESS = 0.01
+
+# [("v_DNA_damage", True)]
 PERTURBABLE = []
+#FILTER_OUT_PARAMETERS = True
 
 #----------------------------------------------------------------
+#def find_unregulated(reg_graph, phenotype_list):
+
 
 """ Converts phenotype_list into the form accepted by the control function. """
 def create_phenotype(model, pert_graph, phenotype_list):
     phenotype = None
     phen_keys = set()
+    unreg_vars = set()
 
     for var_name, fix_val in phenotype_list:
         phen_keys.add(var_name)
@@ -34,20 +42,30 @@ def create_phenotype(model, pert_graph, phenotype_list):
         else:
             phenotype.union(temp_phen)
 
-    return phenotype, phen_keys
+    return phenotype, phen_keys, unreg_vars
 
-""" Finds out if perturbation is part of smaller perturbation. """
-def is_redundant(pert, filtered_perts, card_change_ind):
-    return False
+""" Finds out if perturbation is subset of another perturbation """
+def perturbation_is_sub(pert, bigger_pert):
+    for key in pert.keys():
+        if (pert.get(key) != bigger_pert.get(key)):
+            return False
 
+    return True
+
+""" Finds out if part of perturbation is one of the already found perturbations. """
+def is_part_of(pert, filtered_perts, card_change_ind):
     for ind in range(card_change_ind, len(filtered_perts)):
-        if (pert[0].items().intersection(filtered_perts[ind][0].items()) == filtered_perts[ind][0].items() and pert[1].cardinality() == pert[1].intersection(filtered_perts[ind][1]).cardinality()):
+
+        if len(pert[0]) <= len(filtered_perts[ind][0]):
+            break
+
+        if perturbation_is_sub(filtered_perts[ind][0], pert[0]) and (filtered_perts[ind][1] == pert[1]):
             return True
 
     return False
 
 """ Filters out perturbation with fixed phenotype """
-def filter_fixed_phenotype(working_perts, phen_keys):
+def filter_redundant_data(working_perts, phen_keys):
     filtered_perts = [];
 
     card_change_ind = 0
@@ -60,7 +78,7 @@ def filter_fixed_phenotype(working_perts, phen_keys):
         if filtered_ind >= 0:
             if working_perts[ind][1].cardinality() != filtered_perts[card_change_ind][1].cardinality():
                 card_change_ind = filtered_ind
-            elif is_redundant(working_perts[ind], filtered_perts, card_change_ind):
+            elif is_part_of(working_perts[ind], filtered_perts, card_change_ind):
                 continue
 
         filtered_perts.append(working_perts[ind])
@@ -77,27 +95,28 @@ def control(model, phenotype_list, oscillation):
     else:
         pert_graph = ba.PerturbationGraph.with_restricted_variables(model, perturb=PERTURBABLE)
 
-    phenotype, phen_keys = create_phenotype(model, pert_graph, phenotype_list)
+    phenotype, phen_keys, unreg_vars = create_phenotype(model, pert_graph, phenotype_list)
 
     control_map = pert_graph.ceiled_phenotype_permanent_control( phenotype = phenotype,
-                                                                size_bound = SIZE if SIZE != None else 100,
+                                                                size_bound = SIZE if SIZE != None else model.graph().num_vars(),
                                                                 oscillation = oscillation,
                                                                 stop_early = False,
                                                                 verbose = False )
 
-    return filter_fixed_phenotype(control_map.working_perturbations(min_robustness=ROBUSTNESS, verbose=False), phen_keys)
+    return control_map.working_perturbations(min_robustness=ROBUSTNESS, verbose=False), phen_keys, pert_graph
 
 """ Main function. """
 def control_machine():
     model_string = Path(PATH).read_text()
     model = ba.BooleanNetwork.from_aeon(model_string)
-    pert_graph = ba.PerturbationGraph(model)
 
     phenotype_list = PHENOTYPE
 
-    working_perts = control(model, phenotype_list, "Allowed" if OSCILLATION else "Forbidden")
+    working_perts, phen_keys, pert_graph = control(model, phenotype_list, "Allowed" if OSCILLATION else "Forbidden")
 
     working_perts.sort(reverse = True, key = lambda pert: (pert[1].cardinality(), -len(pert[0])))
+
+    working_perts = filter_redundant_data(working_perts, phen_keys)
 
     data_processor(working_perts, pert_graph.unit_colors().cardinality())
 
