@@ -28,6 +28,7 @@ presenting subsets of perturbations (which combinations of perturbed nodes are p
 The tool is mostly build over biodivine-aeon python module which provides functionality needed for the control tasks. 
 
 In the future should include:
+
 ability to analyse control data and present them in the form of graphs
 posibility to export/load calculated control data
 tools desktop application build on tauri
