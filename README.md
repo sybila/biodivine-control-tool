@@ -1,7 +1,7 @@
 # biodivine-control-tool
 Tool for control over partially specified boolean networks.
 
-The main goal of this tool is to help the user in finding the most suitable solution for problems connected with control.
+The main goal of this tool helping the user to find the most suitable solution for problems connected with control over partially/fully specified boolean networks.
 Another goal of this tool is to produced data about control in form, which is understandable by the user without extensive knowledge of control.
 
 This tool has ability to perform control task with user defined:
