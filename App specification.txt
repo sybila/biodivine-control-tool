@@ -1,4 +1,4 @@
-Extension of biodivine aeon desktop aplication, which will be responsible for performance of control task.
+Extension of biodivine aeon desktop aplication, which will be responsible for performance of control task on partially specified boolean networks.
 
 The app is build on Tauri same as the original biodivine aeon desktop app.
 
