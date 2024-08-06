@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>[Aeon] Control Results</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="style.css" type="text/css">        
+
+        <!-- Favicon -->
+        <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+        <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+        <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+        <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+        <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+        <link rel="icon" type="image/png" sizes="192x192"  href="favicon/android-icon-192x192.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+        <link rel="manifest" href="manifest.json">
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+        <meta name="theme-color" content="#ffffff">
+
+        <script src="script/dependencies/lodash.js"></script>
+        <script src="script/dependencies/hotkeys.min.js"></script>
+        <script src="script/dependencies/vis-network.min.js"></script>
+
+        <script src="script/Results.js"></script>
+        <script src="script/ComputeEngine.js"></script>
+        <script src="script/Examples.js"></script>
+        <script src="script/LiveModel.js"></script>
+        <script src="script/UI.js"></script>
+        <script src="script/CytoscapeEditor.js"></script>        
+        <script src="script/ModelEditor.js"></script>        
+        <script src="script/explorerMain.js"></script>
+    </head>
+
+    <body onload="init()">
+
+        <h1 id='logo'>Aeon/<span id='title'>BIODIVINE</span></h1>
+
+        <div style=" margin-bottom: 5%;"></div>
+
+        <div class="doubleContainer" style="height: 50%; margin-bottom: 2%;">
+            <div class="main-panel" style="margin-left: 0%; margin-right: 0%;">
+                <table class="model-stats">
+                    <tr class="row">    <td>Number of Parametrizations: </td>        <td class="value" id="ParamNumberStat">-</td> </tr>
+                    <tr class="row">    <td>Number of Perturbations: </td>      <td class="value" id="PertNumberStat">-</td></tr>
+                    <tr class="row">    <td>Minimal Robustness: </td>   <td class="value" id="MinRobStat">-</td></tr>
+                    <tr class="row">    <td>Maximal Robustness: </td>   <td class="value" id="MaxRobStat">-</td></tr>
+                    <tr class="row">    <td>Minimal Size: </td>   <td class="value" id="MinSizeStat">-</td></tr>
+                    <tr class="row">    <td>Maximal Size: </td>   <td class="value" id="MaxSizeStat">-</td></tr>
+                    <tr class="row">    <td>Oscillation: </td>   <td class="value" id="OscillationStat">-</td></tr>
+                </table>
+            </div>
+
+            <div class="main-panel" style="margin-left: 0%; height: 20xp;">
+                <table class="model-stats" style="height: 10px;">
+                    <tr class="row">    <td>Variables: </td>        <td class="value">-</td> </tr>
+                </table>
+            </div>
+
+            <div class="main-panel" style="margin-left: 0%;">
+                <table class="model-stats">
+                    <tr class="row">    <td>Variables: </td>        <td class="value">-</td> </tr>
+                    <tr class="row">    <td>Regulations: </td>      <td class="value">-</td></tr>
+                    <tr class="row">    <td>Max. in-degree: </td>   <td class="value">-</td></tr>
+                    <tr class="row">    <td colspan="2">Explicit parameters: </td>  <td colspan="2">(none)</td>   </tr>
+                </table>
+            </div>
+        </div>
+
+        <input type="text" id="ControlResultsfilter" class="filterInput" style="width: 20%;" onkeyup="ControllableEditor.filterTable(true)">
+        <div class="scrolling-container" style="max-height: 5000px;">
+            <table id="ControlResults" class="table borders" style="height: 100px;">
+                <th style="width: 50px;">ID</th>
+                <th style="width: 700px;">Perturbations</th>
+                <th style="width: 170px;">Size</th>
+                <th style="width: 310px;">Number of Parametrizations</th>
+                <th style="width: 100px;">Robustness</th>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+    </body>
+</html>

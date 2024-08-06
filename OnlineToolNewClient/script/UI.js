@@ -29,6 +29,7 @@ let UI = {
 		let sideMenu = document.getElementById("side-menu");
 		let sideMenuButtons = sideMenu.getElementsByClassName("button");
 		this._tabsAndButtons = [];
+	
 		for (var i = 0; i < sideMenuButtons.length; i++) {
 			let button = sideMenuButtons[i];
 			let tab = document.getElementById(button.getAttribute("tab-id"));
@@ -51,14 +52,14 @@ let UI = {
 				if (!selected) {
 					group.style.width = "272px";
 					hint.classList.remove("invisible");
-				}				
+				}
 			});
 			// Hide hint popup on mouse leave
 			button.addEventListener("mouseleave", (e) => {
-				group.style.width = "72px";				
-				hint.classList.add("invisible");			
+				group.style.width = "59px";
+				hint.classList.add("invisible");
 			});
-		}		
+		}
 	},
 
 	updateComputeEngineStatus(status, data) {
@@ -76,12 +77,12 @@ let UI = {
 		statusLabel.classList.remove("red", "green", "orange");
 		dot.classList.remove("red", "green", "orange");
 		cmpStatus.classList.remove("red", "green", "orange");
-		if (status == "connected") {			
+		if (status == "connected") {
 			addressInput.setAttribute("disabled", "1");
 			// Also do this for parent, because we want to apply some css based on this
 			// to the container as well.
 			addressInput.parentElement.setAttribute("disabled", "1");
-			statusLabel.textContent = " ● Connected";			
+			statusLabel.textContent = " ● Connected";
 			connectButton.innerHTML = "Disconnect <img src='img/cloud_off-24px.svg'>";
 			if (data !== undefined) {
 				// data about computation available
@@ -105,7 +106,7 @@ let UI = {
 				// Update server status color depending on current computation status.
 				if (status == "(none)" || status == "done" || status == "cancelled") {
 					statusLabel.classList.add("green");
-					dot.classList.add("green");																
+					dot.classList.add("green");
 				} else {
 					statusLabel.classList.add("orange");
 					dot.classList.add("orange");
@@ -132,7 +133,7 @@ let UI = {
 					cmpClasses.textContent = data.num_classes;
 				} else {
 					cmpClasses.textContent = "-";
-				}			
+				}
 				// Show cancel button if job is running and not cancelled 
 				if (data["is_running"] && !data["is_cancelled"]) {
 					cmpCancel.classList.remove("gone");
@@ -279,7 +280,7 @@ let UI = {
         if (filename === undefined) {
         	filename = "model";
         }
-        this._downloadFile(filename + ".aeon", modelFile)        
+        this._downloadFile(filename + ".aeon", modelFile)
 	},
 
 	downloadSBML() {
@@ -479,17 +480,17 @@ let UI = {
 				observability.src = observability.getAttribute("src-"+state);
 				// if the hint is visible, it must be showing alt of this button (because the value just changed)
 				hint.textContent = observability.alt;
-			}			
+			}
 		};
 		observability.addEventListener("click", (e) => {
 			let selected = CytoscapeEditor.getSelectedRegulationPair();
 			if (selected !== undefined) {
-				LiveModel.toggleObservability(selected.regulator, selected.target);				
+				LiveModel.toggleObservability(selected.regulator, selected.target);
 			}
 		});
 		menu.observabilityButton = observability;
 		let monotonicity = document.getElementById("edge-menu-monotonicity");
-		monotonicity.updateState = function(data) {		
+		monotonicity.updateState = function(data) {
 			if (monotonicity.getAttribute("state") != data.monotonicity) {
 				monotonicity.alt = monotonicity.getAttribute("alt-"+data.monotonicity);
 				monotonicity.src = monotonicity.getAttribute("src-"+data.monotonicity);
@@ -522,7 +523,7 @@ let UI = {
 		let buttons = menu.getElementsByClassName("button");		
 		for (var i = 0; i < buttons.length; i++) {
 			let button = buttons[i];
-			button.addEventListener("mouseenter", (e) => {			
+			button.addEventListener("mouseenter", (e) => {
 				hint.textContent = button.alt;
 				hint.classList.remove("invisible");
 			});
@@ -561,7 +562,7 @@ let UI = {
 	_initSideMenu: function(menu) {
 		let groups = menu.getElementsByClassName("button-group");
 		for (var i = 0; i < groups.length; i++) {
-			let group = groups[i];			
+			let group = groups[i];
 			let button = group.getElementsByClassName("button")[0];
 			let hint = group.getElementsByClassName("hint")[0];
 			let tabId = button.getAttribute("tab-id");
@@ -571,12 +572,12 @@ let UI = {
 				if (!selected) {
 					group.style.width = "272px";
 					hint.classList.remove("invisible");
-				}				
+				}
 			});
 			// Hide hint popup on mouse leave
 			button.addEventListener("mouseleave", (e) => {
-				group.style.width = "72px";				
-				hint.classList.add("invisible");			
+				group.style.width = "59px";
+				hint.classList.add("invisible");
 			});
 			// On click, if selected, close content. If not selected, switch to this tab.
 			button.addEventListener("click", (e) => {
@@ -586,7 +587,7 @@ let UI = {
 				} else {
 					UI.ensureContentTabOpen(tabId);
 					// Also, hide the hint popup
-					group.style.width = "72px";
+					group.style.width = "59px";
 					hint.classList.add("invisible");
 				}				
 			});

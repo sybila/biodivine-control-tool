@@ -9,11 +9,12 @@ let LiveModel = {
 
 	// used to provide unique variable ids
 	_idCounter: 0,
-	// keys are variable ids, values are variable objects { id, name }
+	// keys are variable ids, values are variable objects { id, name, controllable, phenotype }
 	_variables: {},
 	// keys are variable ids, values are update function strings with metadata { functionString, metadata }
 	_updateFunctions: {},
 	_regulations: [],
+
 	// We use this to indicate that there is a batch of changes to the model that are being processed,
 	// and we therefore shouldn't run intensive tasks (like function consistency checks on server).
 	// It is the responsibility of the user of this flag to re-run these tasks AFTER the changes are done.
@@ -25,6 +26,11 @@ let LiveModel = {
 		return Object.keys(this._variables).length == 0;
 	},
 
+	// Returns all variables present in the model.
+	getAllVariables() {
+		return Object.values(this._variables);
+	},
+
 	// Get the name of the variable with given id.
 	getVariableName(id) {
 		let variable = this._variables[id];
@@ -33,18 +39,22 @@ let LiveModel = {
 	},
 
 	// Create a new variable with a default name. Returns an id of the variable.
-	addVariable: function(position = [0.0,0.0], name = undefined) {
+	addVariable: function(position = [0.0,0.0], name = undefined, controllable = true, phenotype = null) {
 		let id = this._idCounter;
 		this._idCounter += 1;
 		if (name === undefined) {
 			name = "v_"+(id + 1);
-		}		
+		}
 		if (position === undefined) {
 			position = [0.0, 0.0];
 		}
-		this._variables[id] = { name: name, id: id }
+		this._variables[id] = { name: name, id: id, controllable: controllable, phenotype: phenotype}
 		CytoscapeEditor.addNode(id, name, position);
 		ModelEditor.addVariable(id, name);
+
+		ControllableEditor.addVariable(id, name, controllable);
+		PhenotypeEditor.addVariable(id, name, phenotype);
+
 		ModelEditor.updateStats();
 		UI.setQuickHelpVisible(false);
 		// Just show the number of possible update functions, even though there are always two.
@@ -63,9 +73,9 @@ let LiveModel = {
 			is_constant = is_constant & this.regulationsOf(id).length == 0;
 			if (!force) {
 				is_constant = is_constant & this._updateFunctions[id] === undefined;
-			}			
-			if (is_constant) { 
-				to_remove.push(id); 
+			}
+			if (is_constant) {
+				to_remove.push(id);
 			}
 		}
 		console.log("To remove: ", to_remove);
@@ -109,14 +119,18 @@ let LiveModel = {
 				this._removeRegulation(reg);
 				update_regulations_after_delete.push(reg.target);
 			}
+
+			ControllableEditor.removeVariable(id);
+			PhenotypeEditor.removeVariable(id);
 			delete this._variables[id];
 			delete this._updateFunctions[id];
 			CytoscapeEditor.removeNode(id);
 			ModelEditor.removeVariable(id);
 			ModelEditor.updateStats();
+			
 			if (this.isEmpty()) UI.setQuickHelpVisible(true);
 			this.saveToLocalStorage();
-			for (let id of update_regulations_after_delete) { 
+			for (let id of update_regulations_after_delete) {
 				// We also have to recompute the update function - the variable just became a parameter...
 					if (this._updateFunctions[id] !== undefined) {
 						// Set the function - this will mark the variable as parameter in metadata
@@ -141,6 +155,8 @@ let LiveModel = {
 			let oldName = variable.name;
 			variable.name = newName;
 			CytoscapeEditor.renameNode(id, newName);
+			ControllableEditor.renameVariable(id, newName);
+			PhenotypeEditor.renameVariable(id, newName);
 			ModelEditor.renameVariable(id, newName, oldName);	
 			// We also have to notify every regulation this variable appears in:
 			// (technically, we don't have to notify regulations where variable appears
@@ -436,7 +452,7 @@ let LiveModel = {
 				return "Unexpected line in file: "+line;
 			}			
 		}
-		
+
 		/*
 		console.log(modelName);
 		console.log(modelDescription);
@@ -451,7 +467,7 @@ let LiveModel = {
 		ModelEditor.setModelName(modelName);
 		ModelEditor.setModelDescription(modelDescription);
 		// Add all regulations, creating variables if needed:
-		for (let template of regulations) {			
+		for (let template of regulations) {
 			// Ensure regulator and target exist at requested positions...
 			let regulator = this._variableFromName(template.regulatorName);
 			if (regulator === undefined) {
@@ -462,14 +478,14 @@ let LiveModel = {
 			}
 			let target = this._variableFromName(template.targetName);
 			if (target === undefined) {
-				let position = positions[template.targetName];				
+				let position = positions[template.targetName];
 				target = this.addVariable(position, template.targetName);
 			} else {
 				target = target.id;
 			}
 			// Create the actual regulation...
 			this.addRegulation(regulator, target, template.observable, template.monotonicity);
-		}	
+		}
 		// Set all update functions
 		let keys = Object.keys(updateFunctions);
 		for (let key of keys) {
@@ -478,10 +494,10 @@ let LiveModel = {
 				variable = this.addVariable(positions[key], key);
 			} else {
 				variable = variable.id;
-			}			
+			}
 			// We actually have to also set the function in the model because we don't update it
 			// from the set method...
-			ModelEditor.setUpdateFunction(variable, updateFunctions[key]);			
+			ModelEditor.setUpdateFunction(variable, updateFunctions[key]);
 			let error = this.setUpdateFunction(variable, updateFunctions[key]);
 			if (error !== undefined) {
 				alert(error);
@@ -509,6 +525,8 @@ let LiveModel = {
 		}
 		ModelEditor.setModelName("");
 		ModelEditor.setModelDescription("");
+		ControllableEditor.clear();
+		PhenotypeEditor.clear();
 	},
 
 	// Save the current state of the model to local storage.
@@ -621,6 +639,11 @@ let LiveModel = {
 			return true;
 		}
 		return false;
+	},
+
+	// Returns variable with corresponding id
+	variableFromId(id) {
+		return this._variables[id];
 	},
 
 	// If variable with the given name exists, return the variable object, otherwise return undefined.

@@ -40,7 +40,11 @@
         <script src="script/LiveModel.js"></script>
         <script src="script/UI.js"></script>
         <script src="script/CytoscapeEditor.js"></script>        
-        <script src="script/ModelEditor.js"></script>        
+        <script src="script/ModelEditor.js"></script>
+        <script src="script/ControllableEditor.js"></script>
+        <script src="script/PhenotypeEditor.js"></script>
+        <script src="script/TableWidget.js"></script>
+        <script src="script/CountWidget.js"></script>
         <script src="script/main.js"></script>
 
         <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -68,7 +72,7 @@
 
         <!-- A menu element that is shown for selected graph nodes in the editor. -->
         <div id="node-menu" class="float-menu invisible">
-            <div class="button-row">                
+            <div class="button-row">
                 <img alt="Edit name (E)" id="node-menu-edit-name" class="button" src="img/edit-24px.svg">                
                 <img alt="Edit update function (F)" id="node-menu-edit-function" class="button" src="img/functions-24px.svg">
                 <img alt="Remove (⌫)" id="node-menu-remove" class="button" src="img/delete-24px.svg">
@@ -79,10 +83,10 @@
 
         <!-- A menu element which is shown for selected edges in the editor. -->
         <div id="edge-menu" class="float-menu invisible">
-            <div class="button-row">                
+            <div class="button-row">
                 <img alt="Toggle observability (O)" id="edge-menu-observability" class="button" src="img/visibility_off-24px.svg" 
                     src-on="img/visibility_off-24px.svg" src-off="img/visibility_on-24px.svg" 
-                    alt-on="Observability off (O)" alt-off="Observability on (O)" 
+                    alt-on="Observability off (O)" alt-off="Observability on (O)"
                     state=""
                 >
                 <img alt="Toggle monotonicity (M)" id="edge-menu-monotonicity" class="button" src="img/trending_up-24px.svg"
@@ -272,7 +276,7 @@
                 </div>
             </div>
 
-            <div id="tab-model-controllable" class="main-panel gone" style="padding-bottom: 0px;">
+            <div id="tab-model-controllable" class="main-panel gone" style="height: 1000px; padding-bottom: 0px;">
                 <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Controllable variables</h2> 
                 <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
 
@@ -280,12 +284,38 @@
                     <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Overview</h3>
                 </div>
                 <table id="model-stats">
-                    <tr class="row">    <td>Controllable: </td>        <td class="value">-</td>
-                    <tr class="row">    <td>Uncontrollable: </td>      <td class="value">-</td>
-                </table>                   
+                    <tr class="row">    <td>Controllable: </td>        <td class="value" id="controllable-count">-</td>
+                    <tr class="row">    <td>Uncontrollable: </td>      <td class="value" id="uncontrollable-count">-</td>
+                </table>  
+                
+                <div style="height: 30px;">
+                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 0px;"> ● Controllable</h3>
+                </div>
+
+                <input type="text" id="ControllableFilter" class="filterInput" onkeyup="ControllableEditor.filterTable(true)">
+
+                <div class="scrolling-container" style="max-height: 170px;">
+                    <table id="Controllable"class="table" style="height: 170px;">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="height: 30px;">
+                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Uncontrollable</h3>
+                </div>
+
+                <input type="text" id="UncontrollableFilter" class="filterInput" onkeyup="ControllableEditor.filterTable(false)">
+
+                <div class="scrolling-container" style="max-height: 170px;">
+                    <table id="Uncontrollable"class="table" style="height: 170px;">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div id="tab-model-phenotype" class="main-panel gone" style="padding-bottom: 0px;">
+            <div id="tab-model-phenotype" class="main-panel gone" style="padding-bottom: 0px; height: 1000px;">
                 <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Phenotype</h2> 
                 <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
 
@@ -293,14 +323,64 @@
                     <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Overview</h3>
                 </div>
                 <table id="model-stats">
-                    <tr class="row">    <td>True: </td>        <td class="value">-</td>
-                    <tr class="row">    <td>False: </td>      <td class="value">-</td>
-                    <tr class="row">    <td>Not in phenotype: </td>      <td class="value">-</td>
+                    <tr class="row">    <td>True: </td>        <td class="value" id="trueCount">-</td>
+                    <tr class="row">    <td>False: </td>      <td class="value" id="falseCount">-</td>
+                    <tr class="row">    <td>Not in phenotype: </td>      <td class="value" id="notInCount">-</td>
                 </table>
                 
-                <div style="height: 40px;">
-                    <h3 style="float: left; font-family: 'FiraMono'; text-transform: uppercase;"> ● Phenotype Oscillation</h3>
-                    <button id="menu-oscillation" class="image-button" style="float: right;">Option <img src="img/add_box-24px.svg"></button>
+                <div class="doubleContainer" style="height: 20px">
+                    <div class="halfContainer">
+                        <h4 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 0%;"> ● Phenotype Oscillation</h4>
+                    </div>
+                    <div class="halfContainer" style="text-align: right;">
+                        <input id="oscillation-switch" type="button" class="centered-button" style="width: 180px; height: 20px; padding-left: 4%;" value="All"></input>
+                    </div>
+                </div>
+
+                <div class="doubleContainer">
+                    <div class="halfContainer">
+                        <div style="height: 30px;">
+                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● True</h3>
+                        </div>
+    
+                        <input type="text" id="TrueFilter" class="filterInput" style="width: 98%;" onkeyup="PhenotypeEditor.filterTable(true)">
+    
+                        <div class="scrolling-container" style="max-height: 140px;">
+                            <table id="True"class="table" style="height: 140px;">
+                                <tbody style="max-height: 140px;">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="halfContainer">
+                        <div style="height: 30px;">
+                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● False</h3>
+                        </div>
+    
+                        <input type="text" id="FalseFilter" class="filterInput" style="width: 98%;" onkeyup="PhenotypeEditor.filterTable(false)">
+    
+                        <div class="scrolling-container" style="max-height: 140px;">
+                            <table id="False"class="table" style="height: 140px;">
+                                <tbody style="max-height: 140px;">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+  
+                </div>
+
+                <div style="height: 30px;">
+                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Not in Phenotype</h3>
+                </div>
+
+                <input type="text" id="NotInFilter" class="filterInput" onkeyup="PhenotypeEditor.filterTable(null)">
+
+                <div class="scrolling-container" style="max-height: 140px;">
+                    <table id="NotIn"class="table" style="height: 140px;">
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -313,13 +393,18 @@
                 </div>
 
                 <div style="height: 40px;">
-                    <button id="button-organic-layout" class="centered-button" " style="margin-left: 73px;" onclick="CytoscapeEditor.layoutCose();">Organic layout </button>
-                    <button id="button-organic-layout" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.layoutDagre();">Hierarchical layout </button>
+                    <button id="button-organic-layout" class="centered-button" style="margin-left: 73px;" onclick="CytoscapeEditor.layoutCose();">Organic layout </button>
+                    <button id="button-hierarchical-layout" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.layoutDagre();">Hierarchical layout </button>
+                </div>
+
+                <div style="height: 30px;">
+                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Highlight</h3>
                 </div>
 
                 <div style="height: 40px;">
+                    <button id="button-show-controllable" class="centered-button" style="margin-left: 44px;" onclick="CytoscapeEditor.showControllable();">Show Controllable </button>
+                    <button id="button-show-phenotype" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.showPhenotype();">Show Phenotype </button>
                 </div>
-
             </div>
 
             <div id="tab-results" class="main-panel gone">
@@ -381,7 +466,7 @@
 
                 <div class="button-group">
                     <img alt="Engine" id="side-menu-engine" src="img/engine-48px.svg" class="button" tab-id="tab-engine">
-                    <span id="engine-dot">●</span>
+                    <span id="engine-dot" style="margin-left: -11px;">●</span>
                     <span class="hint invisible">Compute Engine</span>
                 </div>
 

@@ -5,8 +5,8 @@ function init() {
 	let isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 	if (isSafari) {
 		alert(
-			"At the moment, security measures in Safari may prevent you from connecting to the AEON compute engine.\n\n" + 
-			"You can still use the editor to view, modify and export models. While we work on this issue, you " + 
+			"At the moment, security measures in Safari may prevent you from connecting to the AEON compute engine.\n\n" +
+			"You can still use the editor to view, modify and export models. While we work on this issue, you " +
 			"can access full AEON functionaliy in Google Chrome."
 		);
 	}
@@ -27,7 +27,7 @@ function init() {
 		if (e) {
 			e.returnValue = Strings.closePrompt;
 		}
-	
+
 		// For Safari
 		return Strings.closePrompt;
 	};
@@ -38,7 +38,7 @@ function init() {
 	document.getElementById("engine-link-windows").href = document
 		.getElementById("engine-link-windows")
 		.href.replace("VERSION", version_string);
-	
+
 	document.getElementById("engine-link-macos").href = document
 		.getElementById("engine-link-macos")
 		.href.replace("VERSION", version_string);
@@ -60,11 +60,13 @@ function init() {
 	const engineAddress = urlParams.get('engine');
 	if (engineAddress !== undefined && engineAddress !== null && engineAddress.length > 0) {
 		document.getElementById("engine-address").value = engineAddress;
-	}	
-	
+	}
+
 	UI.init();
 	ModelEditor.init();
-	CytoscapeEditor.init();			
+	ControllableEditor.init();
+	PhenotypeEditor.init();
+	CytoscapeEditor.init();
 	ComputeEngine.openConnection();	// Try to automatically connect when first opened.
 
 	let witnessCallback = function(e, r) {
@@ -72,7 +74,7 @@ function init() {
 		if (e !== undefined) {
 			alert(e);
 		} else {
-			let error = LiveModel.importAeon(r.model);				
+			let error = LiveModel.importAeon(r.model);
 			if (error !== undefined) {
         		alert(error);
         	}
@@ -90,7 +92,7 @@ function init() {
 	if (requestedTreeWitness !== undefined && requestedTreeWitness !== null) {
 		UI.isLoading(true);
 		const requestedVariable = urlParams.get('variable');
-        const requestedBehaviour = urlParams.get('behaviour');     
+        const requestedBehaviour = urlParams.get('behaviour');
         const requestedVector = urlParams.get('vector');
         if(requestedVariable === undefined || requestedVariable === null || requestedVector === null) {
         	ComputeEngine.getTreeWitness(requestedTreeWitness, witnessCallback, true);

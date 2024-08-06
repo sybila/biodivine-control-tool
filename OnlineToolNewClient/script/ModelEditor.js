@@ -63,7 +63,7 @@ let ModelEditor = {
 		row2.children[1].textContent = stats.regulationCount;
 		row2.children[3].textContent = "2^" + stats.variableCount;
 		row3.children[1].textContent = stats.maxInDegree;
-		row3.children[3].textContent = stats.maxOutDegree;		
+		row3.children[3].textContent = stats.maxOutDegree;
 		if (stats.explicitParameters.length == 0) {
 			row4.children[1].textContent = "(none)";
 		} else {
@@ -74,19 +74,19 @@ let ModelEditor = {
 				parametersString += name;
 			}
 			row4.children[1].textContent = parametersString;
-		}		
+		}
 	},
 
 	// Create a new variable box for the given id (without any regulations).
 	addVariable(id, name) {
-		let variableBox = this._variableTemplate.cloneNode(true);		
+		let variableBox = this._variableTemplate.cloneNode(true);
 		let variableName = variableBox.getElementsByClassName("variable-name")[0];
 		let updateFunction = variableBox.getElementsByClassName("variable-function")[0];
 		variableBox.setAttribute("variable-id", id);
 		variableBox.removeAttribute("id");
-		variableName.value = name;		
+		variableName.value = name;
 		// On change, validate variable name and display error if needed.
-		variableName.addEventListener("change", (e) => {			
+		variableName.addEventListener("change", (e) => {
 			let error = LiveModel.renameVariable(id, variableName.value);
 			if (error !== undefined) {
 				alert(error);
@@ -96,7 +96,7 @@ let ModelEditor = {
 			}
 		});
 		// On change, validate function and display error if needed.
-		updateFunction.addEventListener("focusout", (e) => {		
+		updateFunction.addEventListener("focusout", (e) => {
 			let error = LiveModel.setUpdateFunction(id, updateFunction.textContent);
 			if (error !== undefined) {
 				alert(error);
@@ -122,7 +122,7 @@ let ModelEditor = {
 		// Enable remove button
 		variableBox.getElementsByClassName("model-variable-remove")[0].addEventListener("click", (e) => {
 			LiveModel.removeVariable(id);
-		});			
+		});
 		ensurePlaceholder(variableBox.getElementsByClassName("variable-function")[0]);
 		this._variables.appendChild(variableBox);
 	},

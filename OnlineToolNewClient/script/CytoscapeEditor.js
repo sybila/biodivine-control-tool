@@ -17,6 +17,12 @@ let CytoscapeEditor = {
 	// Used to implement the double click feature
 	_lastClickTimestamp: undefined,
 
+	// True if show controllable button is in effect.
+	_controllableShown: undefined,
+	// True if show phenotype button is in effect.
+	_phenotypeShown: undefined,
+
+
 	init: function() {
 		this._cytoscape = cytoscape(this.initOptions());
 		this._edgehandles = this._cytoscape.edgehandles(this.edgeOptions());
@@ -36,6 +42,9 @@ let CytoscapeEditor = {
 			}
 			this._lastClickTimestamp = now;
 		});
+
+		this._controllableShown = false;
+		this._phenotypeShown = false;
 	},
 
 	layoutCose() {
@@ -78,6 +87,9 @@ let CytoscapeEditor = {
 			data: { id: id, name: name },
 			position: { x: position[0], y: position[1] },
 		})
+
+		this.showControllable([LiveModel.variableFromId(id)]);
+
 		node.on('mouseover', (e) => {
 			node.addClass('hover');	
 			ModelEditor.hoverVariable(id, true);		
@@ -281,6 +293,47 @@ let CytoscapeEditor = {
 		let boundingBox = edge.renderedBoundingBox();
 		let position = [ (boundingBox.x1 + boundingBox.x2) / 2, (boundingBox.y1 + boundingBox.y2) / 2 ];
 		UI.toggleEdgeMenu(edge.data(), position, zoom);
+	},
+
+	showPhenotype(inputNodes = null) {
+		var nodes = undefined;
+
+		if (inputNodes == null) {
+			nodes = LiveModel.getAllVariables();
+			this._phenotypeShown = !this._phenotypeShown;
+		} else {
+			nodes = inputNodes;
+		}
+
+		nodes.forEach(node => {
+			if (this._phenotypeShown && node.phenotype == true) {
+				this._cytoscape.getElementById(node.id).style('border-color', 'green',);
+			} else if (this._phenotypeShown && node.phenotype == false) {
+				this._cytoscape.getElementById(node.id).style('border-color', 'red',);
+			} else {
+				this._cytoscape.getElementById(node.id).style('border-color', '#bbbbbb');
+			}
+		});
+	},
+
+	// Changes colour of all nodes which are set as controllable.
+	showControllable(inputNodes = null) {
+		var nodes = undefined;
+
+		if (inputNodes == null) {
+			nodes = LiveModel.getAllVariables();
+			this._controllableShown = !this._controllableShown;
+		} else {
+			nodes = inputNodes;
+		}
+
+		nodes.forEach(node => {
+			if (this._controllableShown && node.controllable) {
+				this._cytoscape.getElementById(node.id).style('background-color', '#FFFF66');
+			} else {
+				this._cytoscape.getElementById(node.id).style('background-color', '#dddddd');
+			}
+		});
 	},
 
 	// Helper function to initialize new edge object, since edges can appear explicitly
