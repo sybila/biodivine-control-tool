@@ -94,6 +94,22 @@ let PhenotypeEditor = {
         });
     },
 
+     // Changes phenotype status of variable by its id and value of the newPhenotype.
+    changeVarPhenotype(variable, newPhenotype) {
+        fromTable = this._getTable(variable.phenotype);
+        toTable = this._getTable(newPhenotype);
+
+        variable.phenotype = newPhenotype;
+    
+        const row = fromTable.table.querySelector(`tr[data-id='${variable.id}']`);
+
+        fromTable.count.decrement();
+        toTable.count.increment();
+        toTable.table.appendChild(row);
+    
+        CytoscapeEditor.highlightPhenotype([variable]);
+    },
+
     // Add drag and drop handlers for moving rows between tables
     addDragAndDropHandlers(table) {
         table.addEventListener('dragover', (event) => {
@@ -106,40 +122,18 @@ let PhenotypeEditor = {
 
             if (draggedRow) {
                 const variable = LiveModel.variableFromId(draggedRow.getAttribute("data-id"));
-                    
-                if (variable.phenotype == true) {
-                    if (table.id == "NotIn") {
-                        variable.phenotype = null;
-                        this._notInTable.count.increment();
-                        this._trueTable.count.decrement();
-                    } else if (table.id == "False") {
-                        variable.phenotype = false;
-                        this._falseTable.count.increment();
-                        this._trueTable.count.decrement();
-                    }
-                } else if (variable.phenotype == false) {
-                    if (table.id == "NotIn") {
-                        variable.phenotype = null;
-                        this._notInTable.count.increment();
-                        this._falseTable.count.decrement();
-                    } else if (table.id == "True") {
-                        variable.phenotype = true;
-                        this._trueTable.count.increment();
-                        this._falseTable.count.decrement();
-                    }
-                } else if (variable.phenotype == null) {
-                    if (table.id == "True") {
-                        variable.phenotype = true;
-                        this._trueTable.count.increment();
-                        this._notInTable.count.decrement();
-                    } else if (table.id == "False") {
-                        variable.phenotype = false;
-                        this._falseTable.count.increment();
-                        this._notInTable.count.decrement();
-                    }
-                }
+                const fromTable = this._getTable(variable.phenotype);
 
-                CytoscapeEditor.showPhenotype([variable]);
+                const toPhenotype = table.id =="NotIn" ? null :
+                                        table.id == "True" ? true : false;
+                const toTable = this._getTable(toPhenotype);
+
+                variable.phenotype = toPhenotype;
+                
+                fromTable.count.decrement();
+                toTable.count.increment();
+                    
+                CytoscapeEditor.highlightPhenotype([variable]);
                 table.getElementsByTagName('tbody')[0].appendChild(draggedRow);
             }
         });

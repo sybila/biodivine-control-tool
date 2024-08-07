@@ -88,7 +88,7 @@ let CytoscapeEditor = {
 			position: { x: position[0], y: position[1] },
 		})
 
-		this.showControllable([LiveModel.variableFromId(id)]);
+		this.highlightControllable([LiveModel.variableFromId(id)]);
 
 		node.on('mouseover', (e) => {
 			node.addClass('hover');	
@@ -295,7 +295,19 @@ let CytoscapeEditor = {
 		UI.toggleEdgeMenu(edge.data(), position, zoom);
 	},
 
-	showPhenotype(inputNodes = null) {
+	// Implements functionality of buttons responsible for highlighting of nodes in the graph.
+	highlightButton(button, highlightPhenotype) {
+		if (highlightPhenotype) {
+			button.style.backgroundColor = this._phenotypeShown ? "#ECEFF1" : '#B0BEC5';
+			this.highlightPhenotype();
+		} else {
+			button.style.backgroundColor = this._controllableShown ? "#ECEFF1" : '#B0BEC5';
+			this.highlightControllable();
+		}
+	},
+
+	// Changes borders of all nodes which are in the phenotype.
+	highlightPhenotype(inputNodes = null) {
 		var nodes = undefined;
 
 		if (inputNodes == null) {
@@ -308,16 +320,24 @@ let CytoscapeEditor = {
 		nodes.forEach(node => {
 			if (this._phenotypeShown && node.phenotype == true) {
 				this._cytoscape.getElementById(node.id).style('border-color', 'green',);
+				this._cytoscape.getElementById(node.id).style('color', 'green');
+				this._cytoscape.getElementById(node.id).style('border-width', '2px');
 			} else if (this._phenotypeShown && node.phenotype == false) {
 				this._cytoscape.getElementById(node.id).style('border-color', 'red',);
+				this._cytoscape.getElementById(node.id).style('color', 'red');
+				this._cytoscape.getElementById(node.id).style('border-width', '2px');
 			} else {
 				this._cytoscape.getElementById(node.id).style('border-color', '#bbbbbb');
+				this._cytoscape.getElementById(node.id).style('color', 'black');
+				this._cytoscape.getElementById(node.id).style('border-width', '1px');
 			}
 		});
 	},
 
+
+
 	// Changes colour of all nodes which are set as controllable.
-	showControllable(inputNodes = null) {
+	highlightControllable(inputNodes = null) {
 		var nodes = undefined;
 
 		if (inputNodes == null) {

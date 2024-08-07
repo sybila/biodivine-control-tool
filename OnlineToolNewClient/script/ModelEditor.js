@@ -9,9 +9,14 @@
 let ModelEditor = {
 	// The element which contains all variable UI boxes.
 	_variables: undefined,
+	// Text bar for filter input.
+	_filterInput: undefined,
 	// Inputs for specifying model name and description
 	_modelName: undefined,
 	_modelDescription: undefined,
+
+	// True if model description is visible.
+	_modelDescriptionShown: undefined,
 
 	// Template element that we use to create new variable boxes and regulation rows.
 	_variableTemplate: undefined,
@@ -23,6 +28,8 @@ let ModelEditor = {
 		this._modelDescription = document.getElementById("model-description");
 		this._variableTemplate = document.getElementById("model-variable-template");
 		this._regulationTemplate = document.getElementById("model-regulation-template");
+		this._filterInput = document.getElementById("variable-filter");
+		this._modelDescriptionShown = false;
 		ensurePlaceholder(document.getElementById("model-description"));
 	},
 
@@ -77,14 +84,85 @@ let ModelEditor = {
 		}
 	},
 
+	filterVariables() {
+		const filterValue = this._filterInput.value;
+
+		LiveModel.getAllVariables().forEach( variable => {
+			const variableBox = this._getVariableBox(variable.id);
+
+			variableBox.style.display = variable.name.includes(filterValue) ? "" : "none";
+		})
+	},
+
 	// Create a new variable box for the given id (without any regulations).
 	addVariable(id, name) {
 		let variableBox = this._variableTemplate.cloneNode(true);
+		let showVariableInfo = variableBox.getElementsByClassName("centered-button")[0];
+		let variableControllability = variableBox.getElementsByClassName("centered-button")[1];
+		let variablePhenotype = variableBox.getElementsByClassName("centered-button")[2];
+		let variableInfo = variableBox.getElementsByClassName("scrolling-container")[0];
 		let variableName = variableBox.getElementsByClassName("variable-name")[0];
 		let updateFunction = variableBox.getElementsByClassName("variable-function")[0];
+		const variable = LiveModel.variableFromId(id);
+
 		variableBox.setAttribute("variable-id", id);
 		variableBox.removeAttribute("id");
 		variableName.value = name;
+
+		variableControllability.style.backgroundColor = variable.controllable ? "#FFFF66" : "#B0BEC5";
+		variablePhenotype.style.backgroundColor = variable.phenotype == null ? "#B0BEC5" :
+													variable.phenotype ? "green" : "red";
+		variableInfo.style.display = "none";
+
+		showVariableInfo.setAttribute("variable-id", id);
+		variableControllability.setAttribute("variable-id", id);
+		variablePhenotype.setAttribute("variable-id", id);
+
+		showVariableInfo.addEventListener("click", (e) => {
+			const variableBox = this._getVariableBox(e.target.getAttribute("variable-id"));
+			const variableInfo = variableBox.getElementsByClassName("scrolling-container")[0];
+
+			if (variableInfo.style.display == "none") {
+				variableInfo.style.display = "";
+			} else {
+				variableInfo.style.display = "none";
+			}
+		})
+
+		variableControllability.addEventListener("click", (e) => {
+			const button = e.target;
+			const variable = LiveModel.variableFromId(button.getAttribute("variable-id"));
+
+			ControllableEditor.changeVarControl(variable);
+
+			if (variable.controllable) {
+				button.style.backgroundColor = "#FFFF66";
+			} else {
+				button.style.backgroundColor = "#B0BEC5";
+			}
+		})
+
+		variablePhenotype.addEventListener("click", (e) => {
+			const button = e.target;
+			const variable = LiveModel.variableFromId(button.getAttribute("variable-id"));
+
+			var newPhen = undefined;
+
+			if (variable.phenotype == null) {
+				newPhen = true;
+				button.style.backgroundColor = "green";
+
+			} else if (variable.phenotype) {
+				newPhen = false;
+				button.style.backgroundColor = "red";
+			} else {
+				newPhen = null;
+				button.style.backgroundColor = "#B0BEC5";
+			}
+
+			PhenotypeEditor.changeVarPhenotype(variable, newPhen);
+		})
+
 		// On change, validate variable name and display error if needed.
 		variableName.addEventListener("change", (e) => {
 			let error = LiveModel.renameVariable(id, variableName.value);
@@ -326,6 +404,13 @@ let ModelEditor = {
 				variableBox.getElementsByClassName("model-variable-regulators")[0].removeChild(row);
 			}
 		}
+	},
+
+	// Switches visibility of the model description.
+	showModelDescription() {
+		this._modelDescriptionShown = !this._modelDescriptionShown;
+
+		this._modelDescription.style.display = this._modelDescriptionShown ? "" : "none";
 	},
 
 	// Utility method to find the variable box GUI element for the given variable.

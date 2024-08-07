@@ -58,12 +58,18 @@ class TableWidget {
     // Add a variable to table determined by the controllability of the variable.
     addVariable(id, name) {
         this.table.appendChild(this._createRow(id, name));
-        this.count.increment();
+
+        if (this.count != null) {
+            this.count.increment();
+        }
     }
 
     // Deletes all data from tables given in tables array.
     clear() {
         this.table.innerHTML = '';
-        this.count.clear();
+
+        if (this.count != null) {
+            this.count.clear();
+        }
     }
 }

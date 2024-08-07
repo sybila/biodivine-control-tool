@@ -11,6 +11,8 @@ let ComputeEngine = {
 	// a timestamp of last successfully started computation
 	// if status returns a different timestamp, we know results are out of date
 	_lastComputation: undefined,
+	// If is true, then computes control, else computes atractor analysis.
+	_computateControl: false,
 
 	// Open connection, taking up to date address from user input.
 	// Callback is called upon first ping.
@@ -136,17 +138,23 @@ let ComputeEngine = {
 			return undefined;
 		} else {
 			Results.clear();
-			this.waitingForResult = true;
-			return this._backendRequest("/start_computation", (e, r) => {
-				if (e !== undefined) {
-					console.log(e);
-					alert("Computation error: "+e);					
-				} else {
-					console.log("Started computation ",r.timestamp);
-					this._lastComputation = r.timestamp;
-				}				
-				this.ping();
-			}, "POST", aeonString);
+
+			if (!this._computateControl) {
+				this.waitingForResult = true;
+				return this._backendRequest("/start_computation", (e, r) => {
+					if (e !== undefined) {
+						console.log(e);
+						alert("Computation error: "+e);					
+					} else {
+						console.log("Started computation ",r.timestamp);
+						this._lastComputation = r.timestamp;
+					}				
+					this.ping();
+				}, "POST", aeonString);
+			}
+
+			console.log("Control backend implementation needed.")
+			return;
 		}
 	},
 
@@ -302,6 +310,22 @@ let ComputeEngine = {
 				callback(error, response);
 			}			
 		});
+	},
+
+	// Changes computation mode of the engine (changes value of the this._computateControl). 
+	changeComputation(mode) {
+		this._computateControl = mode;
+
+		const atractorButton = document.getElementById("button-attractor");
+		const controlButton = document.getElementById("button-control");
+		
+		if (mode) {
+			atractorButton.style.backgroundColor = "#ECEFF1";
+			controlButton.style.backgroundColor = '#B0BEC5';
+		} else {
+			atractorButton.style.backgroundColor = '#B0BEC5';
+			controlButton.style.backgroundColor = '#ECEFF1';
+		}
 	},
 
 	// Build and return an asynchronous request with given parameters.

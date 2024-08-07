@@ -156,7 +156,18 @@
                     <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-windows.zip" id="engine-link-windows" target="blank"><button id="download-windows" class="image-button" style="display: inline-block; margin: 4px;">Windows <img src="img/windows-24px.svg"></button></a>
                     <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-macos.zip" id="engine-link-macos" target="blank"><button id="download-mac" class="image-button" style="display: inline-block; margin: 4px;">MacOS <img src="img/macos-24px.svg"></button></a>
                     <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-linux.zip" id="engine-link-linux" target="blank"><button id="download-linux" class="image-button" style="display: inline-block; margin: 4px;">Linux <img src="img/linux-24px.svg"></button></a>
-                </div>                
+                </div>
+
+                <div class="doubleContainer" style="margin-top: 20px;">
+                    <div>
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Computation mode: </h3>
+                    </div>
+                    
+                    <div class´="doubleContainer">
+                        <button id="button-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="ComputeEngine.changeComputation(false);">Atractor</button>
+                        <button id="button-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="ComputeEngine.changeComputation(true);">Control</button>
+                    </div>
+                </div>
             </div>         
 
             <div id="tab-import-export" class="main-panel gone">
@@ -230,15 +241,16 @@
                 </table>                                        
             </div>
 
-            <div id="tab-model-editor" class="main-panel gone" style="padding-bottom: 0px;">
+            <div id="tab-model-editor" class="main-panel gone" style="padding-bottom: 0px; height: 1000px;">
                 <div class="invisible-input full-line">
                     <input id="model-name" class="center" type="text" name="model-name" placeholder="(model name)" style="font-size: 20px;">
                 </div>
                 <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
-                <div class="invisible-input full-line" id="model-description" contenteditable data-placeholder="(model description)" style="margin-top: 4px; margin-bottom: 4px;"></div>      
+                <div class="invisible-input full-line" id="model-description" style="display: none;" contenteditable data-placeholder="(model description)" style="margin-top: 4px; margin-bottom: 4px;"></div>      
 
-                <div style="height: 30px;">
-                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Overview</h3>
+                <div class="doubleContainer">
+                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;" onclick="ModelEditor.showModelOverview()"> ● Overview</h3>
+                    <button id="button-model-description" class="centered-button" onclick="ModelEditor.showModelDescription()" style="float: right;">Show model description</button>
                 </div>
                 <table id="model-stats">
                     <tr class="row">    <td>Variables: </td>        <td class="value">-</td>     <td>Parameter space size: </td>  <td class="value">-</td> </tr>
@@ -247,24 +259,37 @@
                     <tr class="row">    <td colspan="2">Explicit parameters: </td>  <td colspan="2">(none)</td>   </tr>
                 </table>                   
                 <div style="height: 40px;">
-                    <h3 style="float: left; font-family: 'FiraMono'; text-transform: uppercase;"> ● Variables</h3>
+                    <h3 style="float: left; font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Variables</h3>
                     <button id="button-add-variable" class="image-button" onclick="let id = LiveModel.addVariable(); CytoscapeEditor.showNode(id);" style="float: right;">Add variable (N) <img src="img/add_box-24px.svg"></button>
                 </div>
-                <div style="clear: both;"></div>
-                <div id="model-variables" class="full-line"></div>                       
+
+                <input type="text" id="variable-filter" class="filterInput" style="width: 98%;" onkeyup="ModelEditor.filterVariables()">
+
+                <div id="model-variables" class="scrolling-container" style="max-height: 340px;"></div>
+                                    
                 <div class="templates gone">
                     <div id="model-variable-template" class="model-variable">
-                        <div class="invisible-input">
-                            <input class="variable-name" type="text" name="variable-name" value="Variable name" placeholder="(variable name)" style="font-size: 18px;" spellcheck='false' autocorrect='off'>
+                        <div class="doubleContainer" style="max-width: 410px; max-height: 5px; margin-bottom: 0px;">
+                            <button class="centered-button" style="height: 25px; margin-top: -1px;"></button>
+                            <div class="invisible-input" style="margin-left: 5px;">
+                                <input class="variable-name" type="text" name="variable-name" value="Variable name" placeholder="(variable name)" style="font-size: 18px; margin-left: 0;" spellcheck='false' autocorrect='off'>
+                            </div>
+
+                            <button class="centered-button" style="height: 25px; margin-top: 0%; margin-left: 60px; margin-right: 5px; background-color: #B0BEC5;"></button>
+                            <button class="centered-button" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"></button>
                         </div>
+
                         <img alt="Remove variable" src="img/delete-24px.svg" class="model-variable-remove button">
                         <img alt="Show variable" src="img/search-24px.svg" class="model-variable-show button">
                         <br>
-                        <h4> ● Regulators</h4>
-                        <div class="model-variable-regulators full-line"></div>
-                        <h4> ● Update Function</h4>
-                        <div class="invisible-input full-line variable-function" contenteditable data-placeholder="(default)" spellcheck='false' autocorrect='off' style="font-size: 16px; text-align: center;"></div>
-                        <div class="variable-function-status"></div>
+                        <div class="scrolling-container">
+                            <h4> ● Regulators</h4>
+                            <div class="model-variable-regulators full-line"></div>
+                            <h4> ● Update Function</h4>
+                            <div class="invisible-input full-line variable-function" contenteditable data-placeholder="(default)" spellcheck='false' autocorrect='off' style="font-size: 16px; text-align: center;"></div>
+                            <div class="variable-function-status"></div>
+                        </div>
+
                     </div>
 
                     <div id="model-regulation-template" class="model-regulation">
@@ -384,7 +409,7 @@
                 </div>
             </div>
 
-            <div id="tab-model-visual" class="main-panel gone" style="padding-bottom: 0px;">
+            <div id="tab-model-visual" class="main-panel gone" style="padding-bottom: 0px; height: 225px;">
                 <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Visual Options</h2> 
                 <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
                 
@@ -402,8 +427,8 @@
                 </div>
 
                 <div style="height: 40px;">
-                    <button id="button-show-controllable" class="centered-button" style="margin-left: 44px;" onclick="CytoscapeEditor.showControllable();">Show Controllable </button>
-                    <button id="button-show-phenotype" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.showPhenotype();">Show Phenotype </button>
+                    <button id="button-highlight-phenotype" class="centered-button" style="margin-left: 55px;" onclick="CytoscapeEditor.highlightButton(this, true);">Show Phenotype </button>
+                    <button id="button-highlight-controllable" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.highlightButton(this, false);">Show Controllable </button>
                 </div>
             </div>
 

@@ -53,6 +53,22 @@ let ControllableEditor = {
         table.filterTable();
     },
 
+    // Changes control status of variable by its id.
+    changeVarControl(variable) {
+        fromTable = this._getTable(variable.controllable);
+        toTable = this._getTable(!variable.controllable);
+
+        variable.controllable = !variable.controllable;
+
+        const row = fromTable.table.querySelector(`tr[data-id='${variable.id}']`);
+
+        fromTable.count.decrement();
+        toTable.count.increment();
+        toTable.table.appendChild(row);
+
+        CytoscapeEditor.highlightControllable([variable]);
+    },
+
     // Add drag and drop handlers for moving rows between tables
     addDragAndDropHandlers(table) {
         table.addEventListener('dragover', (event) => {
@@ -65,20 +81,17 @@ let ControllableEditor = {
 
             if (draggedRow) {
                 const variable = LiveModel.variableFromId(draggedRow.getAttribute("data-id"));
-                    
-                if (!variable.controllable && table.id == "Controllable") {
-                    variable.controllable = true;
-                    this._contrTable.table.appendChild(draggedRow);
-                    this._contrTable.count.increment();
-                    this._uncontrTable.count.decrement();
-                } else if (variable.controllable && table.id == "Uncontrollable") {
-                    variable.controllable = false;
-                    this._uncontrTable.table.appendChild(draggedRow);
-                    this._contrTable.count.decrement();
-                    this._uncontrTable.count.increment();
-                }
+                const fromTable = this._getTable(variable.controllable);
 
-                CytoscapeEditor.showControllable([variable])
+                const newControllability = table.id == "Controllable" ? true : false;
+                const toTable = this._getTable(newControllability);
+
+                fromTable.count.decrement();
+                toTable.count.increment();
+                variable.controllable = newControllability;
+
+                table.getElementsByTagName('tbody')[0].appendChild(draggedRow);
+                CytoscapeEditor.highlightControllable([variable]);
             }
         });
     }
