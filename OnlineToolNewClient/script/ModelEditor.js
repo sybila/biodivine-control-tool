@@ -15,9 +15,6 @@ let ModelEditor = {
 	_modelName: undefined,
 	_modelDescription: undefined,
 
-	// True if model description is visible.
-	_modelDescriptionShown: undefined,
-
 	// Template element that we use to create new variable boxes and regulation rows.
 	_variableTemplate: undefined,
 	_regulationTemplate: undefined,
@@ -86,11 +83,34 @@ let ModelEditor = {
 
 	filterVariables() {
 		const filterValue = this._filterInput.value;
+		const findRegulators = filterValue.startsWith("//target ");
+		let regulators = undefined;
+
+		if (findRegulators) {
+			const variable = LiveModel._variableFromName(filterValue.substring(9));
+
+			if (variable == undefined) {
+				return;
+			}
+
+			const regulations = LiveModel.regulationsOf(variable.id);
+			regulators = new Set();
+
+			regulations.forEach(regulation => {
+				regulators.add(regulation.regulator);
+			});
+
+		}
 
 		LiveModel.getAllVariables().forEach( variable => {
 			const variableBox = this._getVariableBox(variable.id);
 
-			variableBox.style.display = variable.name.includes(filterValue) ? "" : "none";
+			if (findRegulators) {
+				variableBox.style.display = regulators.has(variable.id) ? "" : "none";
+			} else {
+				variableBox.style.display = variable.name.includes(filterValue) ? "" : "none";
+			}
+			
 		})
 	},
 
@@ -315,6 +335,13 @@ let ModelEditor = {
 		let variableBox = this._getVariableBox(id);
 		if (variableBox !== undefined) {
 			UI.ensureContentTabOpen(ContentTabs.modelEditor);
+
+			const variableInfo = variableBox.getElementsByClassName("scrolling-container")[0];
+
+			if (variableInfo.style.display == "none") {
+				variableInfo.style.display = "";
+			}
+
 			let updateFunction = variableBox.getElementsByClassName("variable-function")[0];
 			updateFunction.focus();			
 		}
@@ -408,9 +435,11 @@ let ModelEditor = {
 
 	// Switches visibility of the model description.
 	showModelDescription() {
-		this._modelDescriptionShown = !this._modelDescriptionShown;
-
-		this._modelDescription.style.display = this._modelDescriptionShown ? "" : "none";
+		if (this._modelDescription.style.display == "") {
+			this._modelDescription.style.display = "none";
+		} else {
+			this._modelDescription.style.display = "";
+		}
 	},
 
 	// Utility method to find the variable box GUI element for the given variable.

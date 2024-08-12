@@ -48,6 +48,7 @@ let LiveModel = {
 		if (position === undefined) {
 			position = [0.0, 0.0];
 		}
+
 		this._variables[id] = { name: name, id: id, controllable: controllable, phenotype: phenotype}
 		CytoscapeEditor.addNode(id, name, position);
 		ModelEditor.addVariable(id, name);
@@ -361,11 +362,18 @@ let LiveModel = {
 		}
 		for (var i = 0; i < keys.length; i++) {
 			let id = keys[i];
-			let varName = this.getVariableName(id);
+			let variable = this._variables[id];
+			let varName = variable == undefined ? undefined : variable.name;
+			
 			let position = CytoscapeEditor.getNodePosition(id);
 			if (position !== undefined) {
 				result += "#position:"+varName+":"+position+"\n";
 			}
+
+			if (variable != undefined) {
+				result += "#control:"+varName+":"+"c"+variable.controllable +",p"+ variable.phenotype + "\n";
+			}
+			
 			let fun = this._updateFunctions[id];
 			if (fun !== undefined) {
 				result += "$"+varName+":"+fun.functionString+"\n";
@@ -378,17 +386,8 @@ let LiveModel = {
 		return result;
 	},
 
-	// Import model from Aeon file. If the import is successful, return undefined,
-	// otherwise return an error string.
-	importAeon(modelString) {
-		if (!this.isEmpty() && !confirm(Strings.modelWillBeErased)) {
-			// If there is some model loaded, let the user know it will be
-			// overwritten. If he decides not to do it, just return...
-			return undefined;
-		}
-		// Disable on-the-fly server checks.
-		this._disable_dynamic_validation = true;
-
+	// Parses model into intermideate objects. Returns model name and model description.
+	_parseAeonFile(modelString, regulations, positions, control, updateFunctions) {
 		let lines = modelString.split("\n");
 		// name1 -> name2
 		let regulationRegex = /^\s*([a-zA-Z0-9_{}]+)\s*-([>|?])(\??)\s*([a-zA-Z0-9_{}]+)\s*$/;
@@ -398,6 +397,8 @@ let LiveModel = {
 		let modelDescriptionRegex = /^\s*#description:(.+)$/;
 		// #position:var_name:num1,num2
 		let positionRegex = /^\s*#position:([a-zA-Z0-9_{}]+):(.+?),(.+?)\s*$/;
+		// #control:var_name:ccontrollability,pphenotypeStatus
+		let controlRegex = /^\s*#control:([a-zA-Z0-9_{}]+):c(true|false),p(true|false|null)\s*$/;
 		// $var_name:function_data
 		let updateFunctionRegex = /^\s*\$\s*([a-zA-Z0-9_{}]+)\s*:\s*(.+)\s*$/;
 		// #...
@@ -405,11 +406,7 @@ let LiveModel = {
 
 		let modelName = "";
 		let modelDescription = "";
-		let regulations = [];
-		let positions = {};
-		let updateFunctions = {};
 
-		// First, parse all lines into intermediate objects:
 		for (let line of lines) {
 			line = line.trim()
 			if (line.length == 0) continue;	// skip whitespace
@@ -448,10 +445,84 @@ let LiveModel = {
 				updateFunctions[match[1]] = match[2];
 				continue;
 			}
+
+			match = line.match(controlRegex);
+			if (match !== null) {
+				control[match[1]] = [match[2] == "true" ? true : false,
+										match[3] == "true" ? true : match[3] == "false" ? false : null];
+				continue;
+			}
 			if (line.match(commentRegex) === null) {
 				return "Unexpected line in file: "+line;
 			}			
 		}
+
+		return [modelName, modelDescription];
+	},
+
+	// Add variable for importAeon function, returns id of the variable.
+	_addVariableImport(variable, name, position, control) {
+		if (variable !== undefined) {
+			return variable.id;
+		}
+
+		if (control == undefined) {
+			return this.addVariable(position, name);
+		}
+
+		return this.addVariable(position, name, control[0], control[1]);
+	},
+
+	// Add all regulations, creating variables if needed.
+	_setRegulations(regulations, positions, control) {
+		for (let template of regulations) {
+			let regulator = this._addVariableImport(this._variableFromName(template.regulatorName), 
+													template.regulatorName, positions[template.regulatorName],
+													control[template.regulatorName]);
+			let target = this._addVariableImport(this._variableFromName(template.targetName),
+													template.targetName, positions[template.targetName],
+													control[template.targetName]);
+			 
+			// Create the actual regulation...
+			this.addRegulation(regulator, target, template.observable, template.monotonicity);
+		}
+	},
+
+	// Set all update functions
+	_setUpdateFunctions(updateFunctions, positions, control) {
+		let keys = Object.keys(updateFunctions);
+		for (let key of keys) {
+			let variable = this._addVariableImport(this._variableFromName(key), key, positions[key], control[key]);
+
+			// We actually have to also set the function in the model because we don't update it
+			// from the set method...
+			ModelEditor.setUpdateFunction(variable, updateFunctions[key]);
+			let error = this.setUpdateFunction(variable, updateFunctions[key]);
+			if (error !== undefined) {
+				alert(error);
+			}
+		}
+	},
+
+	// Import model from Aeon file. If the import is successful, return undefined,
+	// otherwise return an error string.
+	importAeon(modelString) {
+		if (!this.isEmpty() && !confirm(Strings.modelWillBeErased)) {
+			// If there is some model loaded, let the user know it will be
+			// overwritten. If he decides not to do it, just return...
+			return undefined;
+		}
+		// Disable on-the-fly server checks.
+		this._disable_dynamic_validation = true;
+
+		let modelName = "";
+		let modelDescription = "";
+		let regulations = [];
+		let positions = {};
+		let control = {};
+		let updateFunctions = {};
+		
+		[modelName, modelDescription]  = this._parseAeonFile(modelString, regulations, positions, control, updateFunctions);
 
 		/*
 		console.log(modelName);
@@ -466,43 +537,9 @@ let LiveModel = {
 		// Set model metadata
 		ModelEditor.setModelName(modelName);
 		ModelEditor.setModelDescription(modelDescription);
-		// Add all regulations, creating variables if needed:
-		for (let template of regulations) {
-			// Ensure regulator and target exist at requested positions...
-			let regulator = this._variableFromName(template.regulatorName);
-			if (regulator === undefined) {
-				let position = positions[template.regulatorName];
-				regulator = this.addVariable(position, template.regulatorName);
-			} else {
-				regulator = regulator.id;
-			}
-			let target = this._variableFromName(template.targetName);
-			if (target === undefined) {
-				let position = positions[template.targetName];
-				target = this.addVariable(position, template.targetName);
-			} else {
-				target = target.id;
-			}
-			// Create the actual regulation...
-			this.addRegulation(regulator, target, template.observable, template.monotonicity);
-		}
-		// Set all update functions
-		let keys = Object.keys(updateFunctions);
-		for (let key of keys) {
-			let variable = this._variableFromName(key);
-			if (variable === undefined) {
-				variable = this.addVariable(positions[key], key);
-			} else {
-				variable = variable.id;
-			}
-			// We actually have to also set the function in the model because we don't update it
-			// from the set method...
-			ModelEditor.setUpdateFunction(variable, updateFunctions[key]);
-			let error = this.setUpdateFunction(variable, updateFunctions[key]);
-			if (error !== undefined) {
-				alert(error);
-			}
-		}
+
+		this._setRegulations(regulations, positions, control);
+		this._setUpdateFunctions(updateFunctions, positions, control);
 
 		CytoscapeEditor.fit();
 
