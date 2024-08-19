@@ -73,6 +73,50 @@ let CytoscapeEditor = {
 		}).start();
 	},
 
+	// Applies concentric layout to sort data by phenotype or by controllable values.
+	// If phenotype parameter is true, then sorts by phenotype, else by controllable.
+	_applyConcentricLayout(phenotype) {
+		const nodes = [];
+		const variables = {};
+		
+		LiveModel.getAllVariables().forEach(variable => {
+			nodes.push(this._cytoscape.getElementById(variable.id));
+			
+			if (phenotype == true) {
+				variables[variable.id] = variable.phenotype == null ? 0 : variable.phenotype ? 1 : 2;
+			} else {
+				variables[variable.id] = variable.controllable ? 0 : 1;
+			}
+		})
+
+		const nodesCol = this._cytoscape.collection(nodes);
+
+		nodesCol.layout({
+			name: 'concentric',
+			concentric: function(node) { return variables[node.id()]; },
+			levelWidth: function() { return 1; },
+			minNodeSpacing: 5,
+			padding: 5,
+			startAngle: 3 / 2 * Math.PI,
+			clockwise: true,
+			animate: true,
+			animationDuration: 300,
+			nodeDimensionsIncludeLabels: true,
+			fit: true,
+		  }).run();
+	},
+
+
+	layoutPhenotype() {
+		this._applyConcentricLayout(true);
+	},
+
+	layoutControllable() {
+		this._applyConcentricLayout(false);
+	},
+
+	
+
 	// Return an id of the selected node, or undefined if nothing is selected.
 	getSelectedNodeId() {
 		let node = CytoscapeEditor._cytoscape.nodes(":selected");

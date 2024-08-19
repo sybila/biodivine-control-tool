@@ -128,7 +128,54 @@ let ComputeEngine = {
 		return undefined;		
 	},	
 
-	startComputation(aeonString) {		
+	startComputation(aeonString) {
+		if (this._computateControl) {
+			localStorage.setItem('parNum', 500000000);
+			localStorage.setItem('perturbations', JSON.stringify([[["GcrA:true", "CtrC:false"], 500, 60], 
+													[["GcrA:true", "LmDsd:true"], 90, 40],
+													[["dsadasd:true", "LmDsd:false", "CtrC:true"], 90000, 30],
+													[["CtrC:false"], 1, 40],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90]]));
+			localStorage.setItem('controllable', ["GcrA", "CtrC", "LmDsd", "dsadasd", "dsadasd"]);
+			localStorage.setItem('phenotype', ["GcrA", "CtrC", "LmDsd", "dsadasd", "dsadasd"]);
+			localStorage.setItem('oscillation', "All");
+			window.open("controlResults.html", "_blank");
+			return;
+		}
+
 		if (aeonString === undefined) {
 			alert("Empty model.");
 			return undefined;
@@ -148,12 +195,12 @@ let ComputeEngine = {
 					} else {
 						console.log("Started computation ",r.timestamp);
 						this._lastComputation = r.timestamp;
-					}				
+					}
 					this.ping();
 				}, "POST", aeonString);
 			}
 
-			console.log("Control backend implementation needed.")
+			console.log("Control backend implementation needed.");
 			return;
 		}
 	},
@@ -346,12 +393,12 @@ let ComputeEngine = {
         req.onerror = function(e) {
         	if (callback !== undefined) {
 				callback("Connection error", undefined);
-        	}   
+        	}
         }
 
         req.onabort = function() {
         	console.log("abort: ", req);
-        }    
+        }
 
         req.open(method, this._address + url);
     	if (method == "POST" && postData !== undefined) {
@@ -362,4 +409,34 @@ let ComputeEngine = {
 
     	return req;
     },
+
+	// Control function headers.
+
+	/** Starts computation of control.
+	 *  aeonString (str) = model in the aeon format passed as string,
+	 * 		control data are encoded as = #control:VARIABLENAME:cCONTROLLABILITY,pPHENOTYPESTATUS
+	 * 		controlability values are true(controllable), false(not controllable), phenotype values are true(var in phenotype as true),
+	 * 		false (var in phenotype as false), null (var not present in phenotype)
+	 * 	oscillation (nullable boolean) = true if we want results only for oscillationg phenotype,
+	 * 		false if we want results only for non oscillating phenotype, null if want results for both
+	 * 	minCardinality (int) = minimal cardinality of the computed perturbations
+	 * 	maxSize (int) = maximal size of the computed perturbations
+	 * 	numberResults (int) = optional argument, limits amount of computed perturbations
+	 */
+	startComputationControl(aeonString, oscillation, minCardinality, maxSize, numberResults = undefined) {return;},
+
+	/** Cancels now running control computation and saves partial results.
+	*/
+	cancelControlComp() {return;},
+
+	/** Returns all computed perturbations in iterable form (for example array of dicts, array of arrays, iterator of objects...)
+	*/
+	getResults() {return;},
+
+	/** Returns stats about the computation. Maximal cardinality of the model, number of computed perturbations. 
+	*/
+	getStats() {return;},
+
+	/** Returns status of the computation at the moment. Number of computed perturbations, if possible then also computation progress in %.*/
+	getCompStatus() {return;}
 }

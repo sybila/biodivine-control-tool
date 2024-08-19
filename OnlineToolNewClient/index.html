@@ -45,6 +45,7 @@
         <script src="script/PhenotypeEditor.js"></script>
         <script src="script/TableWidget.js"></script>
         <script src="script/CountWidget.js"></script>
+        <script src="script/ControlResults.js"></script>
         <script src="script/main.js"></script>
 
         <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -409,7 +410,7 @@
                 </div>
             </div>
 
-            <div id="tab-model-visual" class="main-panel gone" style="padding-bottom: 0px; height: 225px;">
+            <div id="tab-model-visual" class="main-panel gone" style="padding-bottom: 0px; height: 1000px;">
                 <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Visual Options</h2> 
                 <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
                 
@@ -417,9 +418,11 @@
                     <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Layout</h3>
                 </div>
 
-                <div style="height: 40px;">
+                <div style="height: 80px;">
                     <button id="button-organic-layout" class="centered-button" style="margin-left: 73px;" onclick="CytoscapeEditor.layoutCose();">Organic layout </button>
                     <button id="button-hierarchical-layout" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.layoutDagre();">Hierarchical layout </button>
+                    <button id="button-phenotype-layout" class="centered-button" style="margin-left: 50px;margin-top: 10px;" onclick="CytoscapeEditor.layoutPhenotype();">Phenotype layout </button>
+                    <button id="button-controllable-layout" class="centered-button" style="margin-left: 30px;margin-top: 10px;" onclick="CytoscapeEditor.layoutControllable();">Controllable layout </button>
                 </div>
 
                 <div style="height: 30px;">
