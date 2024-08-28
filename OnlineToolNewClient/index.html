@@ -125,6 +125,24 @@
 
         <div style="position: absolute;">
 
+            <div id="tab-computation" class="main-panel gone">
+                <button class="centered-button" style="margin-left: 220px;" onclick="ComputeEngine.startComputation(LiveModel.exportAeon());">
+                    <h2 style="font-weight: 4000; font-size: 5px; margin: 0 auto; font-size: 20px; text-align: center;">Start Computation</h2>
+                </button>
+                <div class="doubleContainer" style="margin-top: 20px;">
+                    <div>
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Computation mode: </h3>
+                    </div>
+                    
+                    <div class="doubleContainer">
+                        <button id="button-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="ComputeEngine.changeComputation(false);">Atractor</button>
+                        <button id="button-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="ComputeEngine.changeComputation(true);">Control</button>
+                    </div>
+                </div>
+
+                
+            </div>    
+
             <div id="tab-engine" class="main-panel gone">
                 <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
                 <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Compute Engine</h2>                
@@ -164,7 +182,7 @@
                         <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Computation mode: </h3>
                     </div>
                     
-                    <div class´="doubleContainer">
+                    <div class="doubleContainer">
                         <button id="button-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="ComputeEngine.changeComputation(false);">Atractor</button>
                         <button id="button-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="ComputeEngine.changeComputation(true);">Control</button>
                     </div>
@@ -486,11 +504,10 @@
             </div>
 
             <div id="side-menu">
-                <div class="button-group-fake">
-                    <img alt="Compute Bifurcation" id="side-menu-compute" src="img/play_circle_filled-48px.svg" 
-                    onclick="ComputeEngine.startComputation(LiveModel.exportAeon());" class="button-fake">
-                    <span class="hint invisible">Start Analysis</span>
-                </div> 
+                <div class="button-group">
+                    <img alt="Start" id="side-menu-start" src="img/play_circle_filled-48px.svg" class="button" tab-id="tab-computation">
+                    <span class="hint invisible">Start Computation</span>
+                </div>  
 
                 <div class="button-group">
                     <img alt="Engine" id="side-menu-engine" src="img/engine-48px.svg" class="button" tab-id="tab-engine">

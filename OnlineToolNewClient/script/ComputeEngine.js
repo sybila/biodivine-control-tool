@@ -130,7 +130,7 @@ let ComputeEngine = {
 
 	startComputation(aeonString) {
 		if (this._computateControl) {
-			localStorage.setItem('parNum', 500000000);
+			localStorage.setItem('parNum', 500000000000000000000);
 			localStorage.setItem('perturbations', JSON.stringify([[["GcrA:true", "CtrC:false"], 500, 60], 
 													[["GcrA:true", "LmDsd:true"], 90, 40],
 													[["dsadasd:true", "LmDsd:false", "CtrC:true"], 90000, 30],
@@ -154,7 +154,7 @@ let ComputeEngine = {
 													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
 													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
 													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadadddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddsd:false"], 2000000, 90],
 													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
 													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
 													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
@@ -170,7 +170,7 @@ let ComputeEngine = {
 													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
 													[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90]]));
 			localStorage.setItem('controllable', ["GcrA", "CtrC", "LmDsd", "dsadasd", "dsadasd"]);
-			localStorage.setItem('phenotype', ["GcrA", "CtrC", "LmDsd", "dsadasd", "dsadasd"]);
+			localStorage.setItem('phenotype', JSON.stringify(["GcrA:true", "CtrC:false", "LmDsd:true", "dsddsddsddsddsddsddsddsddsddsddsddsddsddsddsddsd:false", "dsadasd:false"]));
 			localStorage.setItem('oscillation', "All");
 			window.open("controlResults.html", "_blank");
 			return;
