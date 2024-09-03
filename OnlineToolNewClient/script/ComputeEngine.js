@@ -431,7 +431,7 @@ let ComputeEngine = {
 
 	/** Returns all computed perturbations in iterable form (for example array of dicts, array of arrays, iterator of objects...)
 	*/
-	getResults() {return;},
+	getresults() {return;},
 
 	/** Returns stats about the computation. Maximal cardinality of the model, number of computed perturbations. 
 	*/

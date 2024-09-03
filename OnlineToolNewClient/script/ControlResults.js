@@ -120,7 +120,7 @@ let ControlResults = {
             this._appendCell(row, this._createColouredVars(pertDict), pert[0], "877px");
             this._appendCell(row, pert[0].length, null, "70px");
             this._appendCell(row, pert[1], null, "190px");
-            this._appendCell(row, pert[2], null, "110px");
+            this._appendCell(row, pert[2], null, "107px");
 
             this._perturbTable.appendChild(row);
 
@@ -153,23 +153,20 @@ let ControlResults = {
         const search = searchFilter.length > 0 && searchFilter[0] != "";
         const searchDict = this._createPertDict(searchFilter);
 
-        console.log(searchFilter);
-
         const filterValues = [  searchDict, 
                                 this._convertToNumber(this._filters[1].value), 
                                 this._convertToNumber(this._filters[2].value),
                                 this._convertToNumber(this._filters[3].value)];
-        const rows = this._perturbTable.rows;
 
-        for (let i = 1; i < rows.length; i++) {
-            const cells = rows[i].getElementsByTagName('td');
-            if (search && !this._includesPerts(JSON.parse(rows[i].getAttribute('perturb')), filterValues[0]) ||
+        for (const row of this._perturbTable.rows) {
+            const cells = row.getElementsByTagName('td');
+            if (search && !this._includesPerts(JSON.parse(row.getAttribute('perturb')), filterValues[0]) ||
                     filterValues[1] < Number(cells[2].textContent) ||
                         filterValues[2] > Number(cells[3].textContent) ||
                             filterValues[3] > Number(cells[4].textContent)) {
-                rows[i].style.display = "none";
+                row.style.display = "none";
             } else {
-                rows[i].style.display = "";
+                row.style.display = "";
             }
         };
     },
@@ -227,9 +224,8 @@ let ControlResults = {
     },
 
     pertVisual(e) {
-        const rows = this._perturbTable.rows;
-        for (let i = 1; i < rows.length; i++) {
-            const pertDiv = rows[i].children[1].children[0];
+        for (const row of this._perturbTable.rows) {
+            const pertDiv = row.children[1].children[0];
             pertDiv.setAttribute("clickShown", e.getAttribute("colourShown"));
             this._changeContentMode(pertDiv);
             

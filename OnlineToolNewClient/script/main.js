@@ -67,6 +67,7 @@ function init() {
 	ControllableEditor.init();
 	PhenotypeEditor.init();
 	CytoscapeEditor.init();
+	Results.init();
 	ComputeEngine.openConnection();	// Try to automatically connect when first opened.
 
 	let witnessCallback = function(e, r) {

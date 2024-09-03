@@ -126,7 +126,7 @@
         <div style="position: absolute;">
 
             <div id="tab-computation" class="main-panel gone">
-                <button class="centered-button" style="margin-left: 220px;" onclick="ComputeEngine.startComputation(LiveModel.exportAeon());">
+                <button class="centered-button" style="margin-left: 140px;" onclick="ComputeEngine.startComputation(LiveModel.exportAeon());">
                     <h2 style="font-weight: 4000; font-size: 5px; margin: 0 auto; font-size: 20px; text-align: center;">Start Computation</h2>
                 </button>
                 <div class="doubleContainer" style="margin-top: 20px;">
@@ -175,17 +175,6 @@
                     <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-windows.zip" id="engine-link-windows" target="blank"><button id="download-windows" class="image-button" style="display: inline-block; margin: 4px;">Windows <img src="img/windows-24px.svg"></button></a>
                     <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-macos.zip" id="engine-link-macos" target="blank"><button id="download-mac" class="image-button" style="display: inline-block; margin: 4px;">MacOS <img src="img/macos-24px.svg"></button></a>
                     <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-linux.zip" id="engine-link-linux" target="blank"><button id="download-linux" class="image-button" style="display: inline-block; margin: 4px;">Linux <img src="img/linux-24px.svg"></button></a>
-                </div>
-
-                <div class="doubleContainer" style="margin-top: 20px;">
-                    <div>
-                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Computation mode: </h3>
-                    </div>
-                    
-                    <div class="doubleContainer">
-                        <button id="button-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="ComputeEngine.changeComputation(false);">Atractor</button>
-                        <button id="button-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="ComputeEngine.changeComputation(true);">Control</button>
-                    </div>
                 </div>
             </div>         
 
@@ -260,7 +249,7 @@
                 </table>                                        
             </div>
 
-            <div id="tab-model-editor" class="main-panel gone" style="padding-bottom: 0px; height: 1000px;">
+            <div id="tab-model-editor" class="main-panel gone" style="padding-bottom: 0px; height: 620px;">
                 <div class="invisible-input full-line">
                     <input id="model-name" class="center" type="text" name="model-name" placeholder="(model name)" style="font-size: 20px;">
                 </div>
@@ -294,8 +283,8 @@
                                 <input class="variable-name" type="text" name="variable-name" value="Variable name" placeholder="(variable name)" style="font-size: 18px; margin-left: 0;" spellcheck='false' autocorrect='off'>
                             </div>
 
-                            <button class="centered-button" style="height: 25px; margin-top: 0%; margin-left: 60px; margin-right: 5px; background-color: #B0BEC5;"></button>
-                            <button class="centered-button" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"></button>
+                            <button class="centered-button" style="height: 25px; margin-top: 0%; margin-left: 50px; margin-right: 5px; background-color: #B0BEC5;"><img style="max-width: 50px; pointer-events: none;" src="img/controller.svg" alt="controllable"></button>
+                            <button class="centered-button" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"><img style="max-height: 25px; pointer-events: none;" src="img/leaf-48px.svg" alt="phenotype"></button>
                         </div>
 
                         <img alt="Remove variable" src="img/delete-24px.svg" class="model-variable-remove button">
@@ -454,14 +443,52 @@
             </div>
 
             <div id="tab-results" class="main-panel gone">
-                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
-                <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Bifurcation Function</h2>
-                <div style="text-align: center; padding: 12px;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>                
-                <div id="results">
-                    <div style="text-align: center; width: 350px; margin: 0 auto;">No results loaded. Run analysis to show bifurcation function overview for the currently loaded model.</div>
+                <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Results</h2>
+
+                <div class="doubleContainer" style="margin-top: 20px;">
+                    <div>
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Import/Export: </h3>
+                    </div>
+                    
+                    <div class="doubleContainer">
+                        <label for="import-result-input" class="centered-button" > <div style="margin-top: 10px;">Import</div></label>
+                        <input onchange='Results.importResults(this)' id='import-result-input' style='display:none' type='file'>
+        
+                        <button onclick='Results.exportResults()' style="margin-left: 30px; margin-right: 7px;" class="centered-button">Export</button>
+                    </div>
                 </div>
-                <div id="open-tree-explorer" class="gone" style="text-align: center; margin: 8px;"><a class="inline-button" onclick="UI.openTreeExplorer()"> >> Explore Bifurcation Function &lt;&lt; </a></div>
-                <div id='result-legend'><span class='table-behavior'>D</span> disorder | <span class='table-behavior'>O</span> oscillation | <span class='table-behavior'>S</span> stability</div>
+
+                <div class="doubleContainer" style="margin-top: 20px;">
+                    <div>
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Results mode: </h3>
+                    </div>
+                    
+                    <div class="doubleContainer">
+                        <button id="button-result-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="Results.changeMode(false);">Attractor</button>
+                        <button id="button-result-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="Results.changeMode(true);">Control</button>
+                    </div>
+                </div>
+
+                <div class="scrolling-container" id="attractor-res-widget" style="max-height: 420px;">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Bifurcation Function</h2>
+                    <div style="text-align: center; padding: 12px;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>                
+                    <div id="attractor-results">
+                        <div style="text-align: center; width: 350px; margin: 0 auto;">No results loaded. Run analysis to show bifurcation function overview for the currently loaded model.</div>
+                    </div>
+                    <div id="open-tree-explorer" class="gone" style="text-align: center; margin: 8px;"><a class="inline-button" onclick="UI.openTreeExplorer()"> >> Explore Bifurcation Function &lt;&lt; </a></div>
+                    
+                    <div id='result-legend'><span class='table-behavior'>D</span> disorder | <span class='table-behavior'>O</span> oscillation | <span class='table-behavior'>S</span> stability</div>
+                </div>
+
+                <div class="scrolling-container" id="control-res-widget" style="max-height: 420px; display: none;">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Control results</h2>
+                    <div style="text-align: center; padding: 12px;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>                
+                    <div id="control-results">
+                        <div style="text-align: center; width: 350px; margin: 0 auto;">No results loaded. Run control to show perturbations for the currently loaded model.</div>
+                    </div>
+                </div>
             </div>
 
             <div id="tab-help" class="main-panel gone" style="font-family: 'FiraMono';">

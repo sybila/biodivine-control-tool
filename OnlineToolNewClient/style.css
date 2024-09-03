@@ -225,7 +225,7 @@ body {
     overflow-y: auto;
     width: 500px;
     resize: both;
-    max-height: 95vh;
+    max-height: 100%;
 }
 
 #tree-explorer .main-panel {
