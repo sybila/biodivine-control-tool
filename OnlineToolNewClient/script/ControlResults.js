@@ -9,23 +9,11 @@ let ControlResults = {
     _orderArrows: undefined,
 
     init() {
-        document.getElementById("ParamNumberStat").textContent =  localStorage.getItem('parNum');
-        const perts = JSON.parse(localStorage.getItem('perturbations'));
-        document.getElementById("PertNumberStat").textContent = perts.length;
-        document.getElementById("MinSizeStat").textContent = 0;
-        document.getElementById("MaxRobStat").textContent = 0;
-        document.getElementById("OscillationStat").textContent = localStorage.getItem('oscillation');
-        document.getElementById("PhenotypeStat").innerHTML = this._createColouredVars(this._createPertDict(JSON.parse(localStorage.getItem('phenotype'))));
-        console.log(document.getElementById("PhenotypeStat").innerHTML);
-        document.getElementById("ControllableStat").textContent = localStorage.getItem('controllable');
-
-        this._perturbTable = document.getElementById("ControlResults");
+        this._perturbTable = document.getElementById("ControlResults").getElementsByTagName("tbody")[0];
         this._filters = document.getElementsByClassName("filterInput");
         this._sortMode = [document.getElementById("primary-sort-switch"), document.getElementById("secondary-sort-switch")];
         this._orderArrows = document.getElementsByClassName("arrow");
-
         this._filterMenu = document.getElementsByClassName("main-panel")[0];
-        this._fillTable(perts);
     },
 
     _changeContentMode(contentDiv) {
@@ -36,6 +24,18 @@ let ControlResults = {
             contentDiv.innerHTML = contentDiv.getAttribute("clickCont");
             contentDiv.setAttribute("clickShown", true);
         }
+    },
+
+    insertData(controlData) {
+        this._perturbTable.innerHTML = "";
+        document.getElementById("ParamNumberStat").textContent = controlData.parNum;
+        document.getElementById("PertNumberStat").textContent = controlData.perturbations.length;
+        document.getElementById("MinSizeStat").textContent = 0;
+        document.getElementById("MaxRobStat").textContent = 0;
+        document.getElementById("OscillationStat").textContent = controlData.perturbations.oscillation;
+        document.getElementById("PhenotypeStat").innerHTML = this._createColouredVars(this._createPertDict(controlData.phenotype));
+        document.getElementById("ControllableStat").textContent = controlData.controllable;
+        this._fillTable(controlData.perturbations);
     },
 
     // Creates and appends cell into the row of the table.
@@ -267,5 +267,18 @@ let ControlResults = {
 
     showFilters() {
         this._filterMenu.style.display = this._filterMenu.style.display == "none" ? "" : "none";
+    },
+
+    openModel() {
+        const resTab = TabBar.getTab(TabBar.getNowActiveId());
+        const modelTab = TabBar.getTab(resTab.data.modelTabId);
+
+        if (modelTab == undefined || resTab.data.model != modelTab.data) {
+            TabBar.addTab("model", resTab.data.model);
+            resTab.data.modelTabId = TabBar.getNowActiveId();
+        } else {
+            TabBar.toggleActive(resTab.data.modelTabId, false);
+        }
     }
+
 }

@@ -10,7 +10,6 @@ const DOUBLE_CLICK_DELAY = 400;
 	Allows access to operations with the global UI (i.e. operating the menus, showing content panels, etc.).
 */
 let UI = {
-
 	// Element where the cytoscape editor resides.
 	cytoscapeEditor: undefined,
 	// Element of the menu that is displayed for each node/edge when selected.
@@ -19,12 +18,15 @@ let UI = {
 	// Contains pairs of elements of the form { button: ..., tab: ... } corresponding to the side menu.
 	_tabsAndButtons: undefined,
 
-
+	_modelDiv: undefined,
+	_controlResDiv: undefined,
 
 	init: function() {
 		this.cytoscapeEditor = document.getElementById("cytoscape-editor");		
 		this._nodeMenu = document.getElementById("node-menu");
 		this._edgeMenu = document.getElementById("edge-menu");
+		this._modelDiv = document.getElementById("model-div");
+		this._controlResDiv = document.getElementById("control-results-div");
 		
 		let sideMenu = document.getElementById("side-menu");
 		let sideMenuButtons = sideMenu.getElementsByClassName("button");
@@ -35,7 +37,7 @@ let UI = {
 			let tab = document.getElementById(button.getAttribute("tab-id"));
 			this._tabsAndButtons.push({ tab: tab, button: button });
 		}
-		
+
 		this._initNodeMenu(this._nodeMenu);
 		this._initEdgeMenu(this._edgeMenu);
 		this._initSideMenu(sideMenu);	
@@ -570,7 +572,29 @@ let UI = {
 					hint.classList.add("invisible");
 				}				
 			});
+		};
+	},
+
+	toggleDiv(showModel, data) {
+		if (showModel) {
+			this._modelDiv.style.display = "";
+			this._controlResDiv.style.display = "none";
+			LiveModel.importAeon(data, true);
+		} else {
+			this._modelDiv.style.display = "none";
+			this._controlResDiv.style.display = "";
+			ControlResults.insertData(data);
 		}
 	},
-	
+
+	openBrowserTab() {
+		const tab = TabBar.getTab(TabBar.getNowActive())
+
+		if (tab.type == "model") {
+			tab.data = LiveModel.exportAeon();
+		}
+
+		const newWindow = open("index.html", "_Blank");		
+		newWindow.initialTabInfo = {"type":tab.type, "data":tab.data};
+	}
 }

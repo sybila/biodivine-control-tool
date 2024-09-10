@@ -4,7 +4,6 @@ let Results = {
 	attractorResWid: undefined,
 	controlResWid: undefined,
 	attractorResults: undefined,
-	controlResults: undefined,
 
 	// Currently loaded results in the form of JSON
 	currAttractorRes: undefined,
@@ -16,29 +15,13 @@ let Results = {
 		this.attractorResWid = document.getElementById("attractor-res-widget");
 		this.controlResWid = document.getElementById("control-res-widget");
 		this.attractorResults = document.getElementById("attractor-results");
-		this.controlResults = document.getElementById("control-results");
 		this.currAttractorRes = null;
 		this.currControlRes = null;
-	},
-
-	changeMode(toControl) {
-		if (toControl) {
-			this.controlButton.style.backgroundColor = "#ECEFF1";
-			this.attractorButton.style.backgroundColor = "#B0BEC5";
-			this.controlResWid.style.display = "";
-			this.attractorResWid.style.display = "none";
-		} else {
-			this.controlButton.style.backgroundColor = "#B0BEC5";
-			this.attractorButton.style.backgroundColor = "#ECEFF1";
-			this.controlResWid.style.display = "none";
-			this.attractorResWid.style.display = "";
-		}
 	},
 
 	clear() {
 		document.getElementById("open-tree-explorer").classList.add("gone");
 		this.attractorResults.innerHTML = "";
-		this.controlResults.innerHTML = "";
 	},
 
 	hasResults() {

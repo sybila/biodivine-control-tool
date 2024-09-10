@@ -348,10 +348,10 @@ let LiveModel = {
 
 	// Export current model in Aeon text format, or undefined if model cannot be 
 	// exported (no variables).
-	exportAeon() {
+	exportAeon(emptyPossible = false) {
 		let result = "";
 		let keys = Object.keys(this._variables);
-		if (keys.length == 0) return undefined;
+		if (!emptyPossible && keys.length == 0) return undefined;
 		let name = ModelEditor.getModelName();
 		if (name !== undefined) {
 			result += "#name:"+name+"\n";			
@@ -473,6 +473,15 @@ let LiveModel = {
 		return this.addVariable(position, name, control[0], control[1]);
 	},
 
+	// Adds variables which are not connected to any other variable.
+	_insertNotConnected(positions, control) {
+		const vars = Object.keys(positions);
+		for (let variable of vars) {
+			this._addVariableImport(this._variableFromName(variable),
+										variable, positions[variable], control[variable]);
+		}
+	},
+
 	// Add all regulations, creating variables if needed.
 	_setRegulations(regulations, positions, control) {
 		for (let template of regulations) {
@@ -506,8 +515,9 @@ let LiveModel = {
 
 	// Import model from Aeon file. If the import is successful, return undefined,
 	// otherwise return an error string.
-	importAeon(modelString) {
-		if (!this.isEmpty() && !confirm(Strings.modelWillBeErased)) {
+	importAeon(modelString, erasePossible = false) {
+
+		if (!this.isEmpty() && (!erasePossible && !confirm(Strings.modelWillBeErased))) {
 			// If there is some model loaded, let the user know it will be
 			// overwritten. If he decides not to do it, just return...
 			return undefined;
@@ -521,8 +531,9 @@ let LiveModel = {
 		let positions = {};
 		let control = {};
 		let updateFunctions = {};
-		
+
 		[modelName, modelDescription]  = this._parseAeonFile(modelString, regulations, positions, control, updateFunctions);
+
 
 		/*
 		console.log(modelName);
@@ -540,6 +551,7 @@ let LiveModel = {
 
 		this._setRegulations(regulations, positions, control);
 		this._setUpdateFunctions(updateFunctions, positions, control);
+		this._insertNotConnected(positions, control);
 
 		CytoscapeEditor.fit();
 

@@ -68,6 +68,8 @@ function init() {
 	PhenotypeEditor.init();
 	CytoscapeEditor.init();
 	Results.init();
+	ControlResults.init();
+	TabBar.init(window.initialTabInfo == undefined ? null : window.initialTabInfo);
 	ComputeEngine.openConnection();	// Try to automatically connect when first opened.
 
 	let witnessCallback = function(e, r) {

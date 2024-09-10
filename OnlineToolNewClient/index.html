@@ -45,6 +45,8 @@
         <script src="script/PhenotypeEditor.js"></script>
         <script src="script/TableWidget.js"></script>
         <script src="script/CountWidget.js"></script>
+        <script src="script/TabBar.js"></script>
+        <script src="script/Tab.js"></script>
         <script src="script/ControlResults.js"></script>
         <script src="script/main.js"></script>
 
@@ -60,451 +62,51 @@
     </head>
 
     <body onload="init()">
-        <script type="module" src="script/patch-wasm.js"></script>
+        <div id="model-div" >
+            <script type="module" src="script/patch-wasm.js"></script>
 
-        <!-- Hosts the interactive model editor -->        
-        <div id="cytoscape-editor">
-        </div>
-
-        <h1 id='logo'>Aeon/<span id='title'>BIODIVINE</span></h1>
-
-        <!-- Do not change it here, this is a placeholder. Change it in const.js -->
-        <span id="version">v0.0.0</span>
-
-        <!-- A menu element that is shown for selected graph nodes in the editor. -->
-        <div id="node-menu" class="float-menu invisible">
-            <div class="button-row">
-                <img alt="Edit name (E)" id="node-menu-edit-name" class="button" src="img/edit-24px.svg">                
-                <img alt="Edit update function (F)" id="node-menu-edit-function" class="button" src="img/functions-24px.svg">
-                <img alt="Remove (⌫)" id="node-menu-remove" class="button" src="img/delete-24px.svg">
-            </div>
-            <br>
-            <span class="hint invisible">Hint</span>
-        </div>
-
-        <!-- A menu element which is shown for selected edges in the editor. -->
-        <div id="edge-menu" class="float-menu invisible">
-            <div class="button-row">
-                <img alt="Toggle observability (O)" id="edge-menu-observability" class="button" src="img/visibility_off-24px.svg" 
-                    src-on="img/visibility_off-24px.svg" src-off="img/visibility_on-24px.svg" 
-                    alt-on="Observability off (O)" alt-off="Observability on (O)"
-                    state=""
-                >
-                <img alt="Toggle monotonicity (M)" id="edge-menu-monotonicity" class="button" src="img/trending_up-24px.svg"
-                    src-unspecified="img/trending_up-24px.svg" alt-unspecified="Make activating (M)"
-                    src-activation="img/trending_down-24px.svg" alt-activation="Make inhibiting (M)"
-                    src-inhibition="img/swap_vert-24px.svg" alt-inhibition="Monotonicity off (M)"
-                    state=""
-                >
-                <img alt="Remove (⌫)" id="edge-menu-remove" class="button" src="img/delete-24px.svg">
-            </div>
-            <br>
-            <span class="hint invisible">Hint</span>
-        </div>
-
-        <div id="quick-help">
-            <h3 style="display: block; margin: 0 auto; float: right;">HELP</h3>
-            <b>Network editor actions:</b>
-            <ul>
-                <li>Double click to create a new variable.</li>
-                <li>Drag from `+` to create a new regulation.</li>
-                <li>Select element (click) to show the context menu.</li>
-            </ul>
-            <b>Keyboard shortcuts:</b>
-            <ul>
-                <li>(⌫) Remove selected element.</li>
-                <li>(N) Add new variable.</li>
-                <li>(E) Edit name of the selected variable.</li>
-                <li>(F) Edit update function of the selected variable.</li>
-                <li>(O) Change observability of the selected regulation.</li>
-                <li>(M) Change monotonicity of the selected regulation.</li>
-                <li>(H) Show this help message.</li>                
-            </ul>
-            <div style="width: 100%; text-align: center; font-size: 12px;">(this message disappears when you create the first variable)</div>            
-        </div>
-
-        <div style="position: absolute;">
-
-            <div id="tab-computation" class="main-panel gone">
-                <button class="centered-button" style="margin-left: 140px;" onclick="ComputeEngine.startComputation(LiveModel.exportAeon());">
-                    <h2 style="font-weight: 4000; font-size: 5px; margin: 0 auto; font-size: 20px; text-align: center;">Start Computation</h2>
-                </button>
-                <div class="doubleContainer" style="margin-top: 20px;">
-                    <div>
-                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Computation mode: </h3>
-                    </div>
-                    
-                    <div class="doubleContainer">
-                        <button id="button-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="ComputeEngine.changeComputation(false);">Atractor</button>
-                        <button id="button-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="ComputeEngine.changeComputation(true);">Control</button>
-                    </div>
-                </div>
-
-                
-            </div>    
-
-            <div id="tab-engine" class="main-panel gone">
-                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
-                <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Compute Engine</h2>                
-                <div class="invisible-input full-line" style="margin-top: 4px; margin-bottom: 4px; font-size: 16px;">
-                    <input id="engine-address" class="center" type="text" name="engine-address" value="http://localhost:8000" placeholder="(engine address)">
-                </div>
-                <div style="height: 40px;">
-                    <h3 id="compute-engine-status" style="float: left; font-family: 'FiraMono'; text-transform: uppercase;"> ● Disconnected</h3>
-                    <button id="button-connect" class="image-button" onclick="ComputeEngine.toggleConnection((e,r) => { if (e !== undefined) alert(e); });" style="float: right;">Connect <img src="img/cloud-24px.svg"></button>
-                </div>
-                <div style="clear: both;"></div>
-
-                <!-- Computation status -->
-                <div id="computation">
-                    Computation: <span id="computation-status">(none)</span><br>
-                    <span>Progress: <span id="computation-progress">unknown</span><br>Discovered classes: <span id="computation-classes">-</span></span>
-
-                    <div style="margin-top: 16px; text-align: center;">
-                        
-                        <button id="computation-cancel" class="image-button" onclick="ComputeEngine.cancelComputation();" style="margin-right: 4px;">Cancel job <img src="img/cancel-24px.svg"></button>
-
-                        <button id="computation-download" class="image-button" onclick="Results.download();" style="margin-left: 4px;">Show result <img src="img/cloud_download-24px.svg"></button>
-
-                    </div>                    
-                </div>
-
-                <div style="clear: both;"></div>
-                <div style="text-align: center; margin-top: 48px;">
-                    <h3 style="margin: 0 auto; font-size: 14px; text-align: center; margin-bottom: 4px;">No engine running? Download binary:</h3>                                        
-                    <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-windows.zip" id="engine-link-windows" target="blank"><button id="download-windows" class="image-button" style="display: inline-block; margin: 4px;">Windows <img src="img/windows-24px.svg"></button></a>
-                    <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-macos.zip" id="engine-link-macos" target="blank"><button id="download-mac" class="image-button" style="display: inline-block; margin: 4px;">MacOS <img src="img/macos-24px.svg"></button></a>
-                    <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-linux.zip" id="engine-link-linux" target="blank"><button id="download-linux" class="image-button" style="display: inline-block; margin: 4px;">Linux <img src="img/linux-24px.svg"></button></a>
-                </div>
-            </div>         
-
-            <div id="tab-import-export" class="main-panel gone">
-                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
-                <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Model File</h2>
-
-                <table style="text-align: center; margin-left: -4px;">
-                    <tr>
-                        <td style="padding: 4px;">
-                            <h3 style="display: block; margin: 0 auto; text-align: center;">Import</h3>
-                        </td>
-                        <td style="padding: 4px;">
-                            <h3 style="display: block; margin: 0 auto; text-align: center;">Export</h3>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 4px;">
-                            <button id="import-local" class="compound-button" onclick="LiveModel.loadFromLocalStorage();" style="width: 244px;"><span class="main">Last<br>model</span><span class="desc">Browser local storage</span></button>
-                        </td>
-                        <td style="padding: 4px;">
-                            <button id="export-aeon" class="compound-button" onclick="UI.downloadAeon();" style="width: 244px;"><span class="main">.AEON</span><span class="desc">Simple text format</span></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 4px;">
-                            <label for="import-aeon-input" id="import-aeon" class="compound-button"><span class="main">.AEON</span><span class="desc">Simple text format</span></label>
-                            <input onchange='UI.importAeon(this)' id='import-aeon-input' style='display:none' type='file'>
-                        </td>
-                        <td style="padding: 4px;">
-                            <button id="export-sbml" class="compound-button" onclick="UI.downloadSBML();"><span class="main">.SBML<br><small>(parametrized)</small></span><span class="desc">Parametrized model</span></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 4px;">
-                            <label for="import-sbml-input" id="import-sbml" class="compound-button"><span class="main">.SBML</span><span class="desc">Standard<br>SBML L3</span></label>
-                            <input onchange='UI.importSBML(this)' id='import-sbml-input' style='display:none' type='file'>
-                        </td>
-                        <td style="padding: 4px;">
-                            <button id="export-sbml" class="compound-button" onclick="UI.downloadSBMLInstantiated();"><span class="main">.SBML<br><small>(instantiated)</small></span><span class="desc">Witness<br>model</span></button>                   
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 4px;">
-                            <label for="import-bnet-input" id="import-bnet" class="compound-button"><span class="main">.BNET</span><span class="desc">Boolnet text format</span></label>                    
-                            <input onchange='UI.importBnet(this)' id='import-bnet-input' style='display:none' type='file'>
-                        </td>
-                        <td style="padding: 4px;">
-                            <button id="export-bnet" class="compound-button" onclick="UI.downloadBnet();"><span class="main">.BNET</span><span class="desc">Boolnet text format</span></button>
-                        </td>
-                    </tr>
-                </table>                
-                <h3 style="display: block; margin: 0 auto; text-align: center; margin-top: 8px; margin-bottom: 8px;">Example Models</h3>  
-
-                <table style="text-align: center; margin-left: -4px;">
-                    <tr>
-                        <td style="padding: 4px;">
-                            <button id="example-1" class="compound-button" onclick="LiveModel.importAeon(Examples.g2a);"><span class="main">G2A</span><span class="desc">Cell<br>Division</span></button>
-                        </td>
-                        <td style="padding: 4px;">
-                            <button id="example-3" class="compound-button" onclick="LiveModel.importAeon(Examples.buddingYeastOrlando);"><span class="main">Orlando</span><span class="desc">Budding<br>Yeast</span></button>         
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 4px;">
-                            <button id="example-2" class="compound-button" onclick="LiveModel.importAeon(Examples.g2b);"><span class="main">G2B</span><span class="desc">Cell<br>Division</span></button>                
-                        </td>
-                        <td style="padding: 4px;">
-                            <button id="example-4" class="compound-button" onclick="LiveModel.importAeon(Examples.buddingYeastIrons);"><span class="main">Irons</span><span class="desc">Budding<br>Yeast</span></button>                
-                        </td>
-                    </tr>
-                </table>                                        
+            <!-- Hosts the interactive model editor -->        
+            <div id="cytoscape-editor">
             </div>
 
-            <div id="tab-model-editor" class="main-panel gone" style="padding-bottom: 0px; height: 620px;">
-                <div class="invisible-input full-line">
-                    <input id="model-name" class="center" type="text" name="model-name" placeholder="(model name)" style="font-size: 20px;">
+            <h1 id='logo'>Aeon/<span id='title'>BIODIVINE</span></h1>
+
+            <!-- Do not change it here, this is a placeholder. Change it in const.js -->
+            <span id="version">v0.0.0</span>
+
+            <!-- A menu element that is shown for selected graph nodes in the editor. -->
+            <div id="node-menu" class="float-menu invisible">
+                <div class="button-row">
+                    <img alt="Edit name (E)" id="node-menu-edit-name" class="button" src="img/edit-24px.svg">                
+                    <img alt="Edit update function (F)" id="node-menu-edit-function" class="button" src="img/functions-24px.svg">
+                    <img alt="Remove (⌫)" id="node-menu-remove" class="button" src="img/delete-24px.svg">
                 </div>
-                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
-                <div class="invisible-input full-line" id="model-description" style="display: none;" contenteditable data-placeholder="(model description)" style="margin-top: 4px; margin-bottom: 4px;"></div>      
-
-                <div class="doubleContainer">
-                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;" onclick="ModelEditor.showModelOverview()"> ● Overview</h3>
-                    <button id="button-model-description" class="centered-button" onclick="ModelEditor.showModelDescription()" style="float: right;">Show model description</button>
-                </div>
-                <table id="model-stats">
-                    <tr class="row">    <td>Variables: </td>        <td class="value">-</td>     <td>Parameter space size: </td>  <td class="value">-</td> </tr>
-                    <tr class="row">    <td>Regulations: </td>      <td class="value">-</td>     <td>State space size: </td> <td class="value">-</td> </tr>
-                    <tr class="row">    <td>Max. in-degree: </td>   <td class="value">-</td>     <td>Max. out-degree: </td>       <td class="value">-</td> </tr>
-                    <tr class="row">    <td colspan="2">Explicit parameters: </td>  <td colspan="2">(none)</td>   </tr>
-                </table>                   
-                <div style="height: 40px;">
-                    <h3 style="float: left; font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Variables</h3>
-                    <button id="button-add-variable" class="image-button" onclick="let id = LiveModel.addVariable(); CytoscapeEditor.showNode(id);" style="float: right;">Add variable (N) <img src="img/add_box-24px.svg"></button>
-                </div>
-
-                <input type="text" id="variable-filter" class="filterInput" style="width: 98%;" onkeyup="ModelEditor.filterVariables()">
-
-                <div id="model-variables" class="scrolling-container" style="max-height: 340px;"></div>
-                                    
-                <div class="templates gone">
-                    <div id="model-variable-template" class="model-variable">
-                        <div class="doubleContainer" style="max-width: 410px; max-height: 5px; margin-bottom: 0px;">
-                            <button class="centered-button" style="height: 25px; margin-top: -1px;"></button>
-                            <div class="invisible-input" style="margin-left: 5px;">
-                                <input class="variable-name" type="text" name="variable-name" value="Variable name" placeholder="(variable name)" style="font-size: 18px; margin-left: 0;" spellcheck='false' autocorrect='off'>
-                            </div>
-
-                            <button class="centered-button" style="height: 25px; margin-top: 0%; margin-left: 50px; margin-right: 5px; background-color: #B0BEC5;"><img style="max-width: 50px; pointer-events: none;" src="img/controller.svg" alt="controllable"></button>
-                            <button class="centered-button" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"><img style="max-height: 25px; pointer-events: none;" src="img/leaf-48px.svg" alt="phenotype"></button>
-                        </div>
-
-                        <img alt="Remove variable" src="img/delete-24px.svg" class="model-variable-remove button">
-                        <img alt="Show variable" src="img/search-24px.svg" class="model-variable-show button">
-                        <br>
-                        <div class="scrolling-container">
-                            <h4> ● Regulators</h4>
-                            <div class="model-variable-regulators full-line"></div>
-                            <h4> ● Update Function</h4>
-                            <div class="invisible-input full-line variable-function" contenteditable data-placeholder="(default)" spellcheck='false' autocorrect='off' style="font-size: 16px; text-align: center;"></div>
-                            <div class="variable-function-status"></div>
-                        </div>
-
-                    </div>
-
-                    <div id="model-regulation-template" class="model-regulation">
-                        <span class="model-regulation-regulator">Some name</span>
-                        <span class="model-regulation-short">(->)</span>
-                        <span class="model-regulation-observable">observable</span>
-                        <span class="model-regulation-monotonicity">activation</span>
-                    </div>                    
-                </div>
+                <br>
+                <span class="hint invisible">Hint</span>
             </div>
 
-            <div id="tab-model-controllable" class="main-panel gone" style="height: 1000px; padding-bottom: 0px;">
-                <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Controllable variables</h2> 
-                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
-
-                <div style="height: 30px;">
-                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Overview</h3>
+            <!-- A menu element which is shown for selected edges in the editor. -->
+            <div id="edge-menu" class="float-menu invisible">
+                <div class="button-row">
+                    <img alt="Toggle observability (O)" id="edge-menu-observability" class="button" src="img/visibility_off-24px.svg" 
+                        src-on="img/visibility_off-24px.svg" src-off="img/visibility_on-24px.svg" 
+                        alt-on="Observability off (O)" alt-off="Observability on (O)"
+                        state=""
+                    >
+                    <img alt="Toggle monotonicity (M)" id="edge-menu-monotonicity" class="button" src="img/trending_up-24px.svg"
+                        src-unspecified="img/trending_up-24px.svg" alt-unspecified="Make activating (M)"
+                        src-activation="img/trending_down-24px.svg" alt-activation="Make inhibiting (M)"
+                        src-inhibition="img/swap_vert-24px.svg" alt-inhibition="Monotonicity off (M)"
+                        state=""
+                    >
+                    <img alt="Remove (⌫)" id="edge-menu-remove" class="button" src="img/delete-24px.svg">
                 </div>
-                <table id="model-stats">
-                    <tr class="row">    <td>Controllable: </td>        <td class="value" id="controllable-count">-</td>
-                    <tr class="row">    <td>Uncontrollable: </td>      <td class="value" id="uncontrollable-count">-</td>
-                </table>  
-                
-                <div style="height: 30px;">
-                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 0px;"> ● Controllable</h3>
-                </div>
-
-                <input type="text" id="ControllableFilter" class="filterInput" onkeyup="ControllableEditor.filterTable(true)">
-
-                <div class="scrolling-container" style="max-height: 170px;">
-                    <table id="Controllable"class="table" style="height: 170px;">
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-
-                <div style="height: 30px;">
-                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Uncontrollable</h3>
-                </div>
-
-                <input type="text" id="UncontrollableFilter" class="filterInput" onkeyup="ControllableEditor.filterTable(false)">
-
-                <div class="scrolling-container" style="max-height: 170px;">
-                    <table id="Uncontrollable"class="table" style="height: 170px;">
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
+                <br>
+                <span class="hint invisible">Hint</span>
             </div>
 
-            <div id="tab-model-phenotype" class="main-panel gone" style="padding-bottom: 0px; height: 1000px;">
-                <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Phenotype</h2> 
-                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
-
-                <div style="height: 30px;">
-                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Overview</h3>
-                </div>
-                <table id="model-stats">
-                    <tr class="row">    <td>True: </td>        <td class="value" id="trueCount">-</td>
-                    <tr class="row">    <td>False: </td>      <td class="value" id="falseCount">-</td>
-                    <tr class="row">    <td>Not in phenotype: </td>      <td class="value" id="notInCount">-</td>
-                </table>
-                
-                <div class="doubleContainer" style="height: 20px">
-                    <div class="halfContainer">
-                        <h4 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 0%;"> ● Phenotype Oscillation</h4>
-                    </div>
-                    <div class="halfContainer" style="text-align: right;">
-                        <input id="oscillation-switch" type="button" class="centered-button" style="width: 180px; height: 20px; padding-left: 4%;" value="All"></input>
-                    </div>
-                </div>
-
-                <div class="doubleContainer">
-                    <div class="halfContainer">
-                        <div style="height: 30px;">
-                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● True</h3>
-                        </div>
-    
-                        <input type="text" id="TrueFilter" class="filterInput" style="width: 98%;" onkeyup="PhenotypeEditor.filterTable(true)">
-    
-                        <div class="scrolling-container" style="max-height: 140px;">
-                            <table id="True"class="table" style="height: 140px;">
-                                <tbody style="max-height: 140px;">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="halfContainer">
-                        <div style="height: 30px;">
-                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● False</h3>
-                        </div>
-    
-                        <input type="text" id="FalseFilter" class="filterInput" style="width: 98%;" onkeyup="PhenotypeEditor.filterTable(false)">
-    
-                        <div class="scrolling-container" style="max-height: 140px;">
-                            <table id="False"class="table" style="height: 140px;">
-                                <tbody style="max-height: 140px;">
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-  
-                </div>
-
-                <div style="height: 30px;">
-                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Not in Phenotype</h3>
-                </div>
-
-                <input type="text" id="NotInFilter" class="filterInput" onkeyup="PhenotypeEditor.filterTable(null)">
-
-                <div class="scrolling-container" style="max-height: 140px;">
-                    <table id="NotIn"class="table" style="height: 140px;">
-                        <tbody>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="tab-model-visual" class="main-panel gone" style="padding-bottom: 0px; height: 1000px;">
-                <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Visual Options</h2> 
-                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
-                
-                <div style="height: 30px;">
-                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Layout</h3>
-                </div>
-
-                <div style="height: 80px;">
-                    <button id="button-organic-layout" class="centered-button" style="margin-left: 73px;" onclick="CytoscapeEditor.layoutCose();">Organic layout </button>
-                    <button id="button-hierarchical-layout" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.layoutDagre();">Hierarchical layout </button>
-                    <button id="button-phenotype-layout" class="centered-button" style="margin-left: 50px;margin-top: 10px;" onclick="CytoscapeEditor.layoutPhenotype();">Phenotype layout </button>
-                    <button id="button-controllable-layout" class="centered-button" style="margin-left: 30px;margin-top: 10px;" onclick="CytoscapeEditor.layoutControllable();">Controllable layout </button>
-                </div>
-
-                <div style="height: 30px;">
-                    <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Highlight</h3>
-                </div>
-
-                <div style="height: 40px;">
-                    <button id="button-highlight-phenotype" class="centered-button" style="margin-left: 55px;" onclick="CytoscapeEditor.highlightButton(this, true);">Show Phenotype </button>
-                    <button id="button-highlight-controllable" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.highlightButton(this, false);">Show Controllable </button>
-                </div>
-            </div>
-
-            <div id="tab-results" class="main-panel gone">
-                <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Results</h2>
-
-                <div class="doubleContainer" style="margin-top: 20px;">
-                    <div>
-                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Import/Export: </h3>
-                    </div>
-                    
-                    <div class="doubleContainer">
-                        <label for="import-result-input" class="centered-button" > <div style="margin-top: 10px;">Import</div></label>
-                        <input onchange='Results.importResults(this)' id='import-result-input' style='display:none' type='file'>
-        
-                        <button onclick='Results.exportResults()' style="margin-left: 30px; margin-right: 7px;" class="centered-button">Export</button>
-                    </div>
-                </div>
-
-                <div class="doubleContainer" style="margin-top: 20px;">
-                    <div>
-                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Results mode: </h3>
-                    </div>
-                    
-                    <div class="doubleContainer">
-                        <button id="button-result-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="Results.changeMode(false);">Attractor</button>
-                        <button id="button-result-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="Results.changeMode(true);">Control</button>
-                    </div>
-                </div>
-
-                <div class="scrolling-container" id="attractor-res-widget" style="max-height: 420px;">
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
-                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Bifurcation Function</h2>
-                    <div style="text-align: center; padding: 12px;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>                
-                    <div id="attractor-results">
-                        <div style="text-align: center; width: 350px; margin: 0 auto;">No results loaded. Run analysis to show bifurcation function overview for the currently loaded model.</div>
-                    </div>
-                    <div id="open-tree-explorer" class="gone" style="text-align: center; margin: 8px;"><a class="inline-button" onclick="UI.openTreeExplorer()"> >> Explore Bifurcation Function &lt;&lt; </a></div>
-                    
-                    <div id='result-legend'><span class='table-behavior'>D</span> disorder | <span class='table-behavior'>O</span> oscillation | <span class='table-behavior'>S</span> stability</div>
-                </div>
-
-                <div class="scrolling-container" id="control-res-widget" style="max-height: 420px; display: none;">
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
-                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Control results</h2>
-                    <div style="text-align: center; padding: 12px;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>                
-                    <div id="control-results">
-                        <div style="text-align: center; width: 350px; margin: 0 auto;">No results loaded. Run control to show perturbations for the currently loaded model.</div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="tab-help" class="main-panel gone" style="font-family: 'FiraMono';">
-                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
-                <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">About & Help</h2>
-                
-                <p>Aeon is a tool for analysing <b style="font-family: 'FiraMonoBold';">long-term behaviour of Boolean networks with parameters</b>. Use the editor to create a new network, or import your own from .sbml or .aeon. You can leave the update functions in the network blank (this will automatically consider all admissible instantiations of such function) or specify an exact update function. In the update function, you can use <b style="font-family: 'FiraMonoBold';">arbitrary uninterpreted functions as parameters</b> (see Budding Yeast-Irons example). Aeon will then automatically consider all admissible instantiations of such functions when analysing the model.</p>
-
-                <p>Once your network is ready, you can run the long-term behaviour analysis which will show you the behaviour classes of the model. The classes are separated based on <b style="font-family: 'FiraMonoBold';">stable, oscillating or disordered</b> behaviour. For each class, you can generate a <b style="font-family: 'FiraMonoBold';">witness network</b> that exihibits the specified behaviour.</p>
-
-                <h3>Manual</h3>
-
-                Full description of the functionality Aeon provides is available in the <a href="https://biodivine.fi.muni.cz/aeon/manual/v0.4.0/">tool manual</a>.
-
-
-                <h3>Quick Help</h3>
+            <div id="quick-help">
+                <h3 style="display: block; margin: 0 auto; float: right;">HELP</h3>
                 <b>Network editor actions:</b>
                 <ul>
                     <li>Double click to create a new variable.</li>
@@ -521,65 +123,546 @@
                     <li>(M) Change monotonicity of the selected regulation.</li>
                     <li>(H) Show this help message.</li>                
                 </ul>
-
-                <h3>Attributions</h3>
-
-                <p>Compute Engine: crossbeam, rayon, rocket, json.</p>
-
-                <p>Online client: cytoscape with edgehandles, material icons, hotkeys.</p>
-
+                <div style="width: 100%; text-align: center; font-size: 12px;">(this message disappears when you create the first variable)</div>            
             </div>
 
-            <div id="side-menu">
-                <div class="button-group">
-                    <img alt="Start" id="side-menu-start" src="img/play_circle_filled-48px.svg" class="button" tab-id="tab-computation">
-                    <span class="hint invisible">Start Computation</span>
-                </div>  
+            <div style="position: absolute;">
 
-                <div class="button-group">
-                    <img alt="Engine" id="side-menu-engine" src="img/engine-48px.svg" class="button" tab-id="tab-engine">
-                    <span id="engine-dot" style="margin-left: -11px;">●</span>
-                    <span class="hint invisible">Compute Engine</span>
+                <div id="tab-computation" class="main-panel gone">
+                    <button class="centered-button" style="margin-left: 140px;" onclick="ComputeEngine.startComputation(LiveModel.exportAeon());">
+                        <h2 style="font-weight: 4000; font-size: 5px; margin: 0 auto; font-size: 20px; text-align: center;">Start Computation</h2>
+                    </button>
+                    <div class="doubleContainer" style="margin-top: 20px;">
+                        <div>
+                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Computation mode: </h3>
+                        </div>
+                        
+                        <div class="doubleContainer">
+                            <button id="button-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="ComputeEngine.changeComputation(false);">Atractor</button>
+                            <button id="button-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="ComputeEngine.changeComputation(true);">Control</button>
+                        </div>
+                    </div>
+
+                    
+                </div>    
+
+                <div id="tab-engine" class="main-panel gone">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Compute Engine</h2>                
+                    <div class="invisible-input full-line" style="margin-top: 4px; margin-bottom: 4px; font-size: 16px;">
+                        <input id="engine-address" class="center" type="text" name="engine-address" value="http://localhost:8000" placeholder="(engine address)">
+                    </div>
+                    <div style="height: 40px;">
+                        <h3 id="compute-engine-status" style="float: left; font-family: 'FiraMono'; text-transform: uppercase;"> ● Disconnected</h3>
+                        <button id="button-connect" class="image-button" onclick="ComputeEngine.toggleConnection((e,r) => { if (e !== undefined) alert(e); });" style="float: right;">Connect <img src="img/cloud-24px.svg"></button>
+                    </div>
+                    <div style="clear: both;"></div>
+
+                    <!-- Computation status -->
+                    <div id="computation">
+                        Computation: <span id="computation-status">(none)</span><br>
+                        <span>Progress: <span id="computation-progress">unknown</span><br>Discovered classes: <span id="computation-classes">-</span></span>
+
+                        <div style="margin-top: 16px; text-align: center;">
+                            
+                            <button id="computation-cancel" class="image-button" onclick="ComputeEngine.cancelComputation();" style="margin-right: 4px;">Cancel job <img src="img/cancel-24px.svg"></button>
+
+                            <button id="computation-download" class="image-button" onclick="Results.download();" style="margin-left: 4px;">Show result <img src="img/cloud_download-24px.svg"></button>
+
+                        </div>                    
+                    </div>
+
+                    <div style="clear: both;"></div>
+                    <div style="text-align: center; margin-top: 48px;">
+                        <h3 style="margin: 0 auto; font-size: 14px; text-align: center; margin-bottom: 4px;">No engine running? Download binary:</h3>                                        
+                        <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-windows.zip" id="engine-link-windows" target="blank"><button id="download-windows" class="image-button" style="display: inline-block; margin: 4px;">Windows <img src="img/windows-24px.svg"></button></a>
+                        <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-macos.zip" id="engine-link-macos" target="blank"><button id="download-mac" class="image-button" style="display: inline-block; margin: 4px;">MacOS <img src="img/macos-24px.svg"></button></a>
+                        <a href="https://github.com/sybila/biodivine-aeon-server/releases/download/VERSION/aeon-compute-engine-linux.zip" id="engine-link-linux" target="blank"><button id="download-linux" class="image-button" style="display: inline-block; margin: 4px;">Linux <img src="img/linux-24px.svg"></button></a>
+                    </div>
+                </div>         
+
+                <div id="tab-import-export" class="main-panel gone">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Model File</h2>
+
+                    <table style="text-align: center; margin-left: -4px;">
+                        <tr>
+                            <td style="padding: 4px;">
+                                <h3 style="display: block; margin: 0 auto; text-align: center;">Import</h3>
+                            </td>
+                            <td style="padding: 4px;">
+                                <h3 style="display: block; margin: 0 auto; text-align: center;">Export</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px;">
+                                <button id="import-local" class="compound-button" onclick="LiveModel.loadFromLocalStorage();" style="width: 244px;"><span class="main">Last<br>model</span><span class="desc">Browser local storage</span></button>
+                            </td>
+                            <td style="padding: 4px;">
+                                <button id="export-aeon" class="compound-button" onclick="UI.downloadAeon();" style="width: 244px;"><span class="main">.AEON</span><span class="desc">Simple text format</span></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px;">
+                                <label for="import-aeon-input" id="import-aeon" class="compound-button"><span class="main">.AEON</span><span class="desc">Simple text format</span></label>
+                                <input onchange='UI.importAeon(this)' id='import-aeon-input' style='display:none' type='file'>
+                            </td>
+                            <td style="padding: 4px;">
+                                <button id="export-sbml" class="compound-button" onclick="UI.downloadSBML();"><span class="main">.SBML<br><small>(parametrized)</small></span><span class="desc">Parametrized model</span></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px;">
+                                <label for="import-sbml-input" id="import-sbml" class="compound-button"><span class="main">.SBML</span><span class="desc">Standard<br>SBML L3</span></label>
+                                <input onchange='UI.importSBML(this)' id='import-sbml-input' style='display:none' type='file'>
+                            </td>
+                            <td style="padding: 4px;">
+                                <button id="export-sbml" class="compound-button" onclick="UI.downloadSBMLInstantiated();"><span class="main">.SBML<br><small>(instantiated)</small></span><span class="desc">Witness<br>model</span></button>                   
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px;">
+                                <label for="import-bnet-input" id="import-bnet" class="compound-button"><span class="main">.BNET</span><span class="desc">Boolnet text format</span></label>                    
+                                <input onchange='UI.importBnet(this)' id='import-bnet-input' style='display:none' type='file'>
+                            </td>
+                            <td style="padding: 4px;">
+                                <button id="export-bnet" class="compound-button" onclick="UI.downloadBnet();"><span class="main">.BNET</span><span class="desc">Boolnet text format</span></button>
+                            </td>
+                        </tr>
+                    </table>                
+                    <h3 style="display: block; margin: 0 auto; text-align: center; margin-top: 8px; margin-bottom: 8px;">Example Models</h3>  
+
+                    <table style="text-align: center; margin-left: -4px;">
+                        <tr>
+                            <td style="padding: 4px;">
+                                <button id="example-1" class="compound-button" onclick="LiveModel.importAeon(Examples.g2a);"><span class="main">G2A</span><span class="desc">Cell<br>Division</span></button>
+                            </td>
+                            <td style="padding: 4px;">
+                                <button id="example-3" class="compound-button" onclick="LiveModel.importAeon(Examples.buddingYeastOrlando);"><span class="main">Orlando</span><span class="desc">Budding<br>Yeast</span></button>         
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 4px;">
+                                <button id="example-2" class="compound-button" onclick="LiveModel.importAeon(Examples.g2b);"><span class="main">G2B</span><span class="desc">Cell<br>Division</span></button>                
+                            </td>
+                            <td style="padding: 4px;">
+                                <button id="example-4" class="compound-button" onclick="LiveModel.importAeon(Examples.buddingYeastIrons);"><span class="main">Irons</span><span class="desc">Budding<br>Yeast</span></button>                
+                            </td>
+                        </tr>
+                    </table>                                        
                 </div>
 
-                <div class="button-group">
-                    <img alt="Import/Export" id="side-menu-import-export" src="img/file_copy-48px.svg" class="button" tab-id="tab-import-export">
-                    <span class="hint invisible">Import/Export</span>
-                </div> 
+                <div id="tab-model-editor" class="main-panel gone" style="padding-bottom: 0px; height: 620px;">
+                    <div class="invisible-input full-line">
+                        <input id="model-name" class="center" type="text" name="model-name" placeholder="(model name)" style="font-size: 20px;">
+                    </div>
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
+                    <div class="invisible-input full-line" id="model-description" style="display: none;" contenteditable data-placeholder="(model description)" style="margin-top: 4px; margin-bottom: 4px;"></div>      
 
-                <div class="button-group">
-                    <img alt="Model" id="side-menu-model" src="img/model-48px.svg" class="button" tab-id="tab-model-editor">
-                    <span class="hint invisible">Model Editor</span>
-                </div>  
+                    <div class="doubleContainer">
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;" onclick="ModelEditor.showModelOverview()"> ● Overview</h3>
+                        <button id="button-model-description" class="centered-button" onclick="ModelEditor.showModelDescription()" style="float: right;">Show model description</button>
+                    </div>
+                    <table id="model-stats">
+                        <tr class="row">    <td>Variables: </td>        <td class="value">-</td>     <td>Parameter space size: </td>  <td class="value">-</td> </tr>
+                        <tr class="row">    <td>Regulations: </td>      <td class="value">-</td>     <td>State space size: </td> <td class="value">-</td> </tr>
+                        <tr class="row">    <td>Max. in-degree: </td>   <td class="value">-</td>     <td>Max. out-degree: </td>       <td class="value">-</td> </tr>
+                        <tr class="row">    <td colspan="2">Explicit parameters: </td>  <td colspan="2">(none)</td>   </tr>
+                    </table>                   
+                    <div style="height: 40px;">
+                        <h3 style="float: left; font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Variables</h3>
+                        <button id="button-add-variable" class="image-button" onclick="let id = LiveModel.addVariable(); CytoscapeEditor.showNode(id);" style="float: right;">Add variable (N) <img src="img/add_box-24px.svg"></button>
+                    </div>
 
-                <div class="button-group">
-                    <img alt="Controllable" id="side-menu-controllable" src="img/controllable-48px.svg" class="button" tab-id="tab-model-controllable">
-                    <span class="hint invisible">Controllable</span>
+                    <input type="text" id="variable-filter" class="filterInput" style="width: 98%;" onkeyup="ModelEditor.filterVariables()">
+
+                    <div id="model-variables" class="scrolling-container" style="max-height: 340px;"></div>
+                                        
+                    <div class="templates gone">
+                        <div id="model-variable-template" class="model-variable">
+                            <div class="doubleContainer" style="max-width: 410px; max-height: 5px; margin-bottom: 0px;">
+                                <button class="centered-button" style="height: 25px; margin-top: -1px;"></button>
+                                <div class="invisible-input" style="margin-left: 5px;">
+                                    <input class="variable-name" type="text" name="variable-name" value="Variable name" placeholder="(variable name)" style="font-size: 18px; margin-left: 0;" spellcheck='false' autocorrect='off'>
+                                </div>
+
+                                <button class="centered-button" style="height: 25px; margin-top: 0%; margin-left: 50px; margin-right: 5px; background-color: #B0BEC5;"><img style="max-width: 50px; pointer-events: none;" src="img/controller.svg" alt="controllable"></button>
+                                <button class="centered-button" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"><img style="max-height: 25px; pointer-events: none;" src="img/leaf-48px.svg" alt="phenotype"></button>
+                            </div>
+
+                            <img alt="Remove variable" src="img/delete-24px.svg" class="model-variable-remove button">
+                            <img alt="Show variable" src="img/search-24px.svg" class="model-variable-show button">
+                            <br>
+                            <div class="scrolling-container">
+                                <h4> ● Regulators</h4>
+                                <div class="model-variable-regulators full-line"></div>
+                                <h4> ● Update Function</h4>
+                                <div class="invisible-input full-line variable-function" contenteditable data-placeholder="(default)" spellcheck='false' autocorrect='off' style="font-size: 16px; text-align: center;"></div>
+                                <div class="variable-function-status"></div>
+                            </div>
+                        </div>
+
+                        <div id="model-regulation-template" class="model-regulation">
+                            <span class="model-regulation-regulator">Some name</span>
+                            <span class="model-regulation-short">(->)</span>
+                            <span class="model-regulation-observable">observable</span>
+                            <span class="model-regulation-monotonicity">activation</span>
+                        </div>                    
+                    </div>
                 </div>
 
-                <div class="button-group">
-                    <img alt="Phenotype" id="side-menu-phenotype" src="img/phenotype-48px.svg" class="button" tab-id="tab-model-phenotype">
-                    <span class="hint invisible">Phenotype</span>
-                </div>  
+                <div id="tab-model-controllable" class="main-panel gone" style="height: 620px; padding-bottom: 0px;">
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Controllable variables</h2> 
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
 
-                <div class="button-group">
-                    <img alt="Auto Layout" id="side-menu-layout" src="img/view_quilt-48px.svg" class="button" tab-id="tab-model-visual">
-                    <span class="hint invisible">Visual Options</span>
-                </div>                    
+                    <div style="height: 30px;">
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Overview</h3>
+                    </div>
+                    <table id="model-stats">
+                        <tr class="row">    <td>Controllable: </td>        <td class="value" id="controllable-count">-</td>
+                        <tr class="row">    <td>Uncontrollable: </td>      <td class="value" id="uncontrollable-count">-</td>
+                    </table>  
+                    
+                    <div style="height: 30px;">
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 0px;"> ● Controllable</h3>
+                    </div>
 
-                <div class="button-group">
-                    <img alt="Model" id="side-menu-results" src="img/call_split-48px.svg" class="button" tab-id="tab-results">
-                    <span class="hint invisible">Results</span>
-                </div>  
+                    <input type="text" id="ControllableFilter" class="filterInput" onkeyup="ControllableEditor.filterTable(true)">
 
-                <div class="button-group">
-                    <img alt="Help" id="side-menu-help" src="img/help-48px.svg" class="button" tab-id="tab-help">
-                    <span class="hint invisible">About and Help</span>
-                </div>  
+                    <div class="scrolling-container" style="max-height: 170px;">
+                        <table id="Controllable"class="table" style="height: 170px;">
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="height: 30px;">
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Uncontrollable</h3>
+                    </div>
+
+                    <input type="text" id="UncontrollableFilter" class="filterInput" onkeyup="ControllableEditor.filterTable(false)">
+
+                    <div class="scrolling-container" style="max-height: 170px;">
+                        <table id="Uncontrollable"class="table" style="height: 170px;">
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="tab-model-phenotype" class="main-panel gone" style="padding-bottom: 0px; height: 620px;">
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Phenotype</h2> 
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
+
+                    <div style="height: 30px;">
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Overview</h3>
+                    </div>
+                    <table id="model-stats">
+                        <tr class="row">    <td>True: </td>        <td class="value" id="trueCount">-</td>
+                        <tr class="row">    <td>False: </td>      <td class="value" id="falseCount">-</td>
+                        <tr class="row">    <td>Not in phenotype: </td>      <td class="value" id="notInCount">-</td>
+                    </table>
+                    
+                    <div class="doubleContainer" style="height: 20px">
+                        <div class="halfContainer">
+                            <h4 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 0%;"> ● Phenotype Oscillation</h4>
+                        </div>
+                        <div class="halfContainer" style="text-align: right;">
+                            <input id="oscillation-switch" type="button" class="centered-button" style="width: 180px; height: 20px; padding-left: 4%;" value="All"></input>
+                        </div>
+                    </div>
+
+                    <div class="doubleContainer">
+                        <div class="halfContainer">
+                            <div style="height: 30px;">
+                                <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● True</h3>
+                            </div>
+        
+                            <input type="text" id="TrueFilter" class="filterInput" style="width: 98%;" onkeyup="PhenotypeEditor.filterTable(true)">
+        
+                            <div class="scrolling-container" style="max-height: 140px;">
+                                <table id="True"class="table" style="height: 140px;">
+                                    <tbody style="max-height: 140px;">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="halfContainer">
+                            <div style="height: 30px;">
+                                <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● False</h3>
+                            </div>
+        
+                            <input type="text" id="FalseFilter" class="filterInput" style="width: 98%;" onkeyup="PhenotypeEditor.filterTable(false)">
+        
+                            <div class="scrolling-container" style="max-height: 140px;">
+                                <table id="False"class="table" style="height: 140px;">
+                                    <tbody style="max-height: 140px;">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+    
+                    </div>
+
+                    <div style="height: 30px;">
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Not in Phenotype</h3>
+                    </div>
+
+                    <input type="text" id="NotInFilter" class="filterInput" onkeyup="PhenotypeEditor.filterTable(null)">
+
+                    <div class="scrolling-container" style="max-height: 140px;">
+                        <table id="NotIn"class="table" style="height: 140px;">
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="tab-model-visual" class="main-panel gone" style="padding-bottom: 0px;">
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Visual Options</h2> 
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    
+                    <div style="height: 30px;">
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Layout</h3>
+                    </div>
+
+                    <div style="height: 80px;">
+                        <button id="button-organic-layout" class="centered-button" style="margin-left: 73px;" onclick="CytoscapeEditor.layoutCose();">Organic layout </button>
+                        <button id="button-hierarchical-layout" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.layoutDagre();">Hierarchical layout </button>
+                        <button id="button-phenotype-layout" class="centered-button" style="margin-left: 50px;margin-top: 10px;" onclick="CytoscapeEditor.layoutPhenotype();">Phenotype layout </button>
+                        <button id="button-controllable-layout" class="centered-button" style="margin-left: 30px;margin-top: 10px;" onclick="CytoscapeEditor.layoutControllable();">Controllable layout </button>
+                    </div>
+
+                    <div style="height: 30px;">
+                        <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Highlight</h3>
+                    </div>
+
+                    <div style="height: 40px;">
+                        <button id="button-highlight-phenotype" class="centered-button" style="margin-left: 55px;" onclick="CytoscapeEditor.highlightButton(this, true);">Show Phenotype </button>
+                        <button id="button-highlight-controllable" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.highlightButton(this, false);">Show Controllable </button>
+                    </div>
+                </div>
+
+                <div id="tab-results" class="main-panel gone">
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Results</h2>
+
+                    <div class="doubleContainer" style="margin-top: 20px;">
+                        <div>
+                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Import/Export: </h3>
+                        </div>
+                        
+                        <div class="doubleContainer">
+                            <label for="import-result-input" class="centered-button" > <div style="margin-top: 10px;">Import</div></label>
+                            <input onchange='Results.importResults(this)' id='import-result-input' style='display:none' type='file'>
+            
+                            <button onclick='Results.exportResults()' style="margin-left: 30px; margin-right: 7px;" class="centered-button">Export</button>
+                        </div>
+                    </div>
+
+                    <div class="scrolling-container" id="attractor-res-widget" style="max-height: 420px;">
+                        <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                        <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Bifurcation Function</h2>
+                        <div style="text-align: center; padding: 12px;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>                
+                        <div id="attractor-results">
+                            <div style="text-align: center; width: 350px; margin: 0 auto;">No results loaded. Run analysis to show bifurcation function overview for the currently loaded model.</div>
+                        </div>
+                        <div id="open-tree-explorer" class="gone" style="text-align: center; margin: 8px;"><a class="inline-button" onclick="UI.openTreeExplorer()"> >> Explore Bifurcation Function &lt;&lt; </a></div>
+                        
+                        <div id='result-legend'><span class='table-behavior'>D</span> disorder | <span class='table-behavior'>O</span> oscillation | <span class='table-behavior'>S</span> stability</div>
+                    </div>
+                </div>
+
+                <div id="tab-help" class="main-panel gone" style="font-family: 'FiraMono';">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">About & Help</h2>
+                    
+                    <p>Aeon is a tool for analysing <b style="font-family: 'FiraMonoBold';">long-term behaviour of Boolean networks with parameters</b>. Use the editor to create a new network, or import your own from .sbml or .aeon. You can leave the update functions in the network blank (this will automatically consider all admissible instantiations of such function) or specify an exact update function. In the update function, you can use <b style="font-family: 'FiraMonoBold';">arbitrary uninterpreted functions as parameters</b> (see Budding Yeast-Irons example). Aeon will then automatically consider all admissible instantiations of such functions when analysing the model.</p>
+
+                    <p>Once your network is ready, you can run the long-term behaviour analysis which will show you the behaviour classes of the model. The classes are separated based on <b style="font-family: 'FiraMonoBold';">stable, oscillating or disordered</b> behaviour. For each class, you can generate a <b style="font-family: 'FiraMonoBold';">witness network</b> that exihibits the specified behaviour.</p>
+
+                    <h3>Manual</h3>
+
+                    Full description of the functionality Aeon provides is available in the <a href="https://biodivine.fi.muni.cz/aeon/manual/v0.4.0/">tool manual</a>.
+
+
+                    <h3>Quick Help</h3>
+                    <b>Network editor actions:</b>
+                    <ul>
+                        <li>Double click to create a new variable.</li>
+                        <li>Drag from `+` to create a new regulation.</li>
+                        <li>Select element (click) to show the context menu.</li>
+                    </ul>
+                    <b>Keyboard shortcuts:</b>
+                    <ul>
+                        <li>(⌫) Remove selected element.</li>
+                        <li>(N) Add new variable.</li>
+                        <li>(E) Edit name of the selected variable.</li>
+                        <li>(F) Edit update function of the selected variable.</li>
+                        <li>(O) Change observability of the selected regulation.</li>
+                        <li>(M) Change monotonicity of the selected regulation.</li>
+                        <li>(H) Show this help message.</li>                
+                    </ul>
+
+                    <h3>Attributions</h3>
+
+                    <p>Compute Engine: crossbeam, rayon, rocket, json.</p>
+
+                    <p>Online client: cytoscape with edgehandles, material icons, hotkeys.</p>
+
+                </div>
+
+                <div id="side-menu">
+                    <div class="button-group">
+                        <img alt="Start" id="side-menu-start" src="img/play_circle_filled-48px.svg" class="button" tab-id="tab-computation">
+                        <span class="hint invisible">Start Computation</span>
+                    </div>  
+
+                    <div class="button-group">
+                        <img alt="Engine" id="side-menu-engine" src="img/engine-48px.svg" class="button" tab-id="tab-engine">
+                        <span id="engine-dot" style="margin-left: -11px;">●</span>
+                        <span class="hint invisible">Compute Engine</span>
+                    </div>
+
+                    <div class="button-group">
+                        <img alt="Import/Export" id="side-menu-import-export" src="img/file_copy-48px.svg" class="button" tab-id="tab-import-export">
+                        <span class="hint invisible">Import/Export</span>
+                    </div> 
+
+                    <div class="button-group">
+                        <img alt="Model" id="side-menu-model" src="img/model-48px.svg" class="button" tab-id="tab-model-editor">
+                        <span class="hint invisible">Model Editor</span>
+                    </div>  
+
+                    <div class="button-group">
+                        <img alt="Controllable" id="side-menu-controllable" src="img/controllable-48px.svg" class="button" tab-id="tab-model-controllable">
+                        <span class="hint invisible">Controllable</span>
+                    </div>
+
+                    <div class="button-group">
+                        <img alt="Phenotype" id="side-menu-phenotype" src="img/phenotype-48px.svg" class="button" tab-id="tab-model-phenotype">
+                        <span class="hint invisible">Phenotype</span>
+                    </div>  
+
+                    <div class="button-group">
+                        <img alt="Auto Layout" id="side-menu-layout" src="img/view_quilt-48px.svg" class="button" tab-id="tab-model-visual">
+                        <span class="hint invisible">Visual Options</span>
+                    </div>                    
+
+                    <div class="button-group">
+                        <img alt="Model" id="side-menu-results" src="img/call_split-48px.svg" class="button" tab-id="tab-results">
+                        <span class="hint invisible">Results</span>
+                    </div>  
+
+                    <div class="button-group">
+                        <img alt="Help" id="side-menu-help" src="img/help-48px.svg" class="button" tab-id="tab-help">
+                        <span class="hint invisible">About and Help</span>
+                    </div>  
+                </div>
+
+                <div id="loading-indicator" class="invisible"><img src="img/progress.gif"/><br><br>Waiting for server...</div>
             </div>
-
-            <div id="loading-indicator" class="invisible"><img src="img/progress.gif"/><br><br>Waiting for server...</div>
         </div>
 
+        <div id="control-results-div" style="display: none;">
+            <h1 id="model-name"></h1>
+            <h1 id='logo'>Aeon/<span id='title'>BIODIVINE</span></h1>
+    
+            <div style=" margin-bottom: 5%;"></div>
+    
+            <div class="doubleContainer" style="height: 50%; margin-bottom: 1%;">
+                <div class="main-panel-noresize" style="margin-left: 0%; margin-right: 0%; width: 700px; max-height: 100px; overflow-y: hidden; padding-bottom: 0; padding-top: 0;">
+                    <table class="model-stats">
+                        <tr class="row"><td style="width: 500px;">Number of Parametrizations: </td><td class="value" id="ParamNumberStat" style="width: 300px;"> -</td> <td style="width: 500px;">Maximal Robustness: </td>   <td class="value" id="MaxRobStat" style="width: 300px;">-</td></tr>
+                        <tr class="row"><td style="width: 500px;">Number of Perturbations: </td><td class="value" id="PertNumberStat" style="width: 300px;">-</td> <td style="width: 500px;">Oscillation: </td>   <td class="value" id="OscillationStat" style="width: 300px;">-</td> </tr>
+                        <tr class="row"><td style="width: 500px;">Minimal Size: </td><td class="value" id="MinSizeStat" style="width: 200px;">-</td> </tr>
+                    </table>
+                </div>
+    
+                <div>
+                    <div class="main-panel-noresize" style="white-space: nowrap; overflow: hidden; width: 550px; max-height: 25px; margin-left: 0%; margin-left: 10px; margin-right: 10px;padding-bottom: 0px; padding-top: 0;">
+                        <div class="scrolling-container" style="overflow-y: hidden; margin-top: -0.5px;">
+                            <table class="model-stats">
+                                <tr class="row"><td>Phenotype:</td><td id="PhenotypeStat" class="value">-</td> </tr>
+                            </table>
+                        </div>
+    
+                    </div>
+                    <div class="main-panel-noresize" style="white-space: nowrap; overflow: hidden; margin-left: 0%; margin-top: 20px; margin-left: 10px; margin-right: 10px; width: 550px; max-height: 25px; padding-bottom: 0px; padding-top: 0;">
+                        <div class="scrolling-container" style="overflow-y: hidden; margin-top: -0.5px;"></div>
+                            <table class="model-stats">
+                                <tr class="row"><td>Controllable:</td><td id="ControllableStat" class="value">-</td> </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+    
+            <div class="doubleContainer" style="margin: 0px; max-height: 30px;" >
+                <input type="text" id="ControlResultsfilter" class="filterInput" style="width: 20%;" onkeyup="ControlResults.filterTable()">
+                <button id="return-to-model" class="centered-button" style="margin-left: 800px; max-height: 25px;" onclick="ControlResults.openModel()">Return to model</button>
+    
+                <div style="display: none;">
+                    <button onclick="ControlResults.openModel()"></button>
+                </div>
+    
+                <button id="button-filters" class="centered-button" onclick="ControlResults.showFilters()" style="margin-right: 16px; margin-bottom: 50px;max-height: 25px;">Filters</button>
+            </div>
+    
+            <div class="main-panel" style="position: absolute; resize: none; max-height: 150px; width: 300px; margin-top: -170px; margin-left: 930px; display: none;">
+                <div class="doubleContainer">
+                    <h4 style="margin-top: 3px;"> Max Size:</h4>
+                    <input type="text" id="MaxSizeFilter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable()">    
+                </div>
+                <div class="doubleContainer">
+                    <h4 style="margin-top: 3px;"> Min NoP:</h4>
+                    <input type="text" id="MaxSizeFilter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable()">    
+                </div>
+                <div class="doubleContainer">
+                    <h4 style="margin-top: 3px;"> Min Robustness:</h4>
+                    <input type="text" id="MaxSizeFilter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable()">    
+                </div>
+    
+                <div class="doubleContainer" style="height: 20px; margin-bottom: 0px;">
+                    <h4 style="margin-top: 3px; margin-top: 1px; margin-right: 5px;"> Sort:</h4>
+                    
+                    <input id="primary-sort-switch" type="button" class="centered-button" onclick="ControlResults.switchSortMode(0)" style="width: 190px; height: 20px; padding-left: 4%; margin-right: 5px; font-size: 14px;" value="ID"></input>
+                    <button class="centered-button" id="primary-order" onclick="ControlResults.switchOrder(0)" style="height: 20px; margin-right: 5px;">
+                        <div class="arrow up"></div>
+                    </button>
+    
+                    <input id="secondary-sort-switch" type="button" class="centered-button" onclick="ControlResults.switchSortMode(1)" style="width: 190px; height: 20px; padding-left: 4%; margin-right: 5px; font-size: 14px;" value="ID"></input>
+                    <button class="centered-button" id="secondary-order" onclick="ControlResults.switchOrder(1)" style="height: 20px;">
+                        <div class="arrow up" style="border-color: #808080;"></div>
+                    </button>
+                </div>
+            </div>
+    
+            <table class="table borders" style="margin-bottom: 0px;">
+                <th style="min-width: 70px;">ID</th>
+                <th style="min-width: 877px;" visualMode="false" onclick="ControlResults.pertVisual(this)">Perturbations</th>
+                <th style="min-width: 70px;">Size</th>
+                <th style="min-width: 190px;">Parametrizations</th>
+                <th style="min-width: 107px">Robustness</th>
+            </table>
+            <div class="scrolling-container" style="max-height: 432px; max-width: 100%; margin-top: 0px;  user-select: none;">
+                <table id="ControlResults" class="table borders" style="height: 100px; max-width: 90%;">
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <button class="centered-button" style="position: absolute; right: 50px; top: 0;" onclick="document.getElementById('tab-bar').style.display == 'none' ? 
+                                                document.getElementById('tab-bar').style.display = '' : 
+                                                document.getElementById('tab-bar').style.display = 'none'">show</button>
+
+        <button class="centered-button" style="position: absolute; right: 140px; top: 0;" onclick="UI.openBrowserTab()">Open in tab</button>
+
+        <div id="tab-bar" class="model-tab-panel" style="display: none;">
+            <table id="tab-table" class="tab-table">
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <img alt="close" src="img/close-24px.svg" class="panel-close-button" style="right: 0px; left: auto;" onclick="TabBar.closeTab()"> 
     </body>
 </html>
