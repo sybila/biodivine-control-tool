@@ -38,7 +38,7 @@ let CytoscapeEditor = {
 		this._cytoscape.on('click', (e) => {
 			let now = (new Date()).getTime();
 			if (this._lastClickTimestamp && now - this._lastClickTimestamp < DOUBLE_CLICK_DELAY) {				
-				LiveModel.addVariable([e.position['x'], e.position['y']]);
+				LiveModel.addVariable(false, [e.position['x'], e.position['y']]);
 			}
 			this._lastClickTimestamp = now;
 		});
@@ -586,7 +586,7 @@ let CytoscapeEditor = {
 	        },
 	        // Add the edge to the live model
 	        complete: function(sourceNode, targetNode, addedEles) {	        	
-	        	if (!LiveModel.addRegulation(sourceNode.id(), targetNode.id(), true, EdgeMonotonicity.unspecified)) {
+	        	if (!LiveModel.addRegulation(false, sourceNode.id(), targetNode.id(), true, EdgeMonotonicity.unspecified)) {
 	        		addedEles.remove();	// if we can't create the regulation, remove new edge
 	        	} else {
 	        		CytoscapeEditor._initEdge(addedEles[0]);

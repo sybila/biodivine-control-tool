@@ -13,7 +13,7 @@ let ControlResults = {
         this._filters = document.getElementsByClassName("filterInput");
         this._sortMode = [document.getElementById("primary-sort-switch"), document.getElementById("secondary-sort-switch")];
         this._orderArrows = document.getElementsByClassName("arrow");
-        this._filterMenu = document.getElementsByClassName("main-panel")[0];
+        this._filterMenu = document.getElementById("control-res-filters");
     },
 
     _changeContentMode(contentDiv) {
@@ -32,7 +32,7 @@ let ControlResults = {
         document.getElementById("PertNumberStat").textContent = controlData.perturbations.length;
         document.getElementById("MinSizeStat").textContent = 0;
         document.getElementById("MaxRobStat").textContent = 0;
-        document.getElementById("OscillationStat").textContent = controlData.perturbations.oscillation;
+        document.getElementById("OscillationStat").textContent = controlData.oscillation;
         document.getElementById("PhenotypeStat").innerHTML = this._createColouredVars(this._createPertDict(controlData.phenotype));
         document.getElementById("ControllableStat").textContent = controlData.controllable;
         this._fillTable(controlData.perturbations);
@@ -216,10 +216,10 @@ let ControlResults = {
 
         const sortedRows = Array.from(this._perturbTable.rows)
                                 .sort((a, b) => this._comparator(a, b, primaryIndex, secondaryIndex, 0));
-        this._perturbTable.getElementsByTagName('tbody')[0].innerHTML = '';
+        this._perturbTable.innerHTML = '';
         
         for (let row of sortedRows) {
-            this._perturbTable.getElementsByTagName('tbody')[0].appendChild(row);
+            this._perturbTable.appendChild(row);
         }
     },
 
@@ -272,13 +272,12 @@ let ControlResults = {
     openModel() {
         const resTab = TabBar.getTab(TabBar.getNowActiveId());
         const modelTab = TabBar.getTab(resTab.data.modelTabId);
-
-        if (modelTab == undefined || resTab.data.model != modelTab.data) {
+        console.log(resTab.data.modelTabId);
+        if (modelTab == undefined) {
             TabBar.addTab("model", resTab.data.model);
             resTab.data.modelTabId = TabBar.getNowActiveId();
         } else {
             TabBar.toggleActive(resTab.data.modelTabId, false);
         }
     }
-
 }

@@ -43,9 +43,21 @@ let UI = {
 		this._initSideMenu(sideMenu);	
 	},
 
+	//Gets time from ms timestamp in this format HOURS:MINUTES:SECONDS.
+	_getTime(timestamp) {
+		const date = new Date(timestamp);
+
+		let addZero = function(number) {
+			return number < 10 ? "0" + number : number;
+		}
+
+		return addZero(date.getHours()) + ":" + addZero(date.getMinutes()) + ":" + addZero(date.getSeconds());
+	},
+
 	updateComputeEngineStatus(status, data) {
 		let connectButton = document.getElementById("button-connect");
-		let statusLabel = document.getElementById("compute-engine-status");
+		let statusComp = document.getElementById("compute-engine-status");
+		let statusBar = document.getElementById("status-bar");
 		let addressInput = document.getElementById("engine-address");
 		let dot = document.getElementById("engine-dot");
 		let cmp = document.getElementById("computation");
@@ -55,7 +67,8 @@ let UI = {
 		let cmpCancel = document.getElementById("computation-cancel");
 		let cmpDownload = document.getElementById("computation-download");
 		// Reset classes
-		statusLabel.classList.remove("red", "green", "orange");
+		statusBar.classList.remove("red", "green", "orange");
+		statusComp.classList.remove("red", "green", "orange");
 		dot.classList.remove("red", "green", "orange");
 		cmpStatus.classList.remove("red", "green", "orange");
 		if (status == "connected") {
@@ -63,7 +76,7 @@ let UI = {
 			// Also do this for parent, because we want to apply some css based on this
 			// to the container as well.
 			addressInput.parentElement.setAttribute("disabled", "1");
-			statusLabel.textContent = " ● Connected";
+			statusComp.textContent = " ● Connected";
 			connectButton.innerHTML = "Disconnect <img src='img/cloud_off-24px.svg'>";
 			if (data !== undefined) {
 				// data about computation available
@@ -86,10 +99,12 @@ let UI = {
 				}
 				// Update server status color depending on current computation status.
 				if (status == "(none)" || status == "done" || status == "cancelled") {
-					statusLabel.classList.add("green");
+					statusBar.classList.add("green");
+					statusComp.classList.add("green");
 					dot.classList.add("green");
 				} else {
-					statusLabel.classList.add("orange");
+					statusBar.classList.add("orange");
+					statusComp.classList.add("orange");
 					dot.classList.add("orange");
 				}
 				// Make status green/orange depending on state of computation.
@@ -98,16 +113,21 @@ let UI = {
 				} else if (status != "(none)") {
 					cmpStatus.classList.add("orange");
 				}
+
+				if (data.error !== null) {
+					status += ", error: "+ data.error;
+				}
+
 				// Progress is only shown when we are runnign...
 				if (data["is_running"]) {
+					statusBar.textContent = status + " " + data.progress.slice(0, 6);
 					cmpProgress.parentElement.classList.remove("gone");
 				} else {
+					statusBar.textContent = status != "(none)" ? status + " " + this._getTime(data.timestamp):
+																	statusBar.textContent = " ● Connected";
 					cmpProgress.parentElement.classList.add("gone");
 				}
 				cmp.classList.remove("gone");
-				if (data.error !== null) {
-					status += ", error: "+data.error;
-				}
 				cmpStatus.innerHTML = status;
 				cmpProgress.textContent = data.progress;
 				if (data.num_classes !== null) {
@@ -153,8 +173,10 @@ let UI = {
 		} else {
 			addressInput.removeAttribute("disabled");
 			addressInput.parentElement.removeAttribute("disabled");
-			statusLabel.textContent = " ● Disconnected";
-			statusLabel.classList.add("red");
+			statusBar.textContent = " ● Disconnected";
+			statusBar.classList.add("red");
+			statusComp.textContent = " ● Disconnected";
+			statusComp.classList.add("red");
 			dot.classList.add("red");
 			connectButton.innerHTML = "Connect <img src='img/cloud-24px.svg'>";
 			cmp.classList.add("gone");
@@ -575,6 +597,7 @@ let UI = {
 		};
 	},
 
+	//Toggles between data shown in the window. (used when inner tabs are switched)
 	toggleDiv(showModel, data) {
 		if (showModel) {
 			this._modelDiv.style.display = "";
@@ -587,14 +610,19 @@ let UI = {
 		}
 	},
 
+	//Opens new browser tab with contents of currently active inner tab.
 	openBrowserTab() {
-		const tab = TabBar.getTab(TabBar.getNowActive())
+		const tabId = TabBar.getNowActiveId();
+		const tab = TabBar.getTab(tabId)
 
 		if (tab.type == "model") {
 			tab.data = LiveModel.exportAeon();
 		}
 
-		const newWindow = open("index.html", "_Blank");		
-		newWindow.initialTabInfo = {"type":tab.type, "data":tab.data};
+		const newWindow = open("index.html", "_Blank");
+		newWindow.initialTabInfo = {"type":tab.type, "data": JSON.stringify(tab.data)};
+		newWindow.modelId = window.modelId;
+		newWindow.nextModelId = window.nextModelId;
+		newWindow.modelCalc = window.modelCalc;
 	}
 }

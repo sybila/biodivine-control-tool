@@ -11,6 +11,24 @@ function init() {
 		);
 	}
 
+	if (window.initialTabInfo == undefined ||
+			window.modelId == undefined ||
+				window.nextModelId == undefined ||
+					window.modelCalc == undefined) {
+		window.initialTabInfo = {type:"model", data: JSON.stringify("")};
+		window.modelId = 0;
+		window.nextModelId = { "value": 1 };
+		window.modelCalc = {};
+	}
+
+	document.title = document.title + " " + window.initialTabInfo.type + " " + window.modelId;
+
+	if (window.modelCalc[window.modelId] == undefined) {
+		window.modelCalc[window.modelId] = 1;
+	} else {
+		window.modelCalc[window.modelId]++;
+	}
+
 	// Warn user that there is an unsaved model.
 	window.onbeforeunload = function (e) {
 		if (LiveModel.isEmpty()) {
@@ -69,7 +87,7 @@ function init() {
 	CytoscapeEditor.init();
 	Results.init();
 	ControlResults.init();
-	TabBar.init(window.initialTabInfo == undefined ? null : window.initialTabInfo);
+	TabBar.init();
 	ComputeEngine.openConnection();	// Try to automatically connect when first opened.
 
 	let witnessCallback = function(e, r) {
@@ -184,7 +202,7 @@ hotkeys('m', function(event, handler) {
 
 hotkeys('n,+', function(event, handler) {	
 	event.preventDefault();
-	let id = LiveModel.addVariable();
+	let id = LiveModel.addVariable(false);
 	CytoscapeEditor.showNode(id);
 });
 

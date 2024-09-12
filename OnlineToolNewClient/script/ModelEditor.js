@@ -193,6 +193,11 @@ let ModelEditor = {
 				variableName.classList.remove("error");
 			}
 		});
+
+		updateFunction.addEventListener("click", () => {
+			LiveModel._modelModified();
+		});
+
 		// On change, validate function and display error if needed.
 		updateFunction.addEventListener("focusout", (e) => {
 			let error = LiveModel.setUpdateFunction(id, updateFunction.textContent);

@@ -2,32 +2,29 @@ let TabBar = {
     // Contains elements for tab-bar-menu in the form { button:...., tabMenu: ...., tabTable:.... }
 	_tabBarElements: undefined,
 	_tabs: undefined,
-	nowActiveTab: undefined,
+	_nowActiveTab: undefined,
 	_tabId: undefined,
     _draggedRow: undefined,
 
-    init(initialTabInfo) {
-        this._tabBarElements = {"button":null,
-            "tabMenu":document.getElementById("tab-bar"),
-            "tabTable":document.getElementById("tab-table").getElementsByTagName("tbody")[0]};
+    init() {
+        this._tabBarElements = {"button": null,
+            "tabMenu": document.getElementById("tab-bar"),
+            "tabTable": document.getElementById("tab-table").getElementsByTagName("tbody")[0]};
 
         this._draggedRow = null;
         this._tabs = {};
-        this._tabId = 0;
-        this._nowActiveTab = 0;
-
-        if (initialTabInfo == null) {
-            this.addTab("model", LiveModel.exportAeon(true));
-        } else {
-            this.addTab(initialTabInfo.type, initialTabInfo.data);
-        }
+        this._tabId = 1;
+        this._nowActiveTab = window.initialTabInfo.type == "model" ? 0 : 1;
+        this.addTab(window.initialTabInfo.type, JSON.parse(window.initialTabInfo.data));
     },
 
+    //Adds new tab into TabBar.
     addTab(type, data) {
         const tabRow = document.createElement("tr");
         const tabDiv = document.createElement("div");
+        const tabId = type == "model" ? 0 : this._tabId++;
 
-        tabRow.setAttribute("tabId", this._tabId);
+        tabRow.setAttribute("tabId", tabId);
         tabRow.setAttribute('draggable', 'true');
 
         tabDiv.classList.add("centered-button");
@@ -37,14 +34,14 @@ let TabBar = {
         tabDiv.style.paddingTop = "4px";
         tabDiv.style.marginTop = "5px";
         tabDiv.style.pointerEvents = "none";
-        tabDiv.innerText = type + " " + this._tabId;
-        this._tabs[this._tabId] = new Tab(this._tabId, type, data, tabDiv);
+        tabDiv.innerText = type + " " + window.modelId;
+        this._tabs[tabId] = new Tab(type, data, tabDiv);
         
         tabRow.addEventListener("click", (e) => {
             this.toggleActive(e.target.getAttribute("tabId"), true);
         })
 
-        tabRow.addEventListener('dragstart', (e) => {
+        tabRow.addEventListener('dragstart', () => {
             this._draggedRow = tabRow;
             tabRow.classList.add('dragging');
         });
@@ -65,13 +62,12 @@ let TabBar = {
             tabRow.classList.remove('dragging');
         });
         
-        this.toggleActive(this._tabId, false);
-        this._tabId += 1;
-
+        this.toggleActive(tabId, false);
         tabRow.appendChild(tabDiv);
         this._tabBarElements.tabTable.appendChild(tabRow);
     },
 
+    //Changes active tab from this._tabs[this._nowActiveTab] to this._tabs[newActiveId]
     toggleActive(newActiveId, returnEqual) {
         if (newActiveId == null) {
             return;
@@ -94,6 +90,7 @@ let TabBar = {
         this._nowActiveTab = newActiveId;
     },
 
+    //Close current tab.
     closeTab() {
         const tabs =  Array.from(this._tabBarElements.tabTable.rows);
 
@@ -122,8 +119,24 @@ let TabBar = {
         this._tabBarElements.tabTable.deleteRow(deleteIndex);
     },
 
+    //Closes all tabs except the one with the model.
+    closeResults() {
+        const tabs =  Array.from(this._tabBarElements.tabTable.rows);
+
+        for (let i = tabs.length - 1; i >= 0; i--) {
+            if (tabs[i].getAttribute("tabId") != this._nowActiveTab) {
+                delete this._tabs[tabs[i].getAttribute("tabId")];
+                this._tabBarElements.tabTable.deleteRow(i);
+            }
+        }
+    },
+
     getTab(tabId) {
         return this._tabs[tabId];
+    },
+
+    getNumberOfTabs() {
+        return Object.keys(this._tabs).length;
     },
 
     getNowActiveId() {

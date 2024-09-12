@@ -1,6 +1,5 @@
 class Tab {
-    constructor(id, type, data, tab) {
-        this.id = id;
+    constructor(type, data, tab) {
         this.type = type;
         this.data = data;
         this.tabWidget = tab;

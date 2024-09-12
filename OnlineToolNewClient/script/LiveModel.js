@@ -21,6 +21,7 @@ let LiveModel = {
 	// Currently we use this only in import.
 	_disable_dynamic_validation: false,
 
+
 	// True if the model has no variables.
 	isEmpty() {
 		return Object.keys(this._variables).length == 0;
@@ -39,7 +40,11 @@ let LiveModel = {
 	},
 
 	// Create a new variable with a default name. Returns an id of the variable.
-	addVariable: function(position = [0.0,0.0], name = undefined, controllable = true, phenotype = null) {
+	addVariable: function(modAllowed, position = [0.0,0.0], name = undefined, controllable = true, phenotype = null) {
+		if (!modAllowed && !this._modelModified()) {
+			return;
+		}
+
 		let id = this._idCounter;
 		this._idCounter += 1;
 		if (name === undefined) {
@@ -103,6 +108,10 @@ let LiveModel = {
 
 	// Remove the given variable from the model.
 	removeVariable(id, force = false) {
+		if (!force && !this._modelModified()) {
+			return;
+		}
+
 		let variable = this._variables[id];
 		if (variable === undefined) return;	// nothing to remove
 		// prompt user to confirm action
@@ -146,6 +155,10 @@ let LiveModel = {
 	// Change the name of the variable to the given value, if the name is valid.
 	// Return undefined if the change was successful, otherwise return error string.
 	renameVariable(id, newName) {
+		if (!this._modelModified()) {
+			return;
+		}
+
 		let variable = this._variables[id];
 		if (variable == undefined) return;
 		let error = this._checkVariableName(id, newName);
@@ -230,7 +243,11 @@ let LiveModel = {
 
 	// Try to add the specified regulation to the model. Return true if added successfully
 	// and false if not (e.g. already exists).
-	addRegulation(regulatorId, targetId, isObservable, monotonicity) {
+	addRegulation(modAllowed, regulatorId, targetId, isObservable, monotonicity) {
+		if (!modAllowed && !this._modelModified()) {
+			return;
+		}
+
 		if (this.findRegulation(regulatorId, targetId) !== undefined) return false;
 		let regulation = {
 			regulator: regulatorId, target: targetId,
@@ -244,6 +261,10 @@ let LiveModel = {
 
 	// Remove regulation between the two variables (if it is present). Return true if remove was successful.
 	removeRegulation(regulatorId, targetId) {
+		if (!this._modelModified()) {
+			return;
+		}
+
 		for (var i = 0; i < this._regulations.length; i++) {
 			let reg = this._regulations[i];
 			if (reg.regulator == regulatorId && reg.target == targetId) {
@@ -264,6 +285,10 @@ let LiveModel = {
 
 	// Switch observability of the given regulation.
 	toggleObservability(regulatorId, targetId) {
+		if (!this._modelModified()) {
+			return;
+		}
+
 		let regulation = this.findRegulation(regulatorId, targetId);
 		if (regulation !== undefined) {
 			regulation.observable = !regulation.observable;
@@ -283,6 +308,10 @@ let LiveModel = {
 
 	// Switch monotonicity to next value
 	toggleMonotonicity(regulatorId, targetId) {
+		if (!this._modelModified()) {
+			return;
+		}
+
 		let regulation = this.findRegulation(regulatorId, targetId);
 		if (regulation !== undefined) {
 			let next = EdgeMonotonicity.unspecified;
@@ -467,10 +496,10 @@ let LiveModel = {
 		}
 
 		if (control == undefined) {
-			return this.addVariable(position, name);
+			return this.addVariable(true, position, name);
 		}
 
-		return this.addVariable(position, name, control[0], control[1]);
+		return this.addVariable(true, position, name, control[0], control[1]);
 	},
 
 	// Adds variables which are not connected to any other variable.
@@ -493,7 +522,7 @@ let LiveModel = {
 													control[template.targetName]);
 			 
 			// Create the actual regulation...
-			this.addRegulation(regulator, target, template.observable, template.monotonicity);
+			this.addRegulation(true, regulator, target, template.observable, template.monotonicity);
 		}
 	},
 
@@ -516,8 +545,8 @@ let LiveModel = {
 	// Import model from Aeon file. If the import is successful, return undefined,
 	// otherwise return an error string.
 	importAeon(modelString, erasePossible = false) {
-
-		if (!this.isEmpty() && (!erasePossible && !confirm(Strings.modelWillBeErased))) {
+		if ((!erasePossible && !this._modelModified())
+				|| (!this.isEmpty() && (!erasePossible && !confirm(Strings.modelWillBeErased)))) {
 			// If there is some model loaded, let the user know it will be
 			// overwritten. If he decides not to do it, just return...
 			return undefined;
@@ -576,6 +605,34 @@ let LiveModel = {
 		ModelEditor.setModelDescription("");
 		ControllableEditor.clear();
 		PhenotypeEditor.clear();
+	},
+
+	_modelModified() {
+		if (TabBar.getNumberOfTabs() > 1) {
+			const warning = document.getElementById("warning");
+			warning.style.display = "block";
+			return false;
+		}
+
+		if (window.modelCalc[window.modelId] > 1) {
+			alert("Model was modified: Id of the model will be changed from " + window.modelId + " to " + window.nextModelId.value);
+			window.modelCalc[window.modelId]--;
+			window.modelId = window.nextModelId.value++;
+			window.modelCalc[window.modelId] = 1;
+			document.title = document.title.slice(0, document.title.length - 1) + window.modelId;
+		}
+
+		return true;
+	},
+
+	warningResolve(resolveMode) {
+		document.getElementById("warning").style.display = "none";
+
+		if (resolveMode == true) {
+			UI.openBrowserTab();
+		} else if (resolveMode == false) {
+			TabBar.closeResults();
+		}
 	},
 
 	// Save the current state of the model to local storage.
@@ -764,7 +821,7 @@ let LiveModel = {
 					let my_name = this.getVariableName(id);
 					let message = "Variable '"+variable.name+"' does not regulate '"+my_name+"'.";
 					if (confirm(message + " Do you want to create the regulation now?")) {
-						this.addRegulation(variable.id, id, true, EdgeMonotonicity.unspecified);
+						this.addRegulation(false, variable.id, id, true, EdgeMonotonicity.unspecified);
 					} else {
 						return message;
 					}
