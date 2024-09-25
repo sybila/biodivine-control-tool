@@ -47,7 +47,7 @@ body {
 #logo {
     width: fit-content;
     width: -moz-fit-content;
-    position: fixed;
+    position: absolute;
     margin: 0;
     top: 27px;
     right: 11px;
@@ -198,7 +198,7 @@ body {
     pointer-events: none;
 }
 
-#quick-help {
+.quick-help {
     position: fixed; 
     top: 50%; 
     left: 50%; 
@@ -235,15 +235,13 @@ body {
 
 .main-panel-noresize {
     display: block;
+    overflow: auto;
     background-color: #f5f5f5;
     box-shadow: 0px 2px 5px #d0d0d0;
-    margin-left: 82px;
-    padding: 12px;
+    margin: 0;
+    border: 0;
+    padding: 0.5%;
     border-radius: 8px;
-    position: relative;
-    overflow-y: auto;
-    width: 500px;
-    max-height: 620px;
 }
 
 .panel-close-button {
@@ -985,6 +983,44 @@ div.center {
     width: 250px;
 }
 
+/*Types of divs*/
+.page-div {
+    height: 100%;
+    width: 100%;
+    z-index: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.doubleContainer {
+    margin: 0;
+    overflow: auto;
+    display: flex; 
+    justify-content: space-between; 
+} 
+
+.halfContainer {
+    width: 47%;
+    margin-bottom: 0%;
+}
+
+.scrolling-container {
+    margin-top: 5px;
+    margin-bottom: 0px;
+    overflow: auto;
+}
+
+.table-div {
+    max-width: 100%;
+    width: 100%;
+    margin-top: 0px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 /* The slider itself */
 .seekbar {
   -webkit-appearance: none;  /* Override default CSS styles */
@@ -1033,27 +1069,7 @@ div.center {
     table-layout: fixed;
 }
 
-.doubleContainer {
-    margin-top: 0px;
-    margin-bottom: 0px;
-    display: flex; 
-    justify-content: space-between; 
-} 
-
-.halfContainer {
-    width: 48%;
-    margin-bottom: 0%;
-}
-
-.scrolling-container {
-    margin-top: 5px;
-    margin-bottom: 0px;
-    overflow: auto;
-}
-
 .table {
-    width: max-content;
-    min-width: 100%;
     border-collapse: collapse;
     margin-top: 0px;
     margin-bottom: 0px;
@@ -1071,22 +1087,14 @@ div.center {
     resize: horizontal;
 }
 
-.table-div {
-    width: 100%;
-    margin-top: 0px;
-    overflow-x: auto;
-    overflow-y: hidden;
-}
-
 .table td {
     white-space: nowrap;
     font-family: 'FiraMono';
 }
 
 .table tr {
-    display: block;
     width: 100%;
-    height: 100%;
+    max-height: fit-content;
     overflow: auto;
     transition: background-color 0.5s;
 }

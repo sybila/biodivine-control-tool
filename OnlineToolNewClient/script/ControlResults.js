@@ -9,8 +9,9 @@ let ControlResults = {
     _orderArrows: undefined,
 
     init() {
-        this._perturbTable = document.getElementById("ControlResults").getElementsByTagName("tbody")[0];
-        this._filters = document.getElementsByClassName("filterInput");
+        this._perturbTable = document.getElementById("control-results-table").getElementsByTagName("tbody")[0];
+        const filters = document.getElementsByClassName("filterInput");
+        this._filters = [filters[9], filters[6], filters[7], filters[8]]
         this._sortMode = [document.getElementById("primary-sort-switch"), document.getElementById("secondary-sort-switch")];
         this._orderArrows = document.getElementsByClassName("arrow");
         this._filterMenu = document.getElementById("control-res-filters");
@@ -35,15 +36,25 @@ let ControlResults = {
         document.getElementById("OscillationStat").textContent = controlData.oscillation;
         document.getElementById("PhenotypeStat").innerHTML = this._createColouredVars(this._createPertDict(controlData.phenotype));
         document.getElementById("ControllableStat").textContent = controlData.controllable;
+        const tableHead = document.getElementById("control-table-head");
+        const tableDiv = document.getElementById("control-table-container");
+        const table = document.getElementById("control-results-table");
+        const width = tableDiv.clientWidth / tableDiv.offsetWidth * 100;
+
+        tableHead.style.maxWidth = `${width}vw`;
+        tableHead.style.width =`${width}vw`;
+        table.style.maxWidth = `${width}vw`;
+        table.style.width =`${width}vw`;
+        
         this._fillTable(controlData.perturbations);
     },
 
     // Creates and appends cell into the row of the table.
     // If click1content is not null, then the content and click content is switched on the click on the cell.
     _appendCell(row, content, clickContent, width) {
-        const cell = document.createElement("td");
-        
-        cell.style.minWidth = width;
+        const cell = row.insertCell(-1);
+
+        cell.style.width = width;
         cell.style.maxWidth = width;
         cell.style.overflow = "hidden";
         cell.style.borderStyle = "solid";
@@ -64,7 +75,6 @@ let ControlResults = {
         }
 
         cell.appendChild(contentDiv);
-        row.appendChild(cell);
     },
 
     // Creates string of variables coloured by their phenotype/perturbation value.
@@ -107,22 +117,22 @@ let ControlResults = {
         let id = 1;
 
         for (const pert of perts) {
-            const row = document.createElement("tr");
+            const row = this._perturbTable.insertRow(-1);
 
             const pertDict = this._createPertDict(pert[0], false);
 
-            row.style.overflow = "hidden";
+            row.style.overflow = "auto";
+            row.style.maxWidth = "100%";
+            row.style.width = "100%";
 
             row.setAttribute('data-id', id);
             row.setAttribute('perturb', JSON.stringify(pertDict));
 
-            this._appendCell(row, id, null, "70px");
-            this._appendCell(row, this._createColouredVars(pertDict), pert[0], "877px");
-            this._appendCell(row, pert[0].length, null, "70px");
-            this._appendCell(row, pert[1], null, "190px");
-            this._appendCell(row, pert[2], null, "107px");
-
-            this._perturbTable.appendChild(row);
+            this._appendCell(row, id, null, "6%");
+            this._appendCell(row, this._createColouredVars(pertDict), pert[0], "70%");
+            this._appendCell(row, pert[0].length, null, "6%");
+            this._appendCell(row, pert[1], null, "13%");
+            this._appendCell(row, pert[2], null, "5%");
 
             id += 1;
         };
@@ -234,7 +244,7 @@ let ControlResults = {
         e.setAttribute("colourShown", !(e.getAttribute("colourShown") == "true"));
     },
 
-    // 
+    // Switch for the sort of the Control Results table.
     switchSortMode(buttonID) {
         if (this._sortMode[buttonID].value == "ID") {
             this._sortMode[buttonID].value = "Size";
@@ -268,16 +278,4 @@ let ControlResults = {
     showFilters() {
         this._filterMenu.style.display = this._filterMenu.style.display == "none" ? "" : "none";
     },
-
-    openModel() {
-        const resTab = TabBar.getTab(TabBar.getNowActiveId());
-        const modelTab = TabBar.getTab(resTab.data.modelTabId);
-        console.log(resTab.data.modelTabId);
-        if (modelTab == undefined) {
-            TabBar.addTab("model", resTab.data.model);
-            resTab.data.modelTabId = TabBar.getNowActiveId();
-        } else {
-            TabBar.toggleActive(resTab.data.modelTabId, false);
-        }
-    }
 }

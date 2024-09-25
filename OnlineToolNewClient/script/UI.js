@@ -18,15 +18,19 @@ let UI = {
 	// Contains pairs of elements of the form { button: ..., tab: ... } corresponding to the side menu.
 	_tabsAndButtons: undefined,
 
-	_modelDiv: undefined,
-	_controlResDiv: undefined,
+	//Array containing divs od different pages [model-div, control-results-div, explorer-div, tree-explorer-div]
+	_pageDivs: undefined,
 
 	init: function() {
 		this.cytoscapeEditor = document.getElementById("cytoscape-editor");		
 		this._nodeMenu = document.getElementById("node-menu");
 		this._edgeMenu = document.getElementById("edge-menu");
-		this._modelDiv = document.getElementById("model-div");
-		this._controlResDiv = document.getElementById("control-results-div");
+
+		this._pageDivs = [document.getElementById("model-div"),
+							document.getElementById("control-results-div"),
+								document.getElementById("explorer-div"),
+									document.getElementById("tree-explorer-div")
+		]
 		
 		let sideMenu = document.getElementById("side-menu");
 		let sideMenuButtons = sideMenu.getElementsByClassName("button");
@@ -428,31 +432,35 @@ let UI = {
 		}        
 	},
 
-	openWitness(witness) {
+	//Tests if results are available. If not, then alerts the user.
+	testResultsAvailable() {
 		if (!ComputeEngine.hasActiveComputation()) {
 			alert("Results no longer available.");
-			return;
+			return false;
 		}
+
+		return true;
+	},
+
+	openWitness(witness) {
+		if (!this.testResultsAvailable()) {return;};
+
 		const url = window.location.pathname;
+		console.log(window.location.pathname);
         window.open(url + '?engine=' + encodeURI(ComputeEngine.getAddress()) + "&witness="+ encodeURI(witness));
 	},
 
     openExplorer(behavior) {
-		if (!ComputeEngine.hasActiveComputation()) {
-			alert("Results no longer available.");
-			return;
-		}
-		const url = 'explorer.html';
-        window.open(url + '?engine=' + encodeURI(ComputeEngine.getAddress()) + "&behavior="+ encodeURI(behavior));
+		if (!this.testResultsAvailable()) {return;};
+
+		Explorer.openNewExplorer(behavior);
     },
 
     openTreeExplorer() {
-		if (!ComputeEngine.hasActiveComputation()) {
-			alert("Results no longer available.");
-			return;
-		}
-		const url = 'tree_explorer.html';
-		window.open(url + '?engine=' + encodeURI(ComputeEngine.getAddress()));
+		if (!this.testResultsAvailable()) {return;};
+
+		TabBar.addTab("tree-explorer", {});
+		TreeExplorer.openNewTreeExplorer();
     },
 
 
@@ -597,32 +605,52 @@ let UI = {
 		};
 	},
 
+	_switchVisibleDiv(divIndex) {
+		for (let i = 0; i < this._pageDivs.length; i++) {
+			if (i == divIndex) {
+				this._pageDivs[i].style.display = "";
+			} else {
+				this._pageDivs[i].style.display = "none";
+			}
+		}
+	},
+
 	//Toggles between data shown in the window. (used when inner tabs are switched)
-	toggleDiv(showModel, data) {
-		if (showModel) {
-			this._modelDiv.style.display = "";
-			this._controlResDiv.style.display = "none";
+	toggleDiv(type, data) {
+		if (type == "model") {
+			this._switchVisibleDiv(0);
 			LiveModel.importAeon(data, true);
-		} else {
-			this._modelDiv.style.display = "none";
-			this._controlResDiv.style.display = "";
+		} else if (type == "control results") {
+			this._switchVisibleDiv(1);
 			ControlResults.insertData(data);
+		} else if (type == "explorer") {
+			this._switchVisibleDiv(2);
+			Explorer.insertData(data)
+		} else {
+			this._switchVisibleDiv(3);
 		}
 	},
 
 	//Opens new browser tab with contents of currently active inner tab.
-	openBrowserTab() {
+	//If type of the initial tab is "model", then withResults determines
+	//if the calculated results should be present in the new browser tab.
+	openBrowserTab(withResults = true) {
 		const tabId = TabBar.getNowActiveId();
 		const tab = TabBar.getTab(tabId)
 
 		if (tab.type == "model") {
-			tab.data = LiveModel.exportAeon();
+			const modelString = LiveModel.exportAeon(false, withResults);
+			tab.data = modelString;
+			LiveModel.modelSave = modelString;
 		}
 
 		const newWindow = open("index.html", "_Blank");
+
 		newWindow.initialTabInfo = {"type":tab.type, "data": JSON.stringify(tab.data)};
 		newWindow.modelId = window.modelId;
 		newWindow.nextModelId = window.nextModelId;
 		newWindow.modelCalc = window.modelCalc;
+		newWindow.lastComputation = withResults == true ? ComputeEngine.getLastComputation() : undefined;
+		newWindow.model = LiveModel.modelSave;
 	}
 }

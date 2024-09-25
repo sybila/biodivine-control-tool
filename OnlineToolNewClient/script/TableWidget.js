@@ -39,6 +39,7 @@ class TableWidget {
         let row = document.createElement("tr");
         row.setAttribute('draggable', 'true');
         row.setAttribute('data-id', id);
+        row.style.display = "block";
 
         row.addEventListener('dragstart', () => {
             row.classList.add('dragging');

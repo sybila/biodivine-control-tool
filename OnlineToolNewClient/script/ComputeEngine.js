@@ -8,10 +8,13 @@ let ComputeEngine = {
 	_address: "http://localhost:8000",
 	_connected: false,
 	_pingRepeatToken: undefined,
+	
+	//Type of the last started computation in the form of string (attractor, control)
+	_computationType: undefined,
 	// a timestamp of last successfully started computation
 	// if status returns a different timestamp, we know results are out of date
 	_lastComputation: undefined,
-	// If is true, then computes control, else computes atractor analysis.
+	// If is true, then computes control, else computes attractor analysis.
 	_computateControl: false,
 
 	// Open connection, taking up to date address from user input.
@@ -130,52 +133,8 @@ let ComputeEngine = {
 
 	startComputation(aeonString) {
 		if (this._computateControl) {
-			TabBar.addTab("control results", {
-				'parNum':500000000000000000000,
-				'perturbations':[[["GcrA:true", "CtrC:false"], 500, 60], 
-								[["GcrA:true", "LmDsd:true"], 90, 40],
-								[["dsadasd:true", "LmDsd:false", "CtrC:true"], 90000, 30],
-								[["CtrC:false"], 1, 40],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadadddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddsd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-								[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90]],
-				'controllable':["GcrA", "CtrC", "LmDsd", "dsadasd", "dsadasd"],
-				'phenotype':["GcrA:true", "CtrC:false", "LmDsd:true", "dsddsddsddsddsddsddsddsddsddsddsddsddsddsddsddsd:false", "dsadasd:false"],
-				'oscillation':"All",
-				'model':LiveModel.exportAeon(),
-				'modelTabId':TabBar.getNowActiveId()
-			})
+			this._computationType = "control";
+			Results.download();
 			return;
 		}
 
@@ -190,6 +149,7 @@ let ComputeEngine = {
 			Results.clear();
 
 			if (!this._computateControl) {
+				this._computationType = "attractor";
 				this.waitingForResult = true;
 				return this._backendRequest("/start_computation", (e, r) => {
 					if (e !== undefined) {
@@ -228,10 +188,60 @@ let ComputeEngine = {
 			callback("Compute engine not connected.");
 			return undefined;
 		} else {
+			if (this._computationType == "control") {
+				callback(undefined, this._computationType, {
+					'elapsed': this._lastComputation,
+					'parNum':500000000000000000000,
+					'perturbations':[[["GcrA:true", "CtrC:false"], 500, 60], 
+									[["GcrA:true", "LmDsd:true"], 90, 40],
+									[["dsadasd:true", "LmDsd:false", "CtrC:true"], 90000, 30],
+									[["CtrC:false"], 1, 40],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadadddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddsd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
+									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90]],
+					'controllable':["GcrA", "CtrC", "LmDsd", "dsadasd", "dsadasd"],
+					'phenotype':["GcrA:true", "CtrC:false", "LmDsd:true", "dsddsddsddsddsddsddsddsddsddsddsddsddsddsddsddsd:false", "dsadasd:false"],
+					'oscillation':"All",
+				});
+
+				return;
+			}
+
 			return this._backendRequest("/get_results", (e, r) => {
-				console.log(e, r);
+				console.log(e, this._computationType, r);
 				if (callback !== undefined) {
-					callback(e, r);
+					callback(e, this._computationType, r);
 				}
 			}, "GET");
 		}
@@ -412,6 +422,16 @@ let ComputeEngine = {
 
     	return req;
     },
+
+	//Returns timestamp of last succesfully started computation.
+	getLastComputation() {
+		return this._lastComputation;
+	},
+
+	//Sets value of last computation (should be used only for initialization of new browser tab)
+	setLastComputation(timestamp) {
+		this._lastComputation = timestamp;
+	},
 
 	// Control function headers.
 

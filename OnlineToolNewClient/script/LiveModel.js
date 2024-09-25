@@ -14,12 +14,13 @@ let LiveModel = {
 	// keys are variable ids, values are update function strings with metadata { functionString, metadata }
 	_updateFunctions: {},
 	_regulations: [],
-
 	// We use this to indicate that there is a batch of changes to the model that are being processed,
 	// and we therefore shouldn't run intensive tasks (like function consistency checks on server).
 	// It is the responsibility of the user of this flag to re-run these tasks AFTER the changes are done.
 	// Currently we use this only in import.
 	_disable_dynamic_validation: false,
+	//Stores model in the AEON string format.
+	modelSave: "",
 
 
 	// True if the model has no variables.
@@ -65,7 +66,7 @@ let LiveModel = {
 		UI.setQuickHelpVisible(false);
 		// Just show the number of possible update functions, even though there are always two.
 		this._validateUpdateFunction(id);
-		this.saveToLocalStorage();
+		this.saveModel();
 		return id;
 	},
 
@@ -139,7 +140,7 @@ let LiveModel = {
 			ModelEditor.updateStats();
 			
 			if (this.isEmpty()) UI.setQuickHelpVisible(true);
-			this.saveToLocalStorage();
+			this.saveModel();
 			for (let id of update_regulations_after_delete) {
 				// We also have to recompute the update function - the variable just became a parameter...
 					if (this._updateFunctions[id] !== undefined) {
@@ -180,7 +181,7 @@ let LiveModel = {
 				let reg = this._regulations[i];
 				if (reg.regulator == id || reg.target == id) this._regulationChanged(reg);
 			}
-			this.saveToLocalStorage();
+			this.saveModel();
 			return undefined;
 		}		
 	},
@@ -208,7 +209,7 @@ let LiveModel = {
 			}
 			ModelEditor.updateStats();
 			this._validateUpdateFunction(id);
-			this.saveToLocalStorage();
+			this.saveModel();
 		}
 	},
 
@@ -377,7 +378,7 @@ let LiveModel = {
 
 	// Export current model in Aeon text format, or undefined if model cannot be 
 	// exported (no variables).
-	exportAeon(emptyPossible = false) {
+	exportAeon(emptyPossible = false, withResults = true) {
 		let result = "";
 		let keys = Object.keys(this._variables);
 		if (!emptyPossible && keys.length == 0) return undefined;
@@ -412,11 +413,16 @@ let LiveModel = {
 				result += this._regulationToString(regulations[j]) + "\n";
 			}
 		}
+
+		if (withResults) {
+			result += Results.exportResults();
+		}
+
 		return result;
 	},
 
 	// Parses model into intermideate objects. Returns model name and model description.
-	_parseAeonFile(modelString, regulations, positions, control, updateFunctions) {
+	_parseAeonFile(modelString, regulations, positions, control, updateFunctions, results) {
 		let lines = modelString.split("\n");
 		// name1 -> name2
 		let regulationRegex = /^\s*([a-zA-Z0-9_{}]+)\s*-([>|?])(\??)\s*([a-zA-Z0-9_{}]+)\s*$/;
@@ -430,6 +436,8 @@ let LiveModel = {
 		let controlRegex = /^\s*#control:([a-zA-Z0-9_{}]+):c(true|false),p(true|false|null)\s*$/;
 		// $var_name:function_data
 		let updateFunctionRegex = /^\s*\$\s*([a-zA-Z0-9_{}]+)\s*:\s*(.+)\s*$/;
+		//#results:stringifiedJSONofresults
+		let resultsRegex = /^\s*#results:\s*(attractor|control)\s*:\s*(.+)\s*$/;
 		// #...
 		let commentRegex = /^\s*#.*?$/;
 
@@ -481,6 +489,17 @@ let LiveModel = {
 										match[3] == "true" ? true : match[3] == "false" ? false : null];
 				continue;
 			}
+
+			match = line.match(resultsRegex);
+			if (match != null) {
+				try {
+					results.type = match[1];
+					results.data = JSON.parse(match[2]);
+				} catch (e) {
+					console.log("Results are invalid: " + e);
+				}
+			}
+
 			if (line.match(commentRegex) === null) {
 				return "Unexpected line in file: "+line;
 			}			
@@ -560,8 +579,9 @@ let LiveModel = {
 		let positions = {};
 		let control = {};
 		let updateFunctions = {};
+		let results = {};
 
-		[modelName, modelDescription]  = this._parseAeonFile(modelString, regulations, positions, control, updateFunctions);
+		[modelName, modelDescription]  = this._parseAeonFile(modelString, regulations, positions, control, updateFunctions, results);
 
 
 		/*
@@ -577,6 +597,7 @@ let LiveModel = {
 		// Set model metadata
 		ModelEditor.setModelName(modelName);
 		ModelEditor.setModelDescription(modelDescription);
+		Results.importResults(results);
 
 		this._setRegulations(regulations, positions, control);
 		this._setUpdateFunctions(updateFunctions, positions, control);
@@ -608,7 +629,7 @@ let LiveModel = {
 	},
 
 	_modelModified() {
-		if (TabBar.getNumberOfTabs() > 1) {
+		if (Results.hasResults()) {
 			const warning = document.getElementById("warning");
 			warning.style.display = "block";
 			return false;
@@ -619,7 +640,7 @@ let LiveModel = {
 			window.modelCalc[window.modelId]--;
 			window.modelId = window.nextModelId.value++;
 			window.modelCalc[window.modelId] = 1;
-			document.title = document.title.slice(0, document.title.length - 1) + window.modelId;
+			document.title = "Biodivine/Aeon: model " + window.modelId;
 		}
 
 		return true;
@@ -629,20 +650,24 @@ let LiveModel = {
 		document.getElementById("warning").style.display = "none";
 
 		if (resolveMode == true) {
-			UI.openBrowserTab();
+			UI.openBrowserTab(false);
 		} else if (resolveMode == false) {
+			Results.clear();
 			TabBar.closeResults();
 		}
 	},
 
-	// Save the current state of the model to local storage.
+	// Save the current state of the model to local storage and LiveModel.modelSave.
 	// TODO: This is only triggered when structure of the model changes (variables, regulations),
 	// not metadata. Change this so that metadata are also preserved.
-	saveToLocalStorage() {
+	saveModel() {
+		const modelString = this.exportAeon();
+		LiveModel.modelSave = modelString
+
 		if (!hasLocalStorage) return;
 		try {
 			if (!this.isEmpty()) {
-				localStorage.setItem('last_model', this.exportAeon());
+				localStorage.setItem('last_model', modelString);
 			}			
 		} catch (e) {
 			console.log(e);
@@ -730,7 +755,7 @@ let LiveModel = {
 		ModelEditor.ensureRegulation(regulation);
 		CytoscapeEditor.ensureRegulation(regulation);
 		this._validateUpdateFunction(regulation.target);
-		this.saveToLocalStorage();
+		this.saveModel();
 	},
 
 	// Remove the given regulation object from the regulations array.
@@ -741,7 +766,7 @@ let LiveModel = {
 			CytoscapeEditor.removeRegulation(regulation.regulator, regulation.target);
 			ModelEditor.removeRegulation(regulation.regulator, regulation.target);
 			ModelEditor.updateStats();
-			this.saveToLocalStorage();
+			this.saveModel();
 			return true;
 		}
 		return false;

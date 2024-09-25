@@ -20,6 +20,8 @@
         <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
         <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
         <link rel="manifest" href="manifest.json">
+        
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="msapplication-TileColor" content="#ffffff">
         <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
         <meta name="theme-color" content="#ffffff">
@@ -27,11 +29,13 @@
         <link rel="stylesheet" href="style.css" type="text/css">        
 
         <script src="script/dependencies/dagre.js"></script>
-        <script src="script/dependencies/cytoscape.min.js"></script>
         <script src="script/dependencies/lodash.js"></script>
+        <script src="script/dependencies/hotkeys.min.js"></script>
+        <script src="script/dependencies/vis-network.min.js"></script>
+        <script src="script/dependencies/cytoscape.min.js"></script>
         <script src="script/dependencies/cytoscape-edgehandles.js"></script>
         <script src="script/dependencies/cytoscape-dagre.js"></script>
-        <script src="script/dependencies/hotkeys.min.js"></script>
+        <script src="script/dependencies/cytoscape-tidytree.js"></script>
 
         <script src="script/const.js"></script>
         <script src="script/Results.js"></script>
@@ -39,7 +43,8 @@
         <script src="script/Examples.js"></script>
         <script src="script/LiveModel.js"></script>
         <script src="script/UI.js"></script>
-        <script src="script/CytoscapeEditor.js"></script>        
+        <script src="script/CytoscapeEditor.js"></script>
+        <script src="script/CytoscapeTreeEditor.js"></script>       
         <script src="script/ModelEditor.js"></script>
         <script src="script/ControllableEditor.js"></script>
         <script src="script/PhenotypeEditor.js"></script>
@@ -48,6 +53,8 @@
         <script src="script/TabBar.js"></script>
         <script src="script/Tab.js"></script>
         <script src="script/ControlResults.js"></script>
+        <script src="script/TreeExplorer.js"></script>
+        <script src="script/Explorer.js"></script>
         <script src="script/main.js"></script>
 
         <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -62,14 +69,12 @@
     </head>
 
     <body onload="init()">
-        <div id="model-div" >
+        <div id="model-div" class="page-div">
             <script type="module" src="script/patch-wasm.js"></script>
 
             <!-- Hosts the interactive model editor -->        
             <div id="cytoscape-editor">
             </div>
-
-            <h1 id='logo'>Aeon/<span id='title'>BIODIVINE</span></h1>
 
             <!-- Do not change it here, this is a placeholder. Change it in const.js -->
             <span id="version">v0.0.0</span>
@@ -105,7 +110,7 @@
                 <span class="hint invisible">Hint</span>
             </div>
 
-            <div id="quick-help">
+            <div id="quick-help" class="quick-help">
                 <h3 style="display: block; margin: 0 auto; float: right;">HELP</h3>
                 <b>Network editor actions:</b>
                 <ul>
@@ -138,7 +143,7 @@
                         </div>
                         
                         <div class="doubleContainer">
-                            <button id="button-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="ComputeEngine.changeComputation(false);">Atractor</button>
+                            <button id="button-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="ComputeEngine.changeComputation(false);">Attractor</button>
                             <button id="button-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="ComputeEngine.changeComputation(true);">Control</button>
                         </div>
                     </div>
@@ -280,18 +285,22 @@
                                         
                     <div class="templates gone">
                         <div id="model-variable-template" class="model-variable">
-                            <div class="doubleContainer" style="max-width: 410px; max-height: 5px; margin-bottom: 0px;">
-                                <button class="centered-button" style="height: 25px; margin-top: -1px;"></button>
-                                <div class="invisible-input" style="margin-left: 5px;">
+                            <div class="doubleContainer" style="max-width: 410px; max-height: 5px;">
+                                <button class="centered-button" style="height: 25px; position: absolute; top: 4px; left: 1%;"></button>
+                                <div class="invisible-input" style="position: absolute; top: 4px; left: 40px;">
                                     <input class="variable-name" type="text" name="variable-name" value="Variable name" placeholder="(variable name)" style="font-size: 18px; margin-left: 0;" spellcheck='false' autocorrect='off'>
                                 </div>
 
-                                <button class="centered-button" style="height: 25px; margin-top: 0%; margin-left: 50px; margin-right: 5px; background-color: #B0BEC5;"><img style="max-width: 50px; pointer-events: none;" src="img/controller.svg" alt="controllable"></button>
-                                <button class="centered-button" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"><img style="max-height: 25px; pointer-events: none;" src="img/leaf-48px.svg" alt="phenotype"></button>
+                                <div style="position: absolute; top: 4px; right: 55px;">
+                                    <button class="centered-button" style="height: 25px; margin-top: 0%; margin-left: 50px; margin-right: 5px; background-color: #B0BEC5;"><img style="max-width: 50px; pointer-events: none;" src="img/controller.svg" alt="controllable"></button>
+                                    <button class="centered-button" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"><img style="max-height: 25px; pointer-events: none;" src="img/leaf-48px.svg" alt="phenotype"></button>
+                                </div>
                             </div>
-
-                            <img alt="Remove variable" src="img/delete-24px.svg" class="model-variable-remove button">
-                            <img alt="Show variable" src="img/search-24px.svg" class="model-variable-show button">
+                            
+                            <div style="position: absolute; top: -3px; right: 2px;">
+                                <img alt="Remove variable" src="img/delete-24px.svg" class="model-variable-remove button">
+                                <img alt="Show variable" src="img/search-24px.svg" class="model-variable-show button">
+                            </div>
                             <br>
                             <div class="scrolling-container">
                                 <h4> ● Regulators</h4>
@@ -330,7 +339,7 @@
                     <input type="text" id="ControllableFilter" class="filterInput" onkeyup="ControllableEditor.filterTable(true)">
 
                     <div class="scrolling-container" style="max-height: 170px;">
-                        <table id="Controllable"class="table" style="height: 170px;">
+                        <table id="Controllable"class="table" style="height: 170px; min-width: max-content; min-width: 100%;">
                             <tbody>
                             </tbody>
                         </table>
@@ -343,7 +352,7 @@
                     <input type="text" id="UncontrollableFilter" class="filterInput" onkeyup="ControllableEditor.filterTable(false)">
 
                     <div class="scrolling-container" style="max-height: 170px;">
-                        <table id="Uncontrollable"class="table" style="height: 170px;">
+                        <table id="Uncontrollable"class="table" style="height: 170px; min-width: max-content; min-width: 100%;">
                             <tbody>
                             </tbody>
                         </table>
@@ -381,7 +390,7 @@
                             <input type="text" id="TrueFilter" class="filterInput" style="width: 98%;" onkeyup="PhenotypeEditor.filterTable(true)">
         
                             <div class="scrolling-container" style="max-height: 140px;">
-                                <table id="True"class="table" style="height: 140px;">
+                                <table id="True"class="table" style="height: 140px; min-width: max-content; min-width: 100%;">
                                     <tbody style="max-height: 140px;">
                                     </tbody>
                                 </table>
@@ -396,7 +405,7 @@
                             <input type="text" id="FalseFilter" class="filterInput" style="width: 98%;" onkeyup="PhenotypeEditor.filterTable(false)">
         
                             <div class="scrolling-container" style="max-height: 140px;">
-                                <table id="False"class="table" style="height: 140px;">
+                                <table id="False"class="table" style="height: 140px; min-width: max-content; min-width: 100%;">
                                     <tbody style="max-height: 140px;">
                                     </tbody>
                                 </table>
@@ -412,7 +421,7 @@
                     <input type="text" id="NotInFilter" class="filterInput" onkeyup="PhenotypeEditor.filterTable(null)">
 
                     <div class="scrolling-container" style="max-height: 140px;">
-                        <table id="NotIn"class="table" style="height: 140px;">
+                        <table id="NotIn"class="table" style="height: 140px; min-width: max-content; min-width: 100%;">
                             <tbody>
                             </tbody>
                         </table>
@@ -445,31 +454,44 @@
                 </div>
 
                 <div id="tab-results" class="main-panel gone">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Results</h2>
 
-                    <div class="doubleContainer" style="margin-top: 20px;">
+                    <div class="doubleContainer" style="margin-top: 20px; margin-bottom: 0px;">
                         <div>
                             <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Import/Export: </h3>
                         </div>
                         
                         <div class="doubleContainer">
                             <label for="import-result-input" class="centered-button" > <div style="margin-top: 10px;">Import</div></label>
-                            <input onchange='Results.importResults(this)' id='import-result-input' style='display:none' type='file'>
+                            <input onchange='Results.importResultsFromFile(this)' id='import-result-input' style='display:none' type='file'>
             
-                            <button onclick='Results.exportResults()' style="margin-left: 30px; margin-right: 7px;" class="centered-button">Export</button>
+                            <button onclick='Results.exportResultsIntoFile()' style="margin-left: 30px; margin-right: 7px;" class="centered-button">Export</button>
                         </div>
                     </div>
 
-                    <div class="scrolling-container" id="attractor-res-widget" style="max-height: 420px;">
-                        <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
-                        <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Bifurcation Function</h2>
-                        <div style="text-align: center; padding: 12px;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>                
-                        <div id="attractor-results">
-                            <div style="text-align: center; width: 350px; margin: 0 auto;">No results loaded. Run analysis to show bifurcation function overview for the currently loaded model.</div>
+                    <div class="scrolling-container" style="max-height: 500px; margin-top: 0;">
+                        <div style="text-align: center; padding: 12px; display: none;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>               
+
+                        <div id="empty-results">
+                            <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">No results available</h2>
+                            <div style="text-align: center; width: 350px; margin: 0 auto;">No results loaded. Run computation to show results for currently loaded model.</div>
                         </div>
-                        <div id="open-tree-explorer" class="gone" style="text-align: center; margin: 8px;"><a class="inline-button" onclick="UI.openTreeExplorer()"> >> Explore Bifurcation Function &lt;&lt; </a></div>
-                        
-                        <div id='result-legend'><span class='table-behavior'>D</span> disorder | <span class='table-behavior'>O</span> oscillation | <span class='table-behavior'>S</span> stability</div>
+
+                        <div id="attractor-results" style="display: none;">
+                            <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Bifurcation Function</h2>              
+                            <div id="attractor-results-input"></div>
+                            <div id="open-tree-explorer" class="gone" style="text-align: center; margin: 8px;"><a class="inline-button" onclick="UI.openTreeExplorer()"> >> Explore Bifurcation Function &lt;&lt; </a></div>
+                            <div id='result-legend'><span class='table-behavior'>D</span> disorder | <span class='table-behavior'>O</span> oscillation | <span class='table-behavior'>S</span> stability</div>
+                        </div>
+
+                        <div id="control-results" style="display: none;">
+                            <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Control Results</h2>
+                            <div id="control-results-input"></div>
+                            <h4 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px; margin-top: 5px;">Visualization options</h4>
+                            <button class="centered-button" style="width: 99%; height: 30px;" onclick="TabBar.addTab('control results', Results.loadedResults.data)">Table</button>
+                        </div>
+
                     </div>
                 </div>
 
@@ -564,23 +586,22 @@
             </div>
         </div>
 
-        <div id="control-results-div" style="display: none;">
-            <h1 id="model-name"></h1>
-            <h1 id='logo'>Aeon/<span id='title'>BIODIVINE</span></h1>
+        <div id="control-results-div" class="page-div" style="display: none;">
+            <div style="max-height: 70px; height: 70px; max-width: 100%; width: 100%; position: absolute; top: 0;">
+                <h1 id="model-name"></h1>
+            </div>
     
-            <div style=" margin-bottom: 5%;"></div>
-    
-            <div class="doubleContainer" style="height: 50%; margin-bottom: 1%;">
-                <div class="main-panel-noresize" style="margin-left: 0%; margin-right: 0%; width: 700px; max-height: 100px; overflow-y: hidden; padding-bottom: 0; padding-top: 0;">
+            <div class="doubleContainer" style="max-height: 85px; height: 85px; max-width: 100%; width: 100%; margin-bottom: 1%; position: absolute; top: 70px; left: 0;">
+                <div class="main-panel-noresize" style="max-height: 68px; height: 68px; max-width: 55%; width: 55%; padding: 0; position: absolute; left: 10px;">
                     <table class="model-stats">
-                        <tr class="row"><td style="width: 500px;">Number of Parametrizations: </td><td class="value" id="ParamNumberStat" style="width: 300px;"> -</td> <td style="width: 500px;">Maximal Robustness: </td>   <td class="value" id="MaxRobStat" style="width: 300px;">-</td></tr>
-                        <tr class="row"><td style="width: 500px;">Number of Perturbations: </td><td class="value" id="PertNumberStat" style="width: 300px;">-</td> <td style="width: 500px;">Oscillation: </td>   <td class="value" id="OscillationStat" style="width: 300px;">-</td> </tr>
-                        <tr class="row"><td style="width: 500px;">Minimal Size: </td><td class="value" id="MinSizeStat" style="width: 200px;">-</td> </tr>
+                        <tr style="max-height: 2px;"><td style="width: 20%;">Number of Parametrizations: </td><td class="value" id="ParamNumberStat" style="width: 20%;"> -</td> <td style="width: 20%;">Maximal Robustness: </td>   <td class="value" id="MaxRobStat" style="width: 5%;">-</td></tr>
+                        <tr style="max-height: 2px;"><td style="width: 20%;">Number of Perturbations: </td><td class="value" id="PertNumberStat" style="width: 20%;">-</td> <td style="width: 20%;">Oscillation: </td>   <td class="value" id="OscillationStat" style="width: 5%;">-</td> </tr>
+                        <tr style="max-height: 2px;"><td style="width: 20%;">Minimal Size: </td><td class="value" id="MinSizeStat" style="width: 20%;">-</td> </tr>
                     </table>
                 </div>
     
-                <div>
-                    <div class="main-panel-noresize" style="white-space: nowrap; overflow: hidden; width: 550px; max-height: 25px; margin-left: 0%; margin-left: 10px; margin-right: 10px;padding-bottom: 0px; padding-top: 0;">
+                <div style="max-height: 68px; height: 68px; max-width: 43%; width: 43%; position: absolute; top:0; left:auto; right: 0; margin-left: 1%; margin-right: 0.5%; overflow: auto;">
+                    <div class="main-panel-noresize" style="max-height: 25px; max-width: 98%; width: 98%; padding-bottom: 0px; padding-top: 0; position: absolute; top: 4%; left: 0.5%; white-space: nowrap; overflow: hidden;">
                         <div class="scrolling-container" style="overflow-y: hidden; margin-top: -0.5px;">
                             <table class="model-stats">
                                 <tr class="row"><td>Phenotype:</td><td id="PhenotypeStat" class="value">-</td> </tr>
@@ -588,23 +609,19 @@
                         </div>
     
                     </div>
-                    <div class="main-panel-noresize" style="white-space: nowrap; overflow: hidden; margin-left: 0%; margin-top: 20px; margin-left: 10px; margin-right: 10px; width: 550px; max-height: 25px; padding-bottom: 0px; padding-top: 0;">
-                        <div class="scrolling-container" style="overflow-y: hidden; margin-top: -0.5px;"></div>
+                    <div class="main-panel-noresize" style="max-height: 25px; max-width: 98%; width: 98%; padding-bottom: 0px; padding-top: 0; position: absolute; bottom: 4%; left: 0.5%; white-space: nowrap; overflow: hidden;">
+                        <div class="scrolling-container" style="overflow-y: hidden; margin-top: -0.5px;">
                             <table class="model-stats">
                                 <tr class="row"><td>Controllable:</td><td id="ControllableStat" class="value">-</td> </tr>
                             </table>
                         </div>
                     </div>
                 </div>
+            </div>
     
-            <div class="doubleContainer" style="margin: 0px; max-height: 30px;" >
-                <button id="return-to-model" class="centered-button" style="margin-left: 1090px; max-height: 25px;" onclick="ControlResults.openModel()">Return to model</button>
-    
-                <div style="display: none;">
-                    <button onclick="ControlResults.openModel()"></button>
-                </div>
-    
-                <button id="button-filters" class="centered-button" onclick="ControlResults.showFilters()" style="margin-right: 16px; margin-bottom: 50px;max-height: 25px;">Filters</button>
+            <div class="doubleContainer" style="max-height: 30px; height: 30px; max-width: 100%; width: 100%; margin: 0; position: absolute; top: 150px;" >
+                <button id="button-filters" class="centered-button" onclick="ControlResults.showFilters()" style="max-height: 90%; position: absolute; left: auto; right: 9px;">Filters</button>
+                <button id="return-to-model" class="centered-button" onclick="TabBar.openModel()" style="max-height: 90%; position: absolute; left: auto; right: 98px;">Return to model</button>
             </div>
     
             <div id="control-res-filters" class="main-panel" style="position: absolute; resize: none; max-height: 150px; width: 600px; top: 5px; left: 400px; display: none; z-index: 200;">
@@ -634,7 +651,6 @@
                             <button class="centered-button" id="secondary-order" onclick="ControlResults.switchOrder(1)" style="height: 20px;">
                                 <div class="arrow up" style="border-color: #808080;"></div>
                             </button>
-                        
                         </div>
                     </div>
                         <input type="text" id="ControlResultsfilter" class="filterInput" style="width: 20%;" onkeyup="ControlResults.filterTable()">
@@ -645,37 +661,322 @@
                     </div>
                 </div>
             </div>
-    
-            <table class="table borders" style="margin-bottom: 0px;">
-                <th style="min-width: 70px;">ID</th>
-                <th style="min-width: 877px;" visualMode="false" onclick="ControlResults.pertVisual(this)">Perturbations</th>
-                <th style="min-width: 70px;">Size</th>
-                <th style="min-width: 190px;">Parametrizations</th>
-                <th style="min-width: 107px">Robustness</th>
-            </table>
-            <div class="scrolling-container" style="max-height: 432px; max-width: 100%; margin-top: 0px;  user-select: none;">
-                <table id="ControlResults" class="table borders" style="height: 100px; max-width: 90%;">
-                    <tbody></tbody>
+
+            <div id="control-table-container" class="scrolling-container" style="max-height: calc(100% - 200px); height: calc(100% - 200px); max-width: 100vw; width: 100vw; position: absolute; top: 180px; left: 0; overflow-y: scroll; user-select: none;">
+                <table id="control-table-head" class="table borders" style="max-height: 23px; height: 23px; max-width: 100%; width: 100%; position: fixed; left: 0; z-index: 5;">
+                    <tbody style="max-width: 100%; width: 100%;">
+                        <tr style="max-width: 100%; width: 100%; ">
+                            <th style="max-width: 6%; width: 6%;">ID</th>
+                            <th style="max-width: 70%; width: 70%;" visualMode="false" onclick="ControlResults.pertVisual(this)">Perturbations</th>
+                            <th style="max-width: 6%; width: 6%;">Size</th>
+                            <th style="max-width: 13%; width: 13%;">Parametrizations</th>
+                            <th style="max-width: 5%; width: 5%;">Rob</th>
+                        </tr>
+                    </tbody>
+                </table>
+                <table id="control-results-table" class="table borders" style="position: absolute; top: 23px; left: 0;">
+                    <tbody style="max-width: 100%; width: 100%;">
+                    </tbody>
                 </table>
             </div>
         </div>
 
-        <div style="max-height: 25px; z-index: 100;">
-            <img alt="close" src="img/close-24px.svg" class="panel-close-button" style="right: 10px; left: auto; top: 3px; max-height: 20px;" onclick="TabBar.closeTab()"> 
-
-            <button class="centered-button" style="position: absolute; right: 58px; top: 3px;  height: 25px;;" onclick="document.getElementById('tab-bar').style.display == 'none' ? 
-                                                    document.getElementById('tab-bar').style.display = '' : 
-                                                    document.getElementById('tab-bar').style.display = 'none'">Tabs</button>
-    
-            <button class="centered-button" style="position: absolute; right: 140px; top: 3px; height: 25px;" onclick="UI.openBrowserTab()">Open in tab</button>
-    
-            <h3 id="status-bar" style="position: absolute; right: 280px; top: 7px; margin: 0; font-family: 'FiraMono'; text-transform: uppercase; font-size: 15px;"> ● Disconnected</h3>
-    
-            <div id="tab-bar" class="model-tab-panel" style="display: none;">
-                <table id="tab-table" class="tab-table">
-                    <tbody></tbody>
-                </table>
+        <div id="explorer-div" style="display: none;">
+            <div style="position:absolute" id="explorer-witness-panel" class="main-panel gone">
+                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="witnessPanelVisible(false)">
+                        <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Witness update functions</h2>
+                        <ul id='explorer-update-functions' style='list-style:none'></ul>
             </div>
+
+            <button id="return-to-model" class="centered-button" onclick="TabBar.openModel()" style="max-height: 30px; height: 30px; position: absolute; top: 60px; right: 9px;">Return to model</button>
+ 
+            <!-- A container for the graph vizualization -->
+            <div id="visjs-container"></div>
+    
+            <!-- A valuation panel -->
+            <div style="display:none" id="explorer-valuations"><div id="explorer-valuations-text"></div></div>
+    
+            <!-- A witness panel -->
+            <div id="explorer-witness-panel"><div id="explorer-witness-text"></div></div>
+    
+            <!-- engine address  -->
+            <div id="engine-address" style="display:none">http://localhost:8000/</div>
+    
+            <div style="position: absolute;">            
+                <div id="side-menu">
+                    <div class="button-group" onclick='Explorer.witnessPanelVisible()'>
+                        <img alt="Update functions" id="side-menu-functions" src="img/functions-48px.svg" class="button" tab-id="tab-functions">
+                        <span class="hint invisible">Update functions</span>
+                    </div>  
+                </div>
+    
+                <div id="loading-indicator" class="invisible"><img src="img/progress.gif"/><br><br>Waiting for server...</div>
+            </div>
+        </div>
+
+        <div id="tree-explorer-div" class="page-div" style="display: none;">
+            <div id="cytoscape-tree-editor" style="max-height: 100%; height: 100%; max-width: 100%; width: 100%; display: block;">
+            </div>
+
+            <button id="return-to-model" class="centered-button" onclick="TabBar.openModel()" style="max-height: 30px; height: 30px; position: absolute; top: 60px; right: 9px;">Return to model</button>
+    
+            <div id="quick-help-tree-explorer" class="quick-help" style="position: absolute; top: 20%;">
+                <h3 style="display: block; margin: 0 auto; float: right;">HELP</h3>
+                <b>Tree editor navigation:</b>
+                <ul>
+                    <li>(↑) Select parent node.</li>
+                    <li>(↓) Select positive child.</li>
+                    <li>(Shift + ↓) Select negative child.</li>
+                    <li>(←/→) Switch positive/negative branch.</li>           
+                    <li>(F) Fit the screen to view the entire tree.</li>           
+                </ul>
+                <b>Tree actions:</b>
+                <ul>
+                    <li>(⌫) Remove selected node.</li>
+                    <li>(S) Run stability analysis for the selected node.</li>
+                    <li>(D) Compute decision attributes for the selected node.</li>
+                    <li>(I) Move node's subtree up.</li>
+                    <li>(K) Move node's subtree down.</li>
+                    <li>(J/L) Switch node's position with sibling's.</li>
+                    <li>(R) Switch order of node's children.</li>
+                    <li>(H) Toggle this help message.</li>
+                </ul>
+                <b>Units:</b>
+                <ul>
+                    <li>Witness count: Number of fully instantiated networks.</li>
+                    <li>(%): Percentage of networks in the node, i.e. count/total*100.</li>
+                    <li>(٪): Log-percentage of networks, i.e. log(count)/log(total)*100.</li>
+                </ul>     
+    
+                <div style="width: 100%; text-align: center; font-size: 12px;">(this message disappears when you select some element)</div>
+            </div>
+        
+            <div id="decision-info" class="main-panel fira-mono gone" style="margin: 0; position: absolute; top: 3px; left: 3px;">
+                <div class="center" style="margin: 16px;">
+                    <span style="position: relative; top: -20px; font-size: 14px;">Decision</span><br>
+                    <span id="decision-attribute" style="font-size: 30px;">Lorem_Ipsum</span>
+                </div>
+    
+                <span id="decision-phenotype-label" style="font-weight: bold; margin-top: 16px; display: inline-block; margin-bottom: 8px;">Phenotypes (X):</span>
+    
+                <table id="decision-behavior-table" class="behavior-table">                
+                    <tr id="behavior-table-row-template" class="gone">
+                        <td class="cell-behavior symbols">S O</td>
+                        <td class="cell-witness-count">1234</td>
+                        <td class="cell-distribution">24% / 14٪</td>
+                    </tr>
+                    <tr class="behavior-table-header">
+                        <td class="cell-behavior">Behavior</td>
+                        <td class="cell-witness-count">Witness Count</td>
+                        <td class="cell-distribution">Distribution</td>
+                    </tr>
+                    <tr class="empty-space"><td></td></tr>
+                    
+                </table>
+        
+                <div style="text-align: right; margin-bottom: 16px; margin-right: 8px; margin-top: 16px;">
+                    <button id="decision-stability-analysis-button" class="image-button" style="float: right; margin-bottom: 16px; margin-right: 16px;">Stability analysis (S) <img src="img/stability_analysis-24px.svg"></button>
+                    <select id="decision-stability-dropdown" class="stability-dropdown" style="float: right;">
+                        <option value="total">Total</option>
+                        <option value="S">Stability</option>
+                        <option value="O">Oscillation</option>
+                        <option value="D">Disorder</option>
+                    </select>                
+                </div>            
+                <div id="decision-stability-analysis" class="stability-panel"></div>
+            </div>
+    
+            <div id="mixed-info" class="main-panel fira-mono gone" style="margin: 0; position: absolute; top: 3px; left: 3px;">
+                <div class="center" style="margin: 16px;">
+                    <span style="position: relative; top: -20px; font-size: 14px;">Mixed</span><br>
+                    <span id="mixed-type-label" style="font-size: 30px;">X types</span>
+                </div>
+    
+                <table id="mixed-behavior-table" class="behavior-table">                
+                    <tr class="behavior-table-header">
+                        <td class="cell-behavior">Behavior</td>
+                        <td class="cell-witness-count">Witness Count</td>
+                        <td class="cell-distribution">Distribution</td>
+                    </tr>
+                    <tr class="empty-space"><td></td></tr>                
+                </table>
+    
+                <div id="mixed-attributes-list-item-template" class="attribute-panel gone">                
+                    <div style="float: left;" class="information-gain">0.43 ɪɢ / 4 ᴛᴄ</div>
+                    <div style="float: right;" class="attribute-name">ATTr_Name</div>
+                    <div style="clear: both;"></div>
+                    <div class="attribute-sub-panel negative">
+                        <span class="title">Negative</span>
+                        <table class="table collapsed">
+                            <tr>
+                                <td class="distribution">99%</td>
+                                <td class="symbols phenotype">SSSSSSSSSSSSSSSSSD</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="attribute-sub-panel positive">
+                        <span class="title">Positive</span>
+                        <table class="table collapsed">
+                            <tr>                        
+                                <td class="symbols phenotype">SSSSSSSSSSSSSSSSSD</td>
+                                <td class="distribution">99%</td>                            
+                            </tr>
+                        </table>
+                    </div>                
+                    <div style="clear: both;"></div>
+                    <div class="expand-button">more...</div>
+                </div>
+            
+                <div>
+                    <button id="mixed-stability-analysis-button" class="image-button" style="float: right; margin-bottom: 16px; margin-right: 16px;">Stability analysis (S) <img src="img/stability_analysis-24px.svg"></button>
+                    <select id="mixed-stability-dropdown" class="stability-dropdown" style="float: right;">
+                        <option value="total">Total</option>
+                        <option value="S">Stability</option>
+                        <option value="O">Oscillation</option>
+                        <option value="D">Disorder</option>
+                    </select>                
+                </div>            
+    
+                <div id="auto-expand" style="clear: both; text-align: right; padding-right: 16px;">
+                    <button id="button-auto-expand" class="image-button" style="margin-bottom: 16px; margin-right: 16px;">Auto expand (1 level) <img src="img/graph-24px.svg"></button>             
+                    Depth: <input type="range" min="1" max="10" value="1" class="seekbar" id="auto-expand-slider" style="width: 100px; position: relative; top: 8px;">                
+                </div>        
+                <div style="clear: both;">
+                    <button id="make-decision-button" class="image-button" style="float: right; margin-bottom: 16px; margin-right: 16px;">Make decision (D) <img src="img/add_box-24px.svg"></button>
+                </div>
+    
+                <div id="mixed-stability-analysis" class="stability-panel"></div>                  
+                <div id="mixed-attributes" class="gone">
+                    <span id="mixed-attributes-title" style="font-weight: bold; margin-top: 16px; display: inline-block; margin-bottom: 8px;">Attributes:</span>
+    
+                    <div>
+                        <b>Sort by:</b>
+                        <label class="sort-checkbox"><input type="checkbox" name="sort-information-gain" id="sort-information-gain" checked>Information gain</label> | 
+                        <label class="sort-checkbox"><input type="checkbox" name="sort-total-classes" id="sort-total-classes">Total classes</label> | 
+                        <label class="sort-checkbox"><input type="checkbox" name="sort-positive" id="sort-positive">Positive</label> | 
+                        <label class="sort-checkbox"><input type="checkbox" name="sort-positive-majority" id="sort-positive-majority">Positive majority</label> | 
+                        <label class="sort-checkbox"><input type="checkbox" name="sort-negative" id="sort-negative">Negative</label> | 
+                        <label class="sort-checkbox"><input type="checkbox" name="sort-negative-majority" id="sort-negative-majority">Negative majority</label> | 
+                        <label class="sort-checkbox"><input type="checkbox" name="sort-alphabetical" id="sort-alphabetical">Alphabetical</label>
+                    </div>
+    
+                    <div id="mixed-attributes-list">
+    
+                    </div>                                
+    
+                    <span style="font-size: 14px; display: block; width: 100%; text-align: right;">٪ = log-percentage</span>
+                    <span style="font-size: 14px; display: block; width: 100%; text-align: right;">ɪɢ = information gain</span>
+                    <span style="font-size: 14px; display: block; width: 100%; text-align: right;">ᴛᴄ = total class count</span>
+                </div>            
+            </div>
+    
+            <div id="leaf-info" class="main-panel fira-mono gone" style="margin: 0; position: absolute; top: 3px; left: 3px;">
+                <div class="center" style="margin: 16px;">
+                    <span style="position: relative; top: -20px; font-size: 14px;">Phenotype</span><br>
+                    <span class="symbols" id="leaf-phenotype" style="font-size: 50px;">DDS</span>                            
+                </div>            
+                <div>
+                    <span style="float: left;">Witness count: <span id="leaf-witness-count">12345</span></span>
+                    <span class="inline-button" onclick="TreeExplorer.openTreeWitness();" style="float: right;">Witness</span>
+                    <div style="clear: both;"></div>
+                    <span class="inline-button" onclick="TreeExplorer.openTreeAttractor();" style="float: right;">Attractor</span>
+                </div>
+    
+                <table id="leaf-behavior-table" class="behavior-table gone" style="margin-top: 16px;">
+                    <tr><td colspan="3">All phenotypes:</td></tr>
+                    <tr class="behavior-table-header">
+                        <td class="cell-behavior">Behavior</td>
+                        <td class="cell-witness-count">Witness Count</td>
+                        <td class="cell-distribution">Distribution</td>
+                    </tr>
+                    <tr class="empty-space"><td></td></tr>                
+                </table>
+    
+                <span style="font-weight: bold; margin-top: 16px; display: inline-block; margin-bottom: 8px;">Necessary conditions:</span>
+    
+                <div id="leaf-necessary-conditions">Lorem Ipsum</div>
+            
+                <div style="text-align: right; margin-bottom: 16px; margin-right: 8px; margin-top: 16px;">
+                    <button id="leaf-stability-analysis-button" class="image-button" style="float: right; margin-bottom: 16px; margin-right: 16px;">Stability analysis (S) <img src="img/stability_analysis-24px.svg"></button>
+                    <select id="leaf-stability-dropdown" class="stability-dropdown" style="float: right;">
+                        <option value="total">Total</option>
+                        <option value="S">Stability</option>
+                        <option value="O">Oscillation</option>
+                        <option value="D">Disorder</option>
+                    </select>                
+                </div>   
+                <div id="leaf-stability-analysis" class="stability-panel"></div>     
+            </div>    
+    
+            <div id="transparency-switch" class="grey gone">
+                <span id="mass-distribution-label" style="display: table-cell; height: 22px; vertical-align: middle; padding-right: 8px;">Show mass distribution</span>
+                <label class="switch" style="display: table-cell;">
+                  <input id="mass-distribution" type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+            </div> 
+    
+            <div id="layout-settings" style="opacity: 0.5;">
+                <div style="margin-bottom: 15px;">
+                    <button id="button-fit" class="image-button" style="padding-right: 12px; margin-right: 12px;">Fit</button>
+                    <button id="button-resetlayout" class="image-button" style="padding-right: 12px">Reset layout</button>
+                </div>
+                <!--<div style="margin: 5px">
+                    <span>Use new layout</span>
+                    <label class="switch">
+                      <input id="toggle-newlayout" type="checkbox" checked>
+                      <span class="slider round"></span>
+                    </label>
+                </div>-->
+                <div style="margin-top: 5px">
+                    <span>Animate layout changes</span>
+                    <label class="switch">
+                      <input id="toggle-animate" type="checkbox">
+                      <span class="slider round"></span>
+                    </label>
+                </div>
+                <div style="margin-top: 5px">
+                    <span>Snap nodes to layers</span>
+                    <label class="switch">
+                      <input id="toggle-layered" type="checkbox">
+                      <span class="slider round"></span>
+                    </label>
+                </div>
+                <div style="margin-top: 5px">
+                    <span>Positive on the left</span>
+                    <label class="switch">
+                      <input id="toggle-posonleft" type="checkbox">
+                      <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+    
+            <div id="precision" style="opacity: 0.5;">
+                <input type="range" min="5001" max="10000" value="10000" class="seekbar" id="precision-slider">
+                Precision: <span id="precision-value">100%</span>
+            </div>        
+    
+            <div id="loading-indicator" class="invisible"><img src="img/progress.gif"/><br><br>Waiting for server...</div>           
+        </div>
+
+        <div id="tab-menu" style="max-height: 30px; height: 30px; max-width: 412px; width: 412px; position: absolute; top: 0; right: 0; overflow: hidden; z-index: 100;">
+            <img alt="close" src="img/close-24px.svg" class="panel-close-button" style="right: 10px; left: auto; top: 3px; max-height: 20px;" onclick="TabBar.closeTab()"> 
+    
+            <button class="centered-button" style="position: absolute; right: 58px; top: 3px;  height: 25px;;" onclick="document.getElementById('tab-bar').style.display == 'none' ? 
+                                                        document.getElementById('tab-bar').style.display = '' : 
+                                                        document.getElementById('tab-bar').style.display = 'none'">Tabs</button>
+        
+            <button class="centered-button" style="position: absolute; right: 140px; top: 3px; height: 25px;" onclick="UI.openBrowserTab()">Open in tab</button>
+        
+            <h3 id="status-bar" style="position: absolute; right: 280px; top: 7px; margin: 0; font-family: 'FiraMono'; text-transform: uppercase; font-size: 15px;"> ● Disconnected</h3>
+        </div>
+
+        <h1 id='logo'>Aeon/<span id='title'>BIODIVINE</span></h1>
+
+        <div id="tab-bar" class="model-tab-panel" style="display: none;">
+            <table id="tab-table" class="tab-table">
+                <tbody></tbody>
+            </table>
         </div>
 
         <div id="warning" class="blocking-div" style="display: none;">

@@ -21,6 +21,14 @@ function init() {
 		window.modelCalc = {};
 	}
 
+	if (window.lastComputation != undefined) {
+		ComputeEngine.setLastComputation(window.lastComputation);
+	}
+
+	if (window.model != undefined) {
+		LiveModel.modelSave = window.model;
+	}
+
 	document.title = document.title + " " + window.initialTabInfo.type + " " + window.modelId;
 
 	if (window.modelCalc[window.modelId] == undefined) {

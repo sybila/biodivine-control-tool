@@ -1,8 +1,11 @@
 let TabBar = {
     // Contains elements for tab-bar-menu in the form { button:...., tabMenu: ...., tabTable:.... }
 	_tabBarElements: undefined,
+    //Dict containing all tabs {TABID: tab}
 	_tabs: undefined,
+    //ID of now active tab
 	_nowActiveTab: undefined,
+    //ID of the next created tab
 	_tabId: undefined,
     _draggedRow: undefined,
 
@@ -15,7 +18,13 @@ let TabBar = {
         this._tabs = {};
         this._tabId = 1;
         this._nowActiveTab = window.initialTabInfo.type == "model" ? 0 : 1;
-        this.addTab(window.initialTabInfo.type, JSON.parse(window.initialTabInfo.data));
+
+        if (window.initialTabInfo.type == "tree-explorer") {
+            UI.openTreeExplorer();
+        } else {
+            this.addTab(window.initialTabInfo.type, JSON.parse(window.initialTabInfo.data));
+        }
+        
     },
 
     //Adds new tab into TabBar.
@@ -86,7 +95,7 @@ let TabBar = {
         
         const newTab = this._tabs[newActiveId];
         newTab.changeStatus();
-        UI.toggleDiv(newTab.type == "model", newTab.data);
+        UI.toggleDiv(newTab.type, newTab.data);
         this._nowActiveTab = newActiveId;
     },
 
@@ -128,6 +137,17 @@ let TabBar = {
                 delete this._tabs[tabs[i].getAttribute("tabId")];
                 this._tabBarElements.tabTable.deleteRow(i);
             }
+        }
+    },
+
+    openModel() {
+        const resTab = TabBar.getTab(TabBar.getNowActiveId());
+        const modelTab = TabBar.getTab(0);
+
+        if (modelTab == undefined) {
+            TabBar.addTab("model", LiveModel.modelSave);
+        } else {
+            TabBar.toggleActive(0, false);
         }
     },
 

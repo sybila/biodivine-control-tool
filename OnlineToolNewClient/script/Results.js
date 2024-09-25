@@ -1,36 +1,55 @@
 let Results = {
-	controlButton: undefined,
-	attractorButton: undefined,
-	attractorResWid: undefined,
-	controlResWid: undefined,
+	//Divs for different possible results, 
+	emptyResults: undefined,
 	attractorResults: undefined,
+	controlResults: undefined,
 
-	// Currently loaded results in the form of JSON
-	currAttractorRes: undefined,
-	currControlRes: undefined,
+	//Divs where the computed data are inserted
+	attractorInput: undefined,
+	controlInput: undefined,
+
+	// Currently loaded results in the form {"type": ResultsType, "data": resultsData}
+	loadedResults: undefined,
 
 	init() {
-		this.controlButton = document.getElementById("button-result-attractor");
-		this.attractorButton = document.getElementById("button-result-control");
-		this.attractorResWid = document.getElementById("attractor-res-widget");
-		this.controlResWid = document.getElementById("control-res-widget");
+		this.emptyResults = document.getElementById("empty-results");
 		this.attractorResults = document.getElementById("attractor-results");
-		this.currAttractorRes = null;
-		this.currControlRes = null;
+		this.controlResults = document.getElementById("control-results");
+
+		this.attractorInput = document.getElementById("attractor-results-input");
+		this.controlInput = document.getElementById("control-results-input");
+		this.loadedResults = null;
 	},
 
 	clear() {
 		document.getElementById("open-tree-explorer").classList.add("gone");
-		this.attractorResults.innerHTML = "";
+		this.emptyResults.style.display = "";
+		this.attractorResults.style.display = "none";
+		this.controlResults.style.display = "none";
+		this.controlInput.innerHTML = "";
+		this.attractorInput.innerHTML = "";
 	},
 
 	hasResults() {
-		return this.attractorResults.getElementsByClassName("table-head").length > 0;
+		return this.emptyResults.style.display == "none";
 	},
 
-	_insertAttractorRes(resJson) {
-		this.currAttractorRes = resJson;
-		let result = resJson.data.sort((a, b) => b.sat_count - a.sat_count);
+	download() {
+		console.log("Download...")
+		UI.isLoading(true);
+		ComputeEngine.getResults((e, type, resultData) => {
+			UI.isLoading(false);
+			ComputeEngine.waitingForResult = false;
+			if (e !== undefined) {
+				alert(e);
+			} else {
+				this.importResults({"type":type, "data":resultData});
+			}
+		});
+	},
+
+	_insertAttractorRes(res) {
+		let result = res.data.sort((a, b) => b.sat_count - a.sat_count);
 		if (!result) {
 			return false;
 		}
@@ -67,52 +86,64 @@ let Results = {
 				${table}
 			</table>
 		`;
-		if (resJson.isPartial) {	// if the computation is not finished, add 
+		if (res.isPartial) {	// if the computation is not finished, add 
 			table = "<h4 class='orange' style='text-align:center;'>Warning: These are partial results from an unfinished computation.</h4>" + table;
 		} else {
-			table = "<div class='center'>Elapsed: " + (resJson.elapsed/1000) + "s</div>" + table;
+			table = "<div class='center'>Elapsed: " + (res.elapsed/1000) + "s</div>" + table;
 		}
-		this.attractorResults.innerHTML = table;
+
+		this.attractorInput.innerHTML = table;
+		this.emptyResults.style.display = "none";
+		this.controlResults.style.display = "none";
+		this.attractorResults.style.display = "";
 		document.getElementById("open-tree-explorer").classList.remove("gone");
 		UI.ensureContentTabOpen(ContentTabs.results);
 	},
 
-	download() {
-		console.log("Download...")
-		UI.isLoading(true);
-		ComputeEngine.getResults((e, json) => {
-			UI.isLoading(false);
-			ComputeEngine.waitingForResult = false;
-			if (e !== undefined) {
-				alert(e);
-			} else {
-				this._insertAttractorRes(json);
+	_insertControlRes(res) {
+		this.controlInput.innerHTML = `<table>
+											<tr class="row"> <td style="text-align: left;">Elapsed: </td> <td class="value">${res.elapsed/1000}s</td>
+											<tr class="row"> <td style="text-align: left;">Number of Param: </td> <td class="value">${res.parNum}</td>
+											<tr class="row"> <td style="text-align: left;">Number of Pert: </td>  <td class="value">${res.perturbations.length}</td>
+											<tr class="row"> <td style="text-align: left;">Minimal Size: </td>  <td class="value">0</td>
+											<tr class="row"> <td style="text-align: left;">Maximal Robustness: </td>  <td class="value">0</td>
+											<tr class="row"> <td style="text-align: left;">Oscillation: </td> <td class="value">${res.oscillation}</td>
+										</table>
+									   `;
+
+									   
+		this.emptyResults.style.display = "none"
+		this.attractorResults.style.display = "none";
+		this.controlResults.style.display = "";
+		UI.ensureContentTabOpen(ContentTabs.results);
+	},
+
+	//Imports results from results object {"type": resultType, "data":resultData}
+	importResults(results) {
+		if (results.type != undefined && results.data != undefined) {
+			this.loadedResults = results;
+
+			if (results.type == "attractor") {
+				this._insertAttractorRes(results.data);
+			} else if (results.type == "control") {
+				this._insertControlRes(results.data);
 			}
-		});
-	},
 
-	_resultsToStr() {
-		return JSON.stringify(this.currAttractorRes);
-	},
-
-	exportResults() {
-		let modelFile = Results._resultsToStr();
-		if (modelFile === undefined) {
-			alert(Strings.modelEmpty);
-			return;
+			LiveModel.saveModel();
 		}
-		let filename = ModelEditor.getModelName();
-        if (filename === undefined) {
-        	filename = "model";
-        }
-        UI._downloadFile(filename + ".aeonr", modelFile)
 	},
 
-	_importFromFile(resultStr) {
-		this._insertAttractorRes(JSON.parse(resultStr));
+	//Exports results into string '#results:ResultType:ResultJson\n'.
+	//Returns empty string if there are no results.
+	exportResults() {
+		if (this.loadedResults == undefined) {
+			return "";
+		}
+
+		return "#results:" + this.loadedResults.type + ":" + JSON.stringify(this.loadedResults.data) + "\n";
 	},
 
-	importResults(element) {
+	importResultsFromFile(element) {
 		var file = element.files[0];
 		if (file) {
 			var fr = new FileReader();
@@ -125,5 +156,18 @@ let Results = {
 	        };
 	        fr.readAsText(file);
 		}        
+	},
+
+	exportResultsIntoFile() {
+		let modelFile = this.loadedResults;
+		if (modelFile === undefined) {
+			alert(Strings.modelEmpty);
+			return;
+		}
+		let filename = ModelEditor.getModelName();
+        if (filename === undefined) {
+        	filename = "model";
+        }
+        UI._downloadFile(filename + ".aeonr", modelFile)
 	}
 }
