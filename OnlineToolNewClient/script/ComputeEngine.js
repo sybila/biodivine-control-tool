@@ -440,26 +440,65 @@ let ComputeEngine = {
 	 * 		control data are encoded as = #control:VARIABLENAME:cCONTROLLABILITY,pPHENOTYPESTATUS
 	 * 		controlability values are true(controllable), false(not controllable), phenotype values are true(var in phenotype as true),
 	 * 		false (var in phenotype as false), null (var not present in phenotype)
-	 * 	oscillation (nullable boolean) = true if we want results only for oscillationg phenotype,
-	 * 		false if we want results only for non oscillating phenotype, null if want results for both
-	 * 	minCardinality (int) = minimal cardinality of the computed perturbations
+	 * 	oscillation (string) = "allowed"/"required"/"forbidden", matches the values used by the underlying control library
+	 * 	minRobustness (float) = minimal robustness of the computed perturbations
 	 * 	maxSize (int) = maximal size of the computed perturbations
-	 * 	numberResults (int) = optional argument, limits amount of computed perturbations
+	 * 	numberResults (int) = limits amount of computed perturbations. By default limited to 1_000_000, because we need to enumerate all results.
 	 */
-	startComputationControl(aeonString, oscillation, minCardinality, maxSize, numberResults = undefined) {return;},
+	startControlComputation(aeonString, oscillation, minRobustness, maxSize, numberResults = 1_000_000) {
+		this._backendRequest(`/start_control_computation/${oscillation}/${minRobustness}/${maxSize}/${numberResults}`, (error, response) => {
+			if (callback !== undefined) {
+				callback(error, response);
+			}			
+		}, "POST", aeonString);
+	},
 
 	/** Cancels now running control computation and saves partial results.
 	*/
-	cancelControlComp() {return;},
+	cancelControlComputation(callback = undefined) {
+		this._backendRequest("/cancel_control_computation", (error, response) => {
+			if (callback !== undefined) {
+				callback(error, response);
+			}			
+		}, "POST");
+	},
 
 	/** Returns all computed perturbations in iterable form (for example array of dicts, array of arrays, iterator of objects...)
+	 * 
+	 * The result is an array of objects, such that each object contains a "perturbation" (dictionary of fixed variables),
+	 * "color_count" (number of colors for which the perturbation works), and "robustness" (float, 0-1).
 	*/
-	getresults() {return;},
+	getControlResults(callback = undefined) {
+		this._backendRequest("/get_control_results", (error, response) => {
+			if (callback !== undefined) {
+				callback(error, response);
+			}			
+		}, "GET");
+	},
 
-	/** Returns stats about the computation. Maximal cardinality of the model, number of computed perturbations. 
+	/** Returns stats about the computation. Only works if a computation has completed.
+	 * 
+	 * Returns an object with "allColorsCount" (int), "perturbationCount" (int), "minimalPerturbationSize" (int), 
+	 * "maximalPerturbationRobustness" (float), and "elapsed" (int; milliseconds).
 	*/
-	getStats() {return;},
+	getControlStats(callback = undefined) {
+		this._backendRequest("/get_control_stats", (error, response) => {
+			if (callback !== undefined) {
+				callback(error, response);
+			}			
+		}, "GET");
+	},
 
-	/** Returns status of the computation at the moment. Number of computed perturbations, if possible then also computation progress in %.*/
-	getCompStatus() {return;}
+	/** Returns status of the computation at the moment. Only works if the computation is running or finished.
+	 * 
+	 * Returns an object with "computationStarted" (int; unix timestamp), "computationCancelled" (bool)
+	 * "isRunning" (bool), "elapsed" (int; milliseconds), "version" (string),
+	 * */
+	getControlComputationStatus(callback = undefined) {		
+		this._backendRequest("/get_control_computation_status", (error, response) => {
+			if (callback !== undefined) {
+				callback(error, response);
+			}			
+		}, "GET");
+	}
 }
