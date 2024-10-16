@@ -22,7 +22,7 @@ function init() {
 	}
 
 	if (window.lastComputation != undefined) {
-		ComputeEngine.setLastComputation(window.lastComputation);
+		ComputeEngine.Computation.setLastComputation(window.lastComputation);
 	}
 
 	if (window.model != undefined) {
@@ -96,14 +96,14 @@ function init() {
 	Results.init();
 	ControlResults.init();
 	TabBar.init();
-	ComputeEngine.openConnection();	// Try to automatically connect when first opened.
+	ComputeEngine.Connection.openConnection();	// Try to automatically connect when first opened.
 
 	let witnessCallback = function(e, r) {
 		UI.isLoading(false);
 		if (e !== undefined) {
 			alert(e);
 		} else {
-			let error = LiveModel.importAeon(r.model);
+			let error = LiveModel.Import.importAeon(r.model);
 			if (error !== undefined) {
         		alert(error);
         	}
@@ -210,7 +210,7 @@ hotkeys('m', function(event, handler) {
 
 hotkeys('n,+', function(event, handler) {	
 	event.preventDefault();
-	let id = LiveModel.addVariable(false);
+	let id = LiveModel.Variables.addVariable(false);
 	CytoscapeEditor.showNode(id);
 });
 

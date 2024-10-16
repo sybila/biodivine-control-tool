@@ -38,7 +38,7 @@ let CytoscapeEditor = {
 		this._cytoscape.on('click', (e) => {
 			let now = (new Date()).getTime();
 			if (this._lastClickTimestamp && now - this._lastClickTimestamp < DOUBLE_CLICK_DELAY) {				
-				LiveModel.addVariable(false, [e.position['x'], e.position['y']]);
+				LiveModel.Variables.addVariable(false, [e.position['x'], e.position['y']]);
 			}
 			this._lastClickTimestamp = now;
 		});
@@ -79,7 +79,7 @@ let CytoscapeEditor = {
 		const nodes = [];
 		const variables = {};
 		
-		LiveModel.getAllVariables().forEach(variable => {
+		LiveModel.Variables.getAllVariables().forEach(variable => {
 			nodes.push(this._cytoscape.getElementById(variable.id));
 			
 			if (phenotype == true) {
@@ -132,7 +132,7 @@ let CytoscapeEditor = {
 			position: { x: position[0], y: position[1] },
 		})
 
-		this.highlightControllable([LiveModel.variableFromId(id)]);
+		this.highlightControllable([LiveModel.Variables.variableFromId(id)]);
 
 		node.on('mouseover', (e) => {
 			node.addClass('hover');	
@@ -355,7 +355,7 @@ let CytoscapeEditor = {
 		var nodes = undefined;
 
 		if (inputNodes == null) {
-			nodes = LiveModel.getAllVariables();
+			nodes = LiveModel.Variables.getAllVariables();
 			this._phenotypeShown = !this._phenotypeShown;
 		} else {
 			nodes = inputNodes;
@@ -385,7 +385,7 @@ let CytoscapeEditor = {
 		var nodes = undefined;
 
 		if (inputNodes == null) {
-			nodes = LiveModel.getAllVariables();
+			nodes = LiveModel.Variables.getAllVariables();
 			this._controllableShown = !this._controllableShown;
 		} else {
 			nodes = inputNodes;
@@ -586,7 +586,7 @@ let CytoscapeEditor = {
 	        },
 	        // Add the edge to the live model
 	        complete: function(sourceNode, targetNode, addedEles) {	        	
-	        	if (!LiveModel.addRegulation(false, sourceNode.id(), targetNode.id(), true, EdgeMonotonicity.unspecified)) {
+	        	if (!LiveModel.Regulations.addRegulation(false, sourceNode.id(), targetNode.id(), true, EdgeMonotonicity.unspecified)) {
 	        		addedEles.remove();	// if we can't create the regulation, remove new edge
 	        	} else {
 	        		CytoscapeEditor._initEdge(addedEles[0]);

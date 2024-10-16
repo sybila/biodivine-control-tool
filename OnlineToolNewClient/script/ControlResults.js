@@ -8,13 +8,22 @@ let ControlResults = {
     _sortMode: undefined,
     _orderArrows: undefined,
 
+    _pertFilterTable:undefined,
+    _pertFilterValues: undefined,
+
     init() {
         this._perturbTable = document.getElementById("control-results-table").getElementsByTagName("tbody")[0];
-        const filters = document.getElementsByClassName("filterInput");
-        this._filters = [filters[9], filters[6], filters[7], filters[8]]
+ 
+        this._filters = [document.getElementById("controlr-size-filter"),
+                            document.getElementById("controlr-NoP-filter"),
+                                document.getElementById("controlr-rob-filter")];
+
         this._sortMode = [document.getElementById("primary-sort-switch"), document.getElementById("secondary-sort-switch")];
         this._orderArrows = document.getElementsByClassName("arrow");
         this._filterMenu = document.getElementById("control-res-filters");
+        this._pertFilterTable = new TableWidget(document.getElementById("control-pert-filter-table"),
+                                                    document.getElementById("control-pert-filter-input"));
+        this._pertFilterValues = {};
     },
 
     _changeContentMode(contentDiv) {
@@ -27,15 +36,25 @@ let ControlResults = {
         }
     },
 
+    filterPertFTable() {
+        this._pertFilterTable.filterTable();
+    },
+
     insertData(controlData) {
         this._perturbTable.innerHTML = "";
-        document.getElementById("ParamNumberStat").textContent = controlData.parNum;
-        document.getElementById("PertNumberStat").textContent = controlData.perturbations.length;
-        document.getElementById("MinSizeStat").textContent = 0;
-        document.getElementById("MaxRobStat").textContent = 0;
-        document.getElementById("OscillationStat").textContent = controlData.oscillation;
+        this._pertFilterTable.clear();
+        document.getElementById("ParamNumberStat").textContent = controlData.stats.allColorsCount;
+        document.getElementById("PertNumberStat").textContent = controlData.stats.perturbationCount;
+        document.getElementById("MinSizeStat").textContent = controlData.stats.minimalPerturbationSize;
+        document.getElementById("MaxRobStat").textContent = res.stats.maximalPerturbationRobustness;
+        document.getElementById("OscillationStat").textContent = controlData.stats.oscillation;
         document.getElementById("PhenotypeStat").innerHTML = this._createColouredVars(this._createPertDict(controlData.phenotype));
         document.getElementById("ControllableStat").textContent = controlData.controllable;
+
+        for (variable of controlData.controllable) {
+            this._pertFilterValues[variable] = "ignore";
+            this._pertFilterTable.addVariable(variable, variable);
+        }
         const tableHead = document.getElementById("control-table-head");
         const tableDiv = document.getElementById("control-table-container");
         const table = document.getElementById("control-results-table");
@@ -50,7 +69,7 @@ let ControlResults = {
     },
 
     // Creates and appends cell into the row of the table.
-    // If click1content is not null, then the content and click content is switched on the click on the cell.
+    // If clickcontent is not null, then the content and click content is switched on the click on the cell.
     _appendCell(row, content, clickContent, width) {
         const cell = row.insertCell(-1);
 
@@ -148,29 +167,27 @@ let ControlResults = {
     // Tests if perturbation includes variables.
     _includesPerts(perts, include) {
         for (const variable in include) {
-            if (perts[variable] == undefined ||
-                    (include[variable] != null && perts[variable] != include[variable])) {
+            if (include[variable] != "ignore" && 
+                (perts[variable] == undefined ||
+                    (include[variable] != "present" && perts[variable] != include[variable]))) {
                 return false;
             }
         }
-
+        console.log("ha");
         return true;
     },
 
     // Filters data from the table depending on input of all filter inputs.
     filterTable() {
-        const searchFilter = this._filters[0].value.split(",");
-        const search = searchFilter.length > 0 && searchFilter[0] != "";
-        const searchDict = this._createPertDict(searchFilter);
-
-        const filterValues = [  searchDict, 
-                                this._convertToNumber(this._filters[1].value), 
-                                this._convertToNumber(this._filters[2].value),
-                                this._convertToNumber(this._filters[3].value)];
+        const filterValues = [  this._pertFilterValues,
+                                this._convertToNumber(this._filters[0].value), 
+                                this._convertToNumber(this._filters[1].value),
+                                this._convertToNumber(this._filters[2].value)];
 
         for (const row of this._perturbTable.rows) {
             const cells = row.getElementsByTagName('td');
-            if (search && !this._includesPerts(JSON.parse(row.getAttribute('perturb')), filterValues[0]) ||
+            
+            if (!this._includesPerts(JSON.parse(row.getAttribute('perturb')), filterValues[0]) ||
                     filterValues[1] < Number(cells[2].textContent) ||
                         filterValues[2] > Number(cells[3].textContent) ||
                             filterValues[3] > Number(cells[4].textContent)) {
@@ -277,5 +294,25 @@ let ControlResults = {
 
     showFilters() {
         this._filterMenu.style.display = this._filterMenu.style.display == "none" ? "" : "none";
+    },
+
+    setSelected(pertValue) {
+        for (row of this._pertFilterTable.table.rows) {
+            if (row.classList.contains('selected')) {
+                const id = row.getAttribute('data-id');
+                this._pertFilterValues[id] = pertValue;
+                const color = pertValue == 'ignore' ? "#ECEFF1" : pertValue == 'present' ? "#B0BEC5" : pertValue == 'true' ? "green" : "red";
+                this._pertFilterTable.changeIndicatorColor(id, color);
+            }
+        }
+
+        this.filterTable();
+    },
+
+    /** Change selected class of all ControlResults._pertFilterTable table rows. 
+    *  if deselect (boolean) is true then selects all, else deselects all.
+    */
+    changeSelectedAll(deselect) {
+        this._pertFilterTable.changeSelectedAll(deselect);
     },
 }

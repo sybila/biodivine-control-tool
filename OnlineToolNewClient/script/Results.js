@@ -8,7 +8,7 @@ let Results = {
 	attractorInput: undefined,
 	controlInput: undefined,
 
-	// Currently loaded results in the form {"type": ResultsType, "data": resultsData}
+	/** Currently loaded results in the form {"type": ResultsType, "data": resultsData} */
 	loadedResults: undefined,
 
 	init() {
@@ -21,33 +21,7 @@ let Results = {
 		this.loadedResults = null;
 	},
 
-	clear() {
-		document.getElementById("open-tree-explorer").classList.add("gone");
-		this.emptyResults.style.display = "";
-		this.attractorResults.style.display = "none";
-		this.controlResults.style.display = "none";
-		this.controlInput.innerHTML = "";
-		this.attractorInput.innerHTML = "";
-	},
-
-	hasResults() {
-		return this.emptyResults.style.display == "none";
-	},
-
-	download() {
-		console.log("Download...")
-		UI.isLoading(true);
-		ComputeEngine.getResults((e, type, resultData) => {
-			UI.isLoading(false);
-			ComputeEngine.waitingForResult = false;
-			if (e !== undefined) {
-				alert(e);
-			} else {
-				this.importResults({"type":type, "data":resultData});
-			}
-		});
-	},
-
+	/** Inserts result information for attractor analysis. */
 	_insertAttractorRes(res) {
 		let result = res.data.sort((a, b) => b.sat_count - a.sat_count);
 		if (!result) {
@@ -69,8 +43,8 @@ let Results = {
 				<tr>
 					<td class="table-behavior">${behaviorString}</td>
 					<td class="table-sat-count">${sat_count}</td>
-					<td><span class="inline-button" onclick="UI.openWitness('${behavior}');">Witness</span></td>
-					<td><span class="inline-button" onclick="UI.openExplorer('${behavior}');">Attractor</span></td>
+					<td><span class="inline-button" onclick="UI.Open.openWitness('${behavior}');">Witness</span></td>
+					<td><span class="inline-button" onclick="UI.Open.openExplorer('${behavior}');">Attractor</span></td>
 				</tr>
 			`;
 		});
@@ -100,25 +74,41 @@ let Results = {
 		UI.ensureContentTabOpen(ContentTabs.results);
 	},
 
+	/** Inserts result information for control*/
 	_insertControlRes(res) {
+		res.stats.oscillation = PhenotypeEditor.getOscillation();
+
+		res.stats.phenotype = {};
+		res.stats.controllable = [];
+		LiveModel.Variables.getAllVariables().forEach((variable) => {
+			if (variable.phenotype == true) {
+				res.stats.phenotype.true.push(variable.name);
+			} else if (variable.phenotype == false) {
+				res.stats.phenotype.false.push(variable.name);
+			};
+
+			if (variable.controllable == true) {
+				res.controllable.push(variable.name);
+			}
+		})
+
 		this.controlInput.innerHTML = `<table>
-											<tr class="row"> <td style="text-align: left;">Elapsed: </td> <td class="value">${res.elapsed/1000}s</td>
-											<tr class="row"> <td style="text-align: left;">Number of Param: </td> <td class="value">${res.parNum}</td>
-											<tr class="row"> <td style="text-align: left;">Number of Pert: </td>  <td class="value">${res.perturbations.length}</td>
-											<tr class="row"> <td style="text-align: left;">Minimal Size: </td>  <td class="value">0</td>
-											<tr class="row"> <td style="text-align: left;">Maximal Robustness: </td>  <td class="value">0</td>
-											<tr class="row"> <td style="text-align: left;">Oscillation: </td> <td class="value">${res.oscillation}</td>
+											<tr class="row"> <td style="text-align: left;">Elapsed: </td> <td class="value">${res.stats.elapsed}s</td>
+											<tr class="row"> <td style="text-align: left;">Number of Param: </td> <td class="value">${res.stats.allColorsCount}</td>
+											<tr class="row"> <td style="text-align: left;">Number of Pert: </td>  <td class="value">${res.stats.perturbationCount}</td>
+											<tr class="row"> <td style="text-align: left;">Minimal Size: </td>  <td class="value">${res.stats.minimalPerturbationSize}</td>
+											<tr class="row"> <td style="text-align: left;">Maximal Robustness: </td>  <td class="value">${res.stats.maximalPerturbationRobustness}</td>
+											<tr class="row"> <td style="text-align: left;">Oscillation: </td> <td class="value">${res.stats.oscillation}</td>
 										</table>
 									   `;
-
-									   
+								   
 		this.emptyResults.style.display = "none"
 		this.attractorResults.style.display = "none";
 		this.controlResults.style.display = "";
 		UI.ensureContentTabOpen(ContentTabs.results);
 	},
 
-	//Imports results from results object {"type": resultType, "data":resultData}
+	/** Imports results from results object {"type": resultType, "data":resultData}. */
 	importResults(results) {
 		if (results.type != undefined && results.data != undefined) {
 			this.loadedResults = results;
@@ -129,45 +119,47 @@ let Results = {
 				this._insertControlRes(results.data);
 			}
 
-			LiveModel.saveModel();
+			LiveModel.Export.saveModel();
 		}
 	},
 
-	//Exports results into string '#results:ResultType:ResultJson\n'.
-	//Returns empty string if there are no results.
+	/** Gets results from the ComputeEngine and inserts them into results module. */
+	download() {
+		console.log("Download...")
+		UI.isLoading(true);
+		ComputeEngine.getResults((e, type, resultData) => {
+			UI.isLoading(false);
+			ComputeEngine.Computation.waitingForResult = false;
+			if (e !== undefined) {
+				alert(e);
+			} else {
+				this.importResults({"type":type, "data":resultData});
+			}
+		});
+	},
+
+	/** Exports results into string '#results:ResultType:ResultJson\n'.
+	Returns empty string if there are no results. */
 	exportResults() {
 		if (this.loadedResults == undefined) {
 			return "";
 		}
 
-		return "#results:" + this.loadedResults.type + ":" + JSON.stringify(this.loadedResults.data) + "\n";
+		return "#!results:" + this.loadedResults.type + ":" + JSON.stringify(this.loadedResults.data) + "\n";
 	},
 
-	importResultsFromFile(element) {
-		var file = element.files[0];
-		if (file) {
-			var fr = new FileReader();
-	        fr.onload = (e) => {
-	        	let error = this._importFromFile(e.target.result);
-	        	if (error !== undefined) {
-	        		alert(error);
-	        	}
-				element.value = null;
-	        };
-	        fr.readAsText(file);
-		}        
+	/** Resets results module to its initial state. */
+	clear() {
+		document.getElementById("open-tree-explorer").classList.add("gone");
+		this.emptyResults.style.display = "";
+		this.attractorResults.style.display = "none";
+		this.controlResults.style.display = "none";
+		this.controlInput.innerHTML = "";
+		this.attractorInput.innerHTML = "";
 	},
 
-	exportResultsIntoFile() {
-		let modelFile = this.loadedResults;
-		if (modelFile === undefined) {
-			alert(Strings.modelEmpty);
-			return;
-		}
-		let filename = ModelEditor.getModelName();
-        if (filename === undefined) {
-        	filename = "model";
-        }
-        UI._downloadFile(filename + ".aeonr", modelFile)
-	}
+	/** Returns true if results module displays non empty results page. */
+	hasResults() {
+		return this.emptyResults.style.display == "none";
+	},
 }

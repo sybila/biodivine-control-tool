@@ -20,7 +20,7 @@ let TabBar = {
         this._nowActiveTab = window.initialTabInfo.type == "model" ? 0 : 1;
 
         if (window.initialTabInfo.type == "tree-explorer") {
-            UI.openTreeExplorer();
+            UI.Open.openTreeExplorer();
         } else {
             this.addTab(window.initialTabInfo.type, JSON.parse(window.initialTabInfo.data));
         }
@@ -87,7 +87,7 @@ let TabBar = {
             oldTab.changeStatus();
     
             if (oldTab.type == "model") {
-                oldTab.data = LiveModel.exportAeon(true);
+                oldTab.data = LiveModel.Export.exportAeon(true);
             }
         } else if (returnEqual) {
             return;
