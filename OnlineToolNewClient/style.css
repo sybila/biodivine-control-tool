@@ -130,6 +130,7 @@ body {
     text-shadow: 0px 2px 5px #d0d0d0;
 }
 
+
 /*
     The menu with main buttons/panels
 */
@@ -225,7 +226,8 @@ body {
     overflow-y: auto;
     width: 500px;
     resize: both;
-    max-height: 620px;
+    height: 620px;
+    max-height: 97vh;
 }
 
 #tree-explorer .main-panel {
@@ -1099,9 +1101,14 @@ div.center {
     transition: background-color 0.5s;
 }
 
+.selected {
+    background-color: #add8e6;
+} 
+
 .table tr:hover {
     background-color: #CFD8DC;
 }
+
 
 .tab-table {
     width: max-content;
