@@ -399,12 +399,17 @@ let UI = {
 		};
 	},
 
-	//Gets time from ms timestamp in this format HOURS:MINUTES:SECONDS.
-	_getTime(timestamp) {
+	/** Gets time from ms timestamp in this format HOURS:MINUTES:SECONDS.
+	 * 	If UTC is true, then converts independently on the time zone.*/
+	_getTime(timestamp, UTC = false) {
 		const date = new Date(timestamp);
 
 		let addZero = function(number) {
 			return number < 10 ? "0" + number : number;
+		}
+
+		if (UTC) {
+			return addZero(date.getUTCHours()) + ":" + addZero(date.getUTCMinutes()) + ":" + addZero(date.getUTCSeconds());
 		}
 
 		return addZero(date.getHours()) + ":" + addZero(date.getMinutes()) + ":" + addZero(date.getSeconds());
@@ -475,11 +480,11 @@ let UI = {
 				}
 
 				// Progress is only shown when we are running...
-				if (data["is_running"]) {
+				if (data["is_running"] && data.progress != undefined) {
 					statusBar.textContent = status + " " + data.progress.slice(0, 6);
 					cmpProgress.parentElement.classList.remove("gone");
 				} else {
-					statusBar.textContent = status != "(none)" ? status + " " + this._getTime(data.timestamp):
+					statusBar.textContent = status != "(none)" ? status + " " + this._getTime(data.timestamp, data["is_running"] == true):
 																	statusBar.textContent = " ● Connected";
 					cmpProgress.parentElement.classList.add("gone");
 				}

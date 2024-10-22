@@ -81,14 +81,12 @@ let Results = {
 		res.stats.phenotype = {};
 		res.stats.controllable = [];
 		LiveModel.Variables.getAllVariables().forEach((variable) => {
-			if (variable.phenotype == true) {
-				res.stats.phenotype.true.push(variable.name);
-			} else if (variable.phenotype == false) {
-				res.stats.phenotype.false.push(variable.name);
+			if (variable.phenotype == true || variable.phenotype == false) {
+				res.stats.phenotype[variable.name] = variable.phenotype;
 			};
 
 			if (variable.controllable == true) {
-				res.controllable.push(variable.name);
+				res.stats.controllable.push(variable.name);
 			}
 		})
 
@@ -97,7 +95,7 @@ let Results = {
 											<tr class="row"> <td style="text-align: left;">Number of Param: </td> <td class="value">${res.stats.allColorsCount}</td>
 											<tr class="row"> <td style="text-align: left;">Number of Pert: </td>  <td class="value">${res.stats.perturbationCount}</td>
 											<tr class="row"> <td style="text-align: left;">Minimal Size: </td>  <td class="value">${res.stats.minimalPerturbationSize}</td>
-											<tr class="row"> <td style="text-align: left;">Maximal Robustness: </td>  <td class="value">${res.stats.maximalPerturbationRobustness}</td>
+											<tr class="row"> <td style="text-align: left;">Maximal Robustness: </td>  <td class="value">${(res.stats.maximalPerturbationRobustness * 100).toFixed(2)}%</td>
 											<tr class="row"> <td style="text-align: left;">Oscillation: </td> <td class="value">${res.stats.oscillation}</td>
 										</table>
 									   `;
@@ -111,14 +109,13 @@ let Results = {
 	/** Imports results from results object {"type": resultType, "data":resultData}. */
 	importResults(results) {
 		if (results.type != undefined && results.data != undefined) {
-			this.loadedResults = results;
-
 			if (results.type == "attractor") {
 				this._insertAttractorRes(results.data);
 			} else if (results.type == "control") {
 				this._insertControlRes(results.data);
 			}
 
+			this.loadedResults = results;
 			LiveModel.Export.saveModel();
 		}
 	},

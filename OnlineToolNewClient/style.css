@@ -224,10 +224,11 @@ body {
     border-radius: 8px;
     position: relative;
     overflow-y: auto;
+    max-width: calc(97vw - 120px);
     width: 500px;
     resize: both;
     height: 620px;
-    max-height: 97vh;
+    max-height: 95vh;
 }
 
 #tree-explorer .main-panel {

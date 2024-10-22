@@ -134,7 +134,7 @@
 
             <div style="position: absolute;">
 
-                <div id="tab-computation" class="main-panel gone">
+                <div id="tab-computation" class="main-panel gone" style="height: 400px; resize: none;">
                     <button class="centered-button" style="margin-left: 140px;" onclick="ComputeEngine.Computation.startComputation(LiveModel.Export.exportAeon());">
                         <h2 style="font-weight: 4000; font-size: 5px; margin: 0 auto; font-size: 20px; text-align: center;">Start Computation</h2>
                     </button>
@@ -149,10 +149,33 @@
                         </div>
                     </div>
 
-                    
+                    <div id="control-settings">
+                        <div style="height: 30px;">
+                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Control Settings</h3>
+                        </div>
+
+                        <div>
+                            <div style="height: 20px;">
+                                <h4 style="max-width: 50%; width: 50%; position: absolute; top: 160px; left: 10px; font-family: 'FiraMono', monospace;">Minimal Robustness:</h4>
+                                <input id="min-robustness-input" class="filterInput" type="text" onkeyup="ComputeEngine.Computation.Control.setMinRobustness()" style="max-width: 46%; width: 46%; position: absolute; top: 180px; right: 8px;">
+                            </div>
+
+                            <div style="height: 20px;">
+                                <h4 style="max-width: 50%; width: 50%; position: absolute; top: 190px; left: 10px; font-family: 'FiraMono', monospace;">Maximal Size:</h4>
+                                <input id="max-size-input" class="filterInput" type="text" onkeyup="ComputeEngine.Computation.Control.setMaxSize()" style="max-width: 46%; width: 46%; position: absolute; top: 210px; right: 8px;">
+                            </div>
+
+                            <div style="height: 20px;">
+                                <h4 style="max-width: 50%; width: 50%; position: absolute; top: 220px; left: 10px; font-family: 'FiraMono', monospace;">Maximal Number of Results:</h4>
+                                <input id="num-results-input" class="filterInput" type="text" onkeyup="ComputeEngine.Computation.Control.setNumberResults()" style="max-width: 46%; width: 46%; position: absolute; top: 240px; right: 8px;">
+                            </div>
+
+                            <div style="position: absolute; top: 280px">note: Minimal Robustness not working.</div>
+                        </div>
+                    </div>
                 </div>    
 
-                <div id="tab-engine" class="main-panel gone">
+                <div id="tab-engine" class="main-panel gone" style="height: fit-content; resize: none;">
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Compute Engine</h2>                
                     <div class="invisible-input full-line" style="margin-top: 4px; margin-bottom: 4px; font-size: 16px;">
@@ -187,7 +210,7 @@
                     </div>
                 </div>         
 
-                <div id="tab-import-export" class="main-panel gone">
+                <div id="tab-import-export" class="main-panel gone" style="height: 570px; resize: none;">
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Model File</h2>
 
@@ -258,7 +281,7 @@
                     </table>                                        
                 </div>
 
-                <div id="tab-model-editor" class="main-panel gone" style="padding-bottom: 0px; height: 620px;">
+                <div id="tab-model-editor" class="main-panel gone">
                     <div class="invisible-input full-line">
                         <input id="model-name" class="center" type="text" name="model-name" placeholder="(model name)" style="font-size: 20px;">
                     </div>
@@ -294,7 +317,7 @@
 
                                 <div style="position: absolute; top: 4px; right: 55px;">
                                     <button class="centered-button" style="height: 25px; margin-top: 0%; margin-left: 50px; margin-right: 5px; background-color: #B0BEC5;"><img style="max-width: 50px; pointer-events: none;" src="img/controller.svg" alt="controllable"></button>
-                                    <button class="centered-button" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"><img style="max-height: 25px; pointer-events: none;" src="img/leaf-48px.svg" alt="phenotype"></button>
+                                    <button class="centered-button" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"><img style="max-height: 23px; pointer-events: none;" src="img/phenotype-button-100px.svg" alt="phenotype"></button>
                                 </div>
                             </div>
                             
@@ -321,7 +344,7 @@
                     </div>
                 </div>
 
-                <div id="tab-model-controllable" class="main-panel gone" style="padding-bottom: 0px;">
+                <div id="tab-model-controllable" class="main-panel gone">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Controllable variables</h2> 
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
 
@@ -337,28 +360,28 @@
                     
                     <div style="max-height: 30px; height: 30px; max-width: 100%; width: 100%; margin-bottom: 5px;">
                         <div style="max-height: 100%; height: 100%; float: left;">
-                            <button class="centered-button" onclick="ControllableEditor.setSelected(true)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; padding-left: 5px;">C</button>
-                            <button class="centered-button" onclick="ControllableEditor.setSelected(false)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; padding-left: 5px;">U</button>
+                            <button class="centered-button" onclick="ControllableEditor.setSelected(true)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; background-color: #FFFF66""></button>
+                            <button class="centered-button" onclick="ControllableEditor.setSelected(false)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px;  background-color: #B0BEC5;"></button>
                         </div>
 
                         <div style="max-height: 100%; height: 100%; float: right;">
-                            <button class="centered-button" onclick="ControllableEditor.changeSelectedAll(false)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; padding-left: 5px;">A</button>
-                            <button class="centered-button" onclick="ControllableEditor.changeSelectedAll(true)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; padding-left: 5px;">N</button>
-                            <button class="centered-button" onclick="ControllableEditor.changeSelectedAll(null)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; padding-left: 5px;">T</button>
+                            <button class="centered-button" onclick="ControllableEditor.changeSelectedAll(null)"  style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; right: 78px;"><img src="img/toggle-100px.svg" alt="T" style="max-width: 26px; position: absolute; top: 2px; left: 2px;"></button>
+                            <button class="centered-button" onclick="ControllableEditor.changeSelectedAll(false)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; right: 44px;"><img src="img/selectAll-100px.svg" alt="A" style="max-width: 26px; position: absolute; top: 2px; left: auto; right: 2px;"></button>
+                            <button class="centered-button" onclick="ControllableEditor.changeSelectedAll(true)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; right: 10px;"><img src="img/deselectAll-100px.svg" alt="D" style="max-width: 20px; position: absolute; top: 5px; left: 5px;"></button>
                         </div>
                     </div>
 
                     <input type="text" id="controllable-editor-filter" class="filterInput" onkeyup="ControllableEditor.filterTable()">
 
-                    <div class="scrolling-container" style="max-height: 90%;">
-                        <table id="controllable-editor-table"class="table" style="height: 170px; min-width: max-content; min-width: 100%;">
+                    <div class="scrolling-container" style="max-height: calc(100% - 170x); height: calc(100% - 170px);">
+                        <table id="controllable-editor-table"class="table" style="height: 100%; width: 100%;">
                             <tbody>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <div id="tab-model-phenotype" class="main-panel gone" style="padding-bottom: 0px; height: 620px;">
+                <div id="tab-model-phenotype" class="main-panel gone">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Phenotype</h2> 
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
 
@@ -384,29 +407,29 @@
 
                     <div style="max-height: 30px; height: 30px; max-width: 100%; width: 100%; margin-top: 5px; margin-bottom: 5px;">
                         <div style="max-height: 100%; height: 100%; float: left;">
-                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(true)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; padding-left: 5px;">T</button>
-                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(false)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; padding-left: 5px;">F</button>
-                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(null)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; padding-left: 5px;">N</button>
+                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(true)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; background-color: green;"></button>
+                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(false)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; background-color: red;"></button>
+                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(null)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; background-color: #B0BEC5;"></button>
                         </div>
 
                         <div style="max-height: 100%; height: 100%; float: right;">
-                            <button class="centered-button" onclick="PhenotypeEditor.changeSelectedAll(false)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; right: 78px;"><img src="img/selectAll-100px.svg" alt="A" style="max-width: 26px; position: absolute; top: 2px; left: auto; right: 2px;"></button>
-                            <button class="centered-button" onclick="PhenotypeEditor.changeSelectedAll(true)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; padding-left: 5px; position: absolute; right: 44px;">N</button>
-                            <button class="centered-button" onclick="PhenotypeEditor.changeSelectedAll(null)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; padding-left: 5px; position: absolute; right: 10px;"><img src="img/toggle-100px.svg" alt="T" style="max-width: 25px; position: absolute; top: 2px; left: 9%;"></button>
+                            <button class="centered-button" onclick="PhenotypeEditor.changeSelectedAll(null)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; right: 78px;"><img src="img/toggle-100px.svg" alt="T" style="max-width: 26px; position: absolute; top: 2px; left: 2px;"></button>
+                            <button class="centered-button" onclick="PhenotypeEditor.changeSelectedAll(false)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; right: 44px;"><img src="img/selectAll-100px.svg" alt="A" style="max-width: 26px; position: absolute; top: 2px; left: auto; right: 2px;"></button>
+                            <button class="centered-button" onclick="PhenotypeEditor.changeSelectedAll(true)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; right: 10px;"><img src="img/deselectAll-100px.svg" alt="D" style="max-width: 20px; position: absolute; top: 5px; left: 5px;"></button>
                         </div>
                     </div>
 
                     <input type="text" id="phenotype-editor-filter" class="filterInput" onkeyup="PhenotypeEditor.filterTable()">
 
-                    <div class="scrolling-container" style="max-height: calc(100% - 250x); height: calc(100% - 250px);">
-                        <table id="phenotype-editor-table"class="table" style="height: 140px; min-width: max-content; min-width: 100%;">
+                    <div class="scrolling-container" style="max-height: calc(100% - 218px); height: calc(100% - 218px); max-width: 100%; width: 100%;">
+                        <table id="phenotype-editor-table"class="table" style="height: 100%; width: 100%;">
                             <tbody>
                             </tbody>
                         </table>
                     </div>
                 </div>
 
-                <div id="tab-model-visual" class="main-panel gone" style="padding-bottom: 10px;">
+                <div id="tab-model-visual" class="main-panel gone" style="height: 255px; resize: none;">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Visual Options</h2> 
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
                     
@@ -431,11 +454,11 @@
                     </div>
                 </div>
 
-                <div id="tab-results" class="main-panel gone">
+                <div id="tab-results" class="main-panel gone" style="height: fit-content;">
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Results</h2>
 
-                    <div class="scrolling-container" style="max-height: 500px; margin-top: 0;">
+                    <div class="scrolling-container" style="max-height: 50%; margin-top: 0;">
                         <div style="text-align: center; padding: 12px; display: none;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>               
 
                         <div id="empty-results">
@@ -557,7 +580,7 @@
             </div>
     
             <div class="doubleContainer" style="max-height: 85px; height: 85px; max-width: 100%; width: 100%; margin-bottom: 1%; position: absolute; top: 70px; left: 0;">
-                <div class="main-panel-noresize" style="max-height: 68px; height: 68px; max-width: 55%; width: 55%; padding: 0; position: absolute; left: 10px;">
+                <div class="main-panel-noresize" style="max-height: 65px; height: 65px; max-width: 55%; width: 55%; padding: 0; position: absolute; left: 10px;">
                     <table class="model-stats">
                         <tr style="max-height: 2px;"><td style="width: 20%;">Number of Parametrizations: </td><td class="value" id="ParamNumberStat" style="width: 20%;"> -</td> <td style="width: 20%;">Maximal Robustness: </td>   <td class="value" id="MaxRobStat" style="width: 5%;">-</td></tr>
                         <tr style="max-height: 2px;"><td style="width: 20%;">Number of Perturbations: </td><td class="value" id="PertNumberStat" style="width: 20%;">-</td> <td style="width: 20%;">Oscillation: </td>   <td class="value" id="OscillationStat" style="width: 5%;">-</td> </tr>
@@ -565,7 +588,7 @@
                     </table>
                 </div>
     
-                <div style="max-height: 68px; height: 68px; max-width: 43%; width: 43%; position: absolute; top:0; left:auto; right: 0; margin-left: 1%; margin-right: 0.5%; overflow: auto;">
+                <div style="max-height: 65px; height: 65px; max-width: 43%; width: 43%; position: absolute; top:0; left:auto; right: 0; margin-left: 1%; margin-right: 0.5%; overflow: auto;">
                     <div class="main-panel-noresize" style="max-height: 25px; max-width: 98%; width: 98%; padding-bottom: 0px; padding-top: 0; position: absolute; top: 4%; left: 0.5%; white-space: nowrap; overflow: hidden;">
                         <div class="scrolling-container" style="overflow-y: hidden; margin-top: -0.5px;">
                             <table class="model-stats">
@@ -618,18 +641,23 @@
                         </div>
                 </div>
 
-                <div style="max-height: 100%; height: 100%; max-width: calc(70% - 5px); width: calc(70% - 5px); position: absolute; top: 0%; left: calc(30% + 5px); ">
+                <div style="max-height: 100%; height: 100%; max-width: calc(70% - 5px); width: calc(70% - 5px); position: absolute; top: 0%; left: calc(30% + 5px); z-index: 200;">
                     <div style="max-height: 20px; height: 20px; max-width: 100%; width: 100%;">
-                        <input type="text" id="control-pert-filter-input"  class="filterInput" onkeyup="ControlResults.filterPertFtable()" style="max-height: 20px; height: 20px; max-width: 50%; width: 50%; position: absolute; top: 2px; left: 0;">
+                        <input type="text" id="control-pert-filter-input"  class="filterInput" onkeyup="ControlResults.filterPertFTable()" style="max-height: 20px; height: 20px; max-width: 50%; width: 50%; position: absolute; top: 2px; left: 0;">
                         
-                        <div style="max-height: 20px; height: 20px; max-width: 50%; width: 50%; position: absolute; top: 0; left: auto; right: 0;">
-                            <button class="centered-button" onclick="ControlResults.setSelected('true')" style="max-height: 20px; height: 20px; max-width: 10px; width: 10px; position: absolute; top: 2px; right: 60px">T</button>
-                            <button class="centered-button" onclick="ControlResults.setSelected('false')" style="max-height: 20px; height: 20px; max-width: 10px; width: 10px; position: absolute; top: 2px; right: 46px">F</button>
-                            <button class="centered-button" onclick="ControlResults.setSelected('present')" style="max-height: 20px; height: 20px; max-width: 10px; width: 10px; position: absolute; top: 2px; right: 35px">In</button>
-                            <button class="centered-button" onclick="ControlResults.setSelected('ignore')" style="max-height: 20px; height: 20px; max-width: 10px; width: 10px; position: absolute; top: 2px; right: 24px">Del</button>
-
-                            <button class="centered-button" onclick="ControlResults.changeSelectedAll(false)" style="max-height: 20px; height: 20px; max-width: 10px; width: 10px; position: absolute; top: 2px; right: 13px">All</button>
-                            <button class="centered-button" onclick="ControlResults.changeSelectedAll(true)" style="max-height: 20px; height: 20px; max-width: 10px; width: 10px; position: absolute; top: 2px; right: 0px">Unse</button>
+                        <div style="max-height: 20px; height: 20px; max-width: 48%; width: 48%; position: absolute; top: 0; left: auto; right: 0;">
+                            <div style="max-height: 100%; height: 100%; float: left;">
+                                <button class="centered-button" onclick="ControlResults.setSelected(true)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: green;"></button>
+                                <button class="centered-button" onclick="ControlResults.setSelected(false)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: red;"></button>
+                                <button class="centered-button" onclick="ControlResults.setSelected('present')" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: #B0BEC5;"></button>
+                                <button class="centered-button" onclick="ControlResults.setSelected('ignore')" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: #ECEFF1;"></button>
+                            </div>
+    
+                            <div style="max-height: 100%; height: 100%; float: right;">
+                                <button class="centered-button" onclick="ControlResults.changeSelectedAll(null)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 78px;"><img src="img/toggle-100px.svg" alt="T" style="max-width: 26px; position: absolute; top: 2px; left: 2px;"></button>
+                                <button class="centered-button" onclick="ControlResults.changeSelectedAll(false)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 44px;"><img src="img/selectAll-100px.svg" alt="A" style="max-width: 26px; position: absolute; top: 2px; left: auto; right: 2px;"></button>
+                                <button class="centered-button" onclick="ControlResults.changeSelectedAll(true)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 10px;"><img src="img/deselectAll-100px.svg" alt="D" style="max-width: 20px; position: absolute; top: 5px; left: 5px;"></button>
+                            </div>
                         </div>
                     </div>
                     <div class="scrolling-container" style="max-height: calc(100% - 35px); height: calc(100% - 35px);  max-width: 100%; width: 100%; margin: 0; position: absolute; bottom: 5px; left: auto; right: 0%;">
@@ -938,17 +966,17 @@
             <div id="loading-indicator" class="invisible"><img src="img/progress.gif"/><br><br>Waiting for server...</div>           
         </div>
 
-        <div id="tab-menu" style="max-height: 30px; height: 30px; max-width: 412px; width: 412px; position: absolute; top: 0; right: 0; overflow: hidden; z-index: 100;">
-            <img alt="close" src="img/close-24px.svg" class="panel-close-button" style="right: 10px; left: auto; top: 3px; max-height: 20px;" onclick="TabBar.closeTab()"> 
+        <div id="tab-menu" style="max-height: 30px; height: 30px; max-width: 270px; width: 270px; position: absolute; top: 0; right: 0; z-index: 100; overflow: hidden;">
+            <img alt="close" src="img/close-24px.svg" class="panel-close-button" style="max-height: 18px; top: 3px; left: auto; right: 10px;" onclick="TabBar.closeTab()"> 
     
-            <button class="centered-button" style="position: absolute; right: 58px; top: 3px;  height: 25px;;" onclick="document.getElementById('tab-bar').style.display == 'none' ? 
+            <button class="centered-button" style="height: 25px; position: absolute; right: 58px; top: 3px;" onclick="document.getElementById('tab-bar').style.display == 'none' ? 
                                                         document.getElementById('tab-bar').style.display = '' : 
                                                         document.getElementById('tab-bar').style.display = 'none'">Tabs</button>
         
             <button class="centered-button" style="position: absolute; right: 140px; top: 3px; height: 25px;" onclick="UI.Open.openBrowserTab()">Open in tab</button>
-        
-            <h3 id="status-bar" style="position: absolute; right: 280px; top: 7px; margin: 0; font-family: 'FiraMono'; text-transform: uppercase; font-size: 15px;"> ● Disconnected</h3>
         </div>
+
+        <h3 id="status-bar" style="position: absolute; right: 280px; top: 7px; margin: 0; font-family: 'FiraMono'; text-transform: uppercase; font-size: 15px; pointer-events: none;"> ● Disconnected</h3>
 
         <h1 id='logo'>Aeon/<span id='title'>BIODIVINE</span></h1>
 

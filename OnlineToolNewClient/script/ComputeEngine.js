@@ -60,19 +60,20 @@ let ComputeEngine = {
 		/** Updates compute engine status (UI progress bar + computation status).
 		 * 	If last computation was control, then creates new data for the UI function, else uses given ping response. */
 		_updateComputationStatus(status, response) {
-
 			if (ComputeEngine.Computation._computationType == "control") {
-				/*ComputeEngine.getControlComputationStatus((e, r) => {
+				ComputeEngine.getControlComputationStatus((e, r) => {
 					if (e !== undefined) {
 						console.log(e);
 						alert("Error: "+e);					
 					};
 
 					if (r != undefined) {
-						console.log(r);
-						UI.updateComputeEngineStatus(status, {timestamp: r.elapsed, is_running: r.isRunning, is_cancelled: r.computationCancelled, error: e});
+						UI.updateComputeEngineStatus(status, {timestamp: r.isRunning == true ? r.elapsed : r.computationStarted + r.elapsed, 
+																is_running: r.isRunning, 
+																is_cancelled: r.computationCancelled, 
+																error: e});
 					}
-				});*/
+				});
 			} else {
 				UI.updateComputeEngineStatus(status, response);
 			}
@@ -129,22 +130,82 @@ let ComputeEngine = {
 		//** If true then the computation is running or the results weren´t extracted yet. */
 		waitingForResult: false,
 
-		/** Starts computation of control.
-		 *  aeonString (str) = model in the aeon format passed as string,
-		 * 		control data are encoded as = #control:VARIABLENAME:CONTROLLABILITY,PHENOTYPESTATUS
-		 * 		controlability values are true(controllable), false(not controllable), phenotype values are true(var in phenotype as true),
-		 * 		false (var in phenotype as false), null (var not present in phenotype)
-		 * 	oscillation (string) = "allowed"/"required"/"forbidden", matches the values used by the underlying control library
-		 * 	minRobustness (float) = minimal robustness of the computed perturbations
-		 * 	maxSize (int) = maximal size of the computed perturbations
-		 * 	numberResults (int) = limits amount of computed perturbations. By default limited to 1_000_000, because we need to enumerate all results.
-		 */
-		_startControlComputation(aeonString, oscillation, minRobustness, maxSize, numberResults = 1_000_000, callback = undefined) {
-			ComputeEngine._backendRequest(`/start_control_computation/${oscillation}/${minRobustness}/${maxSize}/${numberResults}`, (error, response) => {
-				if (callback !== undefined) {
-					callback(error, response);
-				}			
-			}, "POST", aeonString);
+		/** Functions used for computation of control. */
+		Control: {
+			//minRobustness (float) = minimal robustness of the computed perturbations
+			_minRobustness: 0,
+			//maxSize (int) = maximal size of the computed perturbations
+			_maxSize: 1000,
+			//numberResults (int) = limits amount of computed perturbations. By default limited to 1_000_000, because we need to enumerate all results.
+			_numberResults: 1000000,
+
+			/** Starts computation of control.
+			 *  aeonString (str) = model in the aeon format passed as string,
+			 * 		control data are encoded as = #control:VARIABLENAME:CONTROLLABILITY,PHENOTYPESTATUS
+			 * 		controlability values are true(controllable), false(not controllable), phenotype values are true(var in phenotype as true),
+			 * 		false (var in phenotype as false), null (var not present in phenotype)
+			*/
+			_startControlComputation(aeonString, callback = undefined) {
+
+				// oscillation (string) = "allowed"/"required"/"forbidden", matches the values used by the underlying control library
+				const oscillation =  PhenotypeEditor.getOscillation();
+
+				console.log(this._minRobustness);
+				console.log(this._maxSize);
+				console.log(this._numberResults);
+
+				ComputeEngine._backendRequest(`/start_control_computation/${oscillation}/${this._minRobustness}/${this._maxSize}/${this._numberResults}`, (error, response) => {
+					if (callback !== undefined) {
+						callback(error, response);
+					}			
+				}, "POST", aeonString);
+			},
+
+			/** Cancels now running control computation and saves partial results.
+			*/
+			_cancelControlComputation(callback = undefined) {
+				this._backendRequest("/cancel_control_computation", (error, response) => {
+					if (callback !== undefined) {
+						callback(error, response);
+					}			
+				}, "POST");
+			},
+
+			/** Sets minimal robustness limit of the control computation. */
+			setMinRobustness() {
+				const newMinRob = document.getElementById("min-robustness-input").value;
+				const convertedRob = parseFloat(newMinRob);
+
+				if (isNaN(convertedRob) || newMinRob < 0 || newMinRob > 100) {
+					this._minRobustness = 0;
+				} else {
+					this._minRobustness = convertedRob / 100;
+				}
+			},
+
+			/** Sets maximal size limit of the control computation. */
+			setMaxSize() {
+				const newMaxSize = document.getElementById("max-size-input").value;
+				const convertedSize = parseInt(newMaxSize);
+
+				if (isNaN(convertedSize) || convertedSize < 0) {
+					this._maxSize = 1000;
+				} else {
+					this._maxSize = convertedSize;
+				}
+			},
+
+			/** Sets maximal number of results of the control computation. */
+			setNumberResults() {
+				const newNumResults = document.getElementById("num-results-input").value;
+				const convertedNum = parseInt(newNumResults);
+
+				if (isNaN(convertedNum) || convertedNum < 1) {
+					this._numberResults = 1000000;
+				} else {
+					this._numberResults = convertedNum;
+				}
+			},
 		},
 
 		startComputation(aeonString) {	
@@ -179,19 +240,9 @@ let ComputeEngine = {
 					}, "POST", aeonString);
 				} else {
 					this._computationType = "control";
-					return this._startControlComputation(aeonString, "allowed", 0.01, 10, 1_000_000, callback);
+					return this.Control._startControlComputation(aeonString, callback);
 				}
 			}
-		},
-
-		/** Cancels now running control computation and saves partial results.
-		*/
-		_cancelControlComputation(callback = undefined) {
-			this._backendRequest("/cancel_control_computation", (error, response) => {
-				if (callback !== undefined) {
-					callback(error, response);
-				}			
-			}, "POST");
 		},
 
 		cancelComputation() {
@@ -212,7 +263,7 @@ let ComputeEngine = {
 					return ComputeEngine._backendRequest("/cancel_computation", (e, r) =>  {callback(e, r);}, "POST", "");
 				}
 
-				return this._cancelControlComputation(callback);
+				return this.Control._cancelControlComputation(callback);
 			}
 		},
 
@@ -373,6 +424,7 @@ let ComputeEngine = {
 
         req.onload = function() {
         	if (callback !== undefined) {
+				//console.log(req.response);
         		let response = JSON.parse(req.response);
         		if (response.status) {
         			callback(undefined, response.result);

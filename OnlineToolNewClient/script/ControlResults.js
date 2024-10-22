@@ -46,12 +46,12 @@ let ControlResults = {
         document.getElementById("ParamNumberStat").textContent = controlData.stats.allColorsCount;
         document.getElementById("PertNumberStat").textContent = controlData.stats.perturbationCount;
         document.getElementById("MinSizeStat").textContent = controlData.stats.minimalPerturbationSize;
-        document.getElementById("MaxRobStat").textContent = res.stats.maximalPerturbationRobustness;
+        document.getElementById("MaxRobStat").textContent = controlData.stats.maximalPerturbationRobustness;
         document.getElementById("OscillationStat").textContent = controlData.stats.oscillation;
-        document.getElementById("PhenotypeStat").innerHTML = this._createColouredVars(this._createPertDict(controlData.phenotype));
-        document.getElementById("ControllableStat").textContent = controlData.controllable;
+        document.getElementById("PhenotypeStat").innerHTML = this._createColouredVars(controlData.stats.phenotype);
+        document.getElementById("ControllableStat").textContent = controlData.stats.controllable;
 
-        for (variable of controlData.controllable) {
+        for (variable of controlData.stats.controllable) {
             this._pertFilterValues[variable] = "ignore";
             this._pertFilterTable.addVariable(variable, variable);
         }
@@ -65,7 +65,7 @@ let ControlResults = {
         table.style.maxWidth = `${width}vw`;
         table.style.width =`${width}vw`;
         
-        this._fillTable(controlData.perturbations);
+        this._fillTable(controlData.results);
     },
 
     // Creates and appends cell into the row of the table.
@@ -101,7 +101,7 @@ let ControlResults = {
         let resultStr = "";
 
         for (const variable in variables) {
-            if (variables[variable] == "true") {
+            if (variables[variable] == true) {
                 resultStr += `<span style="color: green; line-height: 10px; white-space: nowrap;">${variable}</span>`
             } else {
                 resultStr += `<span style="color: red; line-height: 10px; white-space: nowrap;">${variable}</span>`
@@ -110,6 +110,30 @@ let ControlResults = {
             resultStr += ", ";
         }
         return resultStr.substring(0, resultStr.length - 2);
+    },
+
+    /** Converts perturbation in the form of {variableName:phenotypeValue,...} to string "variableName:phenotypeValue, ..." */
+    _perturbationToString(pert) {
+        let resultStr = "";
+        const variables = Object.keys(pert);
+
+        for (let i = 0; i < variables.length; i++) {
+            resultStr += variables[i];
+
+            if (pert[variables[i]] == true) {
+                resultStr += ":true";
+            } else if (pert[variables[i]] == false) {
+                resultStr += ":false";
+            } else {
+                resultStr += ":null";
+            }
+
+            if (i != variables.length - 1) {
+                resultStr += ", ";
+            }
+        }
+
+        return resultStr
     },
 
     // Creates dict from perturbarion in the form of array of strings [varName:pertValue, ...].
@@ -138,20 +162,18 @@ let ControlResults = {
         for (const pert of perts) {
             const row = this._perturbTable.insertRow(-1);
 
-            const pertDict = this._createPertDict(pert[0], false);
-
             row.style.overflow = "auto";
             row.style.maxWidth = "100%";
             row.style.width = "100%";
 
             row.setAttribute('data-id', id);
-            row.setAttribute('perturb', JSON.stringify(pertDict));
+            row.setAttribute('perturb', JSON.stringify(pert.perturbation));
 
             this._appendCell(row, id, null, "6%");
-            this._appendCell(row, this._createColouredVars(pertDict), pert[0], "70%");
-            this._appendCell(row, pert[0].length, null, "6%");
-            this._appendCell(row, pert[1], null, "13%");
-            this._appendCell(row, pert[2], null, "5%");
+            this._appendCell(row, this._createColouredVars(pert.perturbation), this._perturbationToString(pert.perturbation), "70%");
+            this._appendCell(row, Object.keys(pert.perturbation).length, null, "6%");
+            this._appendCell(row, pert.color_count, null, "13%");
+            this._appendCell(row, (pert.robustness * 100).toFixed(2), null, "5%");
 
             id += 1;
         };
@@ -164,7 +186,7 @@ let ControlResults = {
         return stringNum == "" || isNaN(num) || !isFinite(num) ? undefined : num;
     },
 
-    // Tests if perturbation includes variables.
+    /** Tests if perturbation includes variables. */
     _includesPerts(perts, include) {
         for (const variable in include) {
             if (include[variable] != "ignore" && 
@@ -173,7 +195,7 @@ let ControlResults = {
                 return false;
             }
         }
-        console.log("ha");
+
         return true;
     },
 
@@ -296,12 +318,19 @@ let ControlResults = {
         this._filterMenu.style.display = this._filterMenu.style.display == "none" ? "" : "none";
     },
 
+    /** Sets values of all selected rows in the ControlResults._pertFilterTable to the value of pertValue ("ignore", "present", "true", "false"). */
     setSelected(pertValue) {
+        if (pertValue == "true") {
+            pertValue = true;
+        } else if (pertValue == "false") {
+            pertValue = false;
+        }
+
         for (row of this._pertFilterTable.table.rows) {
             if (row.classList.contains('selected')) {
                 const id = row.getAttribute('data-id');
                 this._pertFilterValues[id] = pertValue;
-                const color = pertValue == 'ignore' ? "#ECEFF1" : pertValue == 'present' ? "#B0BEC5" : pertValue == 'true' ? "green" : "red";
+                const color = pertValue == 'ignore' ? "#ECEFF1" : pertValue == 'present' ? "#B0BEC5" : pertValue == true ? "green" : "red";
                 this._pertFilterTable.changeIndicatorColor(id, color);
             }
         }

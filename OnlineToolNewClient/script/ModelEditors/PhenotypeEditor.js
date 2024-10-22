@@ -54,7 +54,7 @@ let PhenotypeEditor = {
         this._counters[false].clear();
         this._counters[null].clear();
 
-        this._oscillationButton.value = "Allowed";
+        this._oscillationButton.value = "allowed";
         this._oscillation = "allowed";
     },
 
@@ -113,7 +113,7 @@ let PhenotypeEditor = {
             if (this._oscillation == "allowed") {
                 this._oscillationButton.value = "required";
                 this._oscillation = "required";
-            } else if (this._oscillation) {
+            } else if (this._oscillation == "required") {
                 this._oscillationButton.value = "forbidden";
                 this._oscillation = "forbidden";
             } else {
