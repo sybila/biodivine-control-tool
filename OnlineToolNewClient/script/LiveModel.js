@@ -44,7 +44,7 @@ let LiveModel = {
 			PhenotypeEditor.addVariable(this._variables[id]);
 
 			ModelEditor.updateStats();
-			UI.setQuickHelpVisible(false);
+			UI.Visible.setQuickHelpVisible(false);
 			// Just show the number of possible update functions, even though there are always two.
 			LiveModel.UpdateFunctions._validateUpdateFunction(id);
 			LiveModel.Export.saveModel();
@@ -83,7 +83,7 @@ let LiveModel = {
 				ModelEditor.removeVariable(id);
 				ModelEditor.updateStats();
 				
-				if (LiveModel.isEmpty()) UI.setQuickHelpVisible(true);
+				if (LiveModel.isEmpty()) UI.Visible.setQuickHelpVisible(true);
 				LiveModel.Export.saveModel();
 				for (let id of update_regulations_after_delete) {
 					// We also have to recompute the update function - the variable just became a parameter...
@@ -591,7 +591,7 @@ let LiveModel = {
 				ModelEditor.setUpdateFunction(variable, updateFunctions[key]);
 				let error = LiveModel.UpdateFunctions.setUpdateFunction(variable, updateFunctions[key]);
 				if (error !== undefined) {
-					alert(error);
+					Warning.displayWarning(error);
 				}
 			}
 		},
@@ -736,7 +736,7 @@ let LiveModel = {
 				LiveModel.UpdateFunctions._validateUpdateFunction(variable);
 			}
 
-			UI.closeContent();
+			UI.Visible.closeContent();
 
 			return undefined;	// no error
 		},
@@ -749,7 +749,7 @@ let LiveModel = {
 					this.importAeon(modelString);
 				}			
 			} catch (e) {
-				alert("No recent model available. Make sure 'Block third-party cookies and site data' is disabled in your browser.");
+				Warning.displayWarning("No recent model available. Make sure 'Block third-party cookies and site data' is disabled in your browser.");
 				console.log(e);
 			}
 		},
@@ -894,13 +894,12 @@ let LiveModel = {
 	/** Function which blocks model modifications and initializes warning. */
 	_modelModified() {
 		if (Results.hasResults()) {
-			const warning = document.getElementById("warning");
-			warning.style.display = "block";
+			Warning.displayWarning("resultsAvailable");
 			return false;
 		}
 
 		if (window.modelCalc[window.modelId] > 1) {
-			alert("Model was modified: Id of the model will be changed from " + window.modelId + " to " + window.nextModelId.value);
+			Warning.displayWarning("Model was modified: Id of the model will be changed from " + window.modelId + " to " + window.nextModelId.value);
 			window.modelCalc[window.modelId]--;
 			window.modelId = window.nextModelId.value++;
 			window.modelCalc[window.modelId] = 1;
@@ -908,18 +907,6 @@ let LiveModel = {
 		}
 
 		return true;
-	},
-
-	/** Function which resolves warning blocking user from interaction with the program. */
-	warningResolve(resolveMode) {
-		document.getElementById("warning").style.display = "none";
-
-		if (resolveMode == true) {
-			UI.Open.openBrowserTab(false);
-		} else if (resolveMode == false) {
-			Results.clear();
-			TabBar.closeResults();
-		}
 	},
 
 	/** In the tokenized update function, detect all occurrences of the function call pattern (i.e. x(a,b,c))

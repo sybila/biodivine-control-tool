@@ -37,25 +37,27 @@
         <script src="script/dependencies/cytoscape-dagre.js"></script>
         <script src="script/dependencies/cytoscape-tidytree.js"></script>
 
-        <script src="script/const.js"></script>
-        <script src="script/Results.js"></script>
-        <script src="script/ComputeEngine.js"></script>
-        <script src="script/Examples.js"></script>
-        <script src="script/LiveModel.js"></script>
-        <script src="script/UI.js"></script>
-        <script src="script/CytoscapeEditor.js"></script>
+        
+        <script src="script/Utils/const.js"></script>
+        <script src="script/Utils/TableWidget.js"></script>
+        <script src="script/Utils/CountWidget.js"></script>
+        <script src="script/Utils/Tab.js"></script>
+        <script src="script/Utils/TabBar.js"></script>
+        <script src="script/Utils/Warning.js"></script>
+        <script src="script/Utils/Examples.js"></script>
         <script src="script/AttractorResults/CytoscapeTreeEditor.js"></script>
         <script src="script/AttractorResults/TreeExplorer.js"></script>
         <script src="script/AttractorResults/Explorer.js"></script>     
-        <script src="script/ModelEditors/ModelEditor.js"></script>
-        <script src="script/ModelEditors/ControllableEditor.js"></script>
-        <script src="script/ModelEditors/PhenotypeEditor.js"></script>
-        <script src="script/TableWidget.js"></script>
-        <script src="script/CountWidget.js"></script>
-        <script src="script/TabBar.js"></script>
-        <script src="script/Tab.js"></script>
+        <script src="script/EditorTabs/ModelEditor.js"></script>
+        <script src="script/EditorTabs/ControllableEditor.js"></script>
+        <script src="script/EditorTabs/PhenotypeEditor.js"></script>
+        <script src="script/EditorTabs/Results.js"></script>
+        <script src="script/ComputeEngine.js"></script>
+        <script src="script/initHotkeys.js"></script>
+        <script src="script/LiveModel.js"></script>
+        <script src="script/UI.js"></script>
         <script src="script/ControlResults.js"></script>
-
+        <script src="script/CytoscapeEditor.js"></script>
         <script src="script/main.js"></script>
 
         <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -125,6 +127,8 @@
                     <li>(N) Add new variable.</li>
                     <li>(E) Edit name of the selected variable.</li>
                     <li>(F) Edit update function of the selected variable.</li>
+                    <li>(A,S,D) Change phenotype value of the selected variable. (A-not in, S-false, D-true)</li>
+                    <li>(C) Toggle controllable value of the selected variable. </li>
                     <li>(O) Change observability of the selected regulation.</li>
                     <li>(M) Change monotonicity of the selected regulation.</li>
                     <li>(H) Show this help message.</li>                
@@ -176,14 +180,14 @@
                 </div>    
 
                 <div id="tab-engine" class="main-panel gone" style="height: fit-content; resize: none;">
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Compute Engine</h2>                
                     <div class="invisible-input full-line" style="margin-top: 4px; margin-bottom: 4px; font-size: 16px;">
                         <input id="engine-address" class="center" type="text" name="engine-address" value="http://localhost:8000" placeholder="(engine address)">
                     </div>
                     <div style="height: 40px;">
                         <h3 id="compute-engine-status" style="float: left; font-family: 'FiraMono'; text-transform: uppercase;"> ● Disconnected</h3>
-                        <button id="button-connect" class="image-button" onclick="ComputeEngine.Connection.toggleConnection((e,r) => { if (e !== undefined) alert(e); });" style="float: right;">Connect <img src="img/cloud-24px.svg"></button>
+                        <button id="button-connect" class="image-button" onclick="ComputeEngine.Connection.toggleConnection((e,r) => { if (e !== undefined) Warning.displayWarning(e); });" style="float: right;">Connect <img src="img/cloud-24px.svg"></button>
                     </div>
                     <div style="clear: both;"></div>
 
@@ -211,7 +215,7 @@
                 </div>         
 
                 <div id="tab-import-export" class="main-panel gone" style="height: 570px; resize: none;">
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Model File</h2>
 
                     <table style="text-align: center; margin-left: -4px;">
@@ -285,7 +289,7 @@
                     <div class="invisible-input full-line">
                         <input id="model-name" class="center" type="text" name="model-name" placeholder="(model name)" style="font-size: 20px;">
                     </div>
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">                
                     <div class="invisible-input full-line" id="model-description" style="display: none;" contenteditable data-placeholder="(model description)" style="margin-top: 4px; margin-bottom: 4px;"></div>      
 
                     <div class="doubleContainer">
@@ -346,7 +350,7 @@
 
                 <div id="tab-model-controllable" class="main-panel gone">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Controllable variables</h2> 
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">                
 
                     <div>
                         <div style="height: 30px;">
@@ -383,7 +387,7 @@
 
                 <div id="tab-model-phenotype" class="main-panel gone">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Phenotype</h2> 
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">                
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">                
 
                     <div>
                         <div style="height: 30px;">
@@ -431,7 +435,7 @@
 
                 <div id="tab-model-visual" class="main-panel gone" style="height: 255px; resize: none;">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Visual Options</h2> 
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     
                     <div style="height: 30px;">
                         <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Layout</h3>
@@ -455,7 +459,7 @@
                 </div>
 
                 <div id="tab-results" class="main-panel gone" style="height: fit-content;">
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Results</h2>
 
                     <div class="scrolling-container" style="max-height: 50%; margin-top: 0;">
@@ -484,7 +488,7 @@
                 </div>
 
                 <div id="tab-help" class="main-panel gone" style="font-family: 'FiraMono';">
-                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.closeContent()">
+                    <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">About & Help</h2>
                     
                     <p>Aeon is a tool for analysing <b style="font-family: 'FiraMonoBold';">long-term behaviour of Boolean networks with parameters</b>. Use the editor to create a new network, or import your own from .sbml or .aeon. You can leave the update functions in the network blank (this will automatically consider all admissible instantiations of such function) or specify an exact update function. In the update function, you can use <b style="font-family: 'FiraMonoBold';">arbitrary uninterpreted functions as parameters</b> (see Budding Yeast-Irons example). Aeon will then automatically consider all admissible instantiations of such functions when analysing the model.</p>
@@ -580,11 +584,17 @@
             </div>
     
             <div class="doubleContainer" style="max-height: 85px; height: 85px; max-width: 100%; width: 100%; margin-bottom: 1%; position: absolute; top: 70px; left: 0;">
-                <div class="main-panel-noresize" style="max-height: 65px; height: 65px; max-width: 55%; width: 55%; padding: 0; position: absolute; left: 10px;">
-                    <table class="model-stats">
-                        <tr style="max-height: 2px;"><td style="width: 20%;">Number of Parametrizations: </td><td class="value" id="ParamNumberStat" style="width: 20%;"> -</td> <td style="width: 20%;">Maximal Robustness: </td>   <td class="value" id="MaxRobStat" style="width: 5%;">-</td></tr>
-                        <tr style="max-height: 2px;"><td style="width: 20%;">Number of Perturbations: </td><td class="value" id="PertNumberStat" style="width: 20%;">-</td> <td style="width: 20%;">Oscillation: </td>   <td class="value" id="OscillationStat" style="width: 5%;">-</td> </tr>
-                        <tr style="max-height: 2px;"><td style="width: 20%;">Minimal Size: </td><td class="value" id="MinSizeStat" style="width: 20%;">-</td> </tr>
+                <div class="main-panel-noresize" style="max-height: 70px; height: 70px; max-width: 55%; width: 55%; padding: 0; position: absolute; left: 10px;">
+                    <table class="model-stats" style="max-height: 60px; height: 60px;">
+                        <tbody style="max-height: 60px; height: 60px;">
+                            <tr style="max-height: 2px; height: 2px;">
+                                <td style="width: 20%;">Number of Parametrizations: </td><td class="value" id="ParamNumberStat" style="width: 20%;"> -</td> 
+                                <td style="width: 20%;">Maximal Robustness: </td>   <td class="value" id="MaxRobStat" style="width: 5%;">-</td></tr>
+                            <tr style="max-height: 2px;">
+                                <td style="width: 20%; ">Number of Perturbations: </td><td class="value" id="PertNumberStat" style="width: 20%;">-</td> <td style="width: 20%;">Oscillation: </td>   <td class="value" id="OscillationStat" style="width: 5%;">-</td> </tr>
+                            <tr style="max-height: 2px;">
+                                <td style="width: 20%;">Minimal Size: </td><td class="value" id="MinSizeStat" style="width: 20%;">-</td> </tr>
+                        </tbody>
                     </table>
                 </div>
     
@@ -616,26 +626,26 @@
                 <div style="max-height: 100%; height: 100%; max-width: 30%; width: 30%; position: absolute; top: 0%; left: 0%;">
                         <div class="doubleContainer">
                             <h4 style="margin-top: 3px;"> Max Size:</h4>
-                            <input type="text" id="controlr-size-filter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable()">    
+                            <input type="text" id="controlr-size-filter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable.filterTable()">    
                         </div>
                         <div class="doubleContainer">
                             <h4 style="margin-top: 3px;"> Min NoP:</h4>
-                            <input type="text" id="controlr-NoP-filter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable()">    
+                            <input type="text" id="controlr-NoP-filter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable.filterTable()">    
                         </div>
                         <div class="doubleContainer">
                             <h4 style="margin-top: 3px;"> Min Robustness:</h4>
-                            <input type="text" id="controlr-rob-filter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable()">    
+                            <input type="text" id="controlr-rob-filter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable.filterTable()">    
                         </div>
                         <div class="doubleContainer" style="height: 20px; margin-bottom: 0px;">
                             <h4 style="margin-top: 3px; margin-top: 1px; margin-right: 5px;"> Sort:</h4>
                             
-                            <input id="primary-sort-switch" type="button" class="centered-button" onclick="ControlResults.switchSortMode(0)" style="width: 190px; height: 20px; padding-left: 4%; margin-right: 5px; font-size: 14px;" value="ID"></input>
-                            <button class="centered-button" id="primary-order" onclick="ControlResults.switchOrder(0)" style="height: 20px; margin-right: 5px;">
+                            <input id="primary-sort-switch" type="button" class="centered-button" onclick="ControlResults.sortTable.switchSortMode(0)" style="width: 190px; height: 20px; padding-left: 4%; margin-right: 5px; font-size: 14px;" value="ID"></input>
+                            <button class="centered-button" id="primary-order" onclick="ControlResults.sortTable.switchOrder(0)" style="height: 20px; margin-right: 5px;">
                                 <div class="arrow up"></div>
                             </button>
             
-                            <input id="secondary-sort-switch" type="button" class="centered-button" onclick="ControlResults.switchSortMode(1)" style="width: 190px; height: 20px; padding-left: 4%; margin-right: 5px; font-size: 14px;" value="ID"></input>
-                            <button class="centered-button" id="secondary-order" onclick="ControlResults.switchOrder(1)" style="height: 20px;">
+                            <input id="secondary-sort-switch" type="button" class="centered-button" onclick="ControlResults.sortTable.switchSortMode(1)" style="width: 190px; height: 20px; padding-left: 4%; margin-right: 5px; font-size: 14px;" value="ID"></input>
+                            <button class="centered-button" id="secondary-order" onclick="ControlResults.sortTables.switchOrder(1)" style="height: 20px;">
                                 <div class="arrow up" style="border-color: #808080;"></div>
                             </button>
                         </div>
@@ -643,20 +653,20 @@
 
                 <div style="max-height: 100%; height: 100%; max-width: calc(70% - 5px); width: calc(70% - 5px); position: absolute; top: 0%; left: calc(30% + 5px); z-index: 200;">
                     <div style="max-height: 20px; height: 20px; max-width: 100%; width: 100%;">
-                        <input type="text" id="control-pert-filter-input"  class="filterInput" onkeyup="ControlResults.filterPertFTable()" style="max-height: 20px; height: 20px; max-width: 50%; width: 50%; position: absolute; top: 2px; left: 0;">
+                        <input type="text" id="control-pert-filter-input"  class="filterInput" onkeyup="ControlResults.filterTable.filterPertFilterTable()" style="max-height: 20px; height: 20px; max-width: 50%; width: 50%; position: absolute; top: 2px; left: 0;">
                         
                         <div style="max-height: 20px; height: 20px; max-width: 48%; width: 48%; position: absolute; top: 0; left: auto; right: 0;">
                             <div style="max-height: 100%; height: 100%; float: left;">
-                                <button class="centered-button" onclick="ControlResults.setSelected(true)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: green;"></button>
-                                <button class="centered-button" onclick="ControlResults.setSelected(false)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: red;"></button>
-                                <button class="centered-button" onclick="ControlResults.setSelected('present')" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: #B0BEC5;"></button>
-                                <button class="centered-button" onclick="ControlResults.setSelected('ignore')" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: #ECEFF1;"></button>
+                                <button class="centered-button" onclick="ControlResults.filterTable.setSelected(true)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: green;"></button>
+                                <button class="centered-button" onclick="ControlResults.filterTable.setSelected(false)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: red;"></button>
+                                <button class="centered-button" onclick="ControlResults.filterTable.setSelected('present')" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: #B0BEC5;"></button>
+                                <button class="centered-button" onclick="ControlResults.filterTable.setSelected('ignore')" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: #ECEFF1;"></button>
                             </div>
     
                             <div style="max-height: 100%; height: 100%; float: right;">
-                                <button class="centered-button" onclick="ControlResults.changeSelectedAll(null)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 78px;"><img src="img/toggle-100px.svg" alt="T" style="max-width: 26px; position: absolute; top: 2px; left: 2px;"></button>
-                                <button class="centered-button" onclick="ControlResults.changeSelectedAll(false)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 44px;"><img src="img/selectAll-100px.svg" alt="A" style="max-width: 26px; position: absolute; top: 2px; left: auto; right: 2px;"></button>
-                                <button class="centered-button" onclick="ControlResults.changeSelectedAll(true)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 10px;"><img src="img/deselectAll-100px.svg" alt="D" style="max-width: 20px; position: absolute; top: 5px; left: 5px;"></button>
+                                <button class="centered-button" onclick="ControlResults.filterTable.changeSelectedAll(null)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 78px;"><img src="img/toggle-100px.svg" alt="T" style="max-width: 26px; position: absolute; top: 2px; left: 2px;"></button>
+                                <button class="centered-button" onclick="ControlResults.filterTable.changeSelectedAll(false)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 44px;"><img src="img/selectAll-100px.svg" alt="A" style="max-width: 26px; position: absolute; top: 2px; left: auto; right: 2px;"></button>
+                                <button class="centered-button" onclick="ControlResults.filterTable.changeSelectedAll(true)" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 10px;"><img src="img/deselectAll-100px.svg" alt="D" style="max-width: 20px; position: absolute; top: 5px; left: 5px;"></button>
                             </div>
                         </div>
                     </div>
@@ -674,10 +684,10 @@
                     <tbody style="max-width: 100%; width: 100%;">
                         <tr style="max-width: 100%; width: 100%; ">
                             <th style="max-width: 6%; width: 6%;">ID</th>
-                            <th style="max-width: 70%; width: 70%;" visualMode="false" onclick="ControlResults.pertVisual(this)">Perturbations</th>
+                            <th style="max-width: 70%; width: 70%;" visualMode="false" onclick="ControlResults.changeContentModeAllPerts(this)">Perturbations</th>
                             <th style="max-width: 6%; width: 6%;">Size</th>
                             <th style="max-width: 13%; width: 13%;">Parametrizations</th>
-                            <th style="max-width: 5%; width: 5%;">Rob</th>
+                            <th style="max-width: 5%; width: 5%;">Rob(%)</th>
                         </tr>
                     </tbody>
                 </table>
@@ -987,13 +997,10 @@
         </div>
 
         <div id="warning" class="blocking-div" style="display: none;">
-            <div class="main-panel-noresize" style="font-family: 'FiraMono'; width: 600px; position: absolute; top: 200px; right: 370px;">
-                Results available. If you want to modify the model you have to close all results or open model in a new window.
-                <div class="doubleContainer" style="margin-top: 5px;">
-                    <button class="centered-button" onclick="LiveModel.warningResolve(null)" style="height: 25px;">Cancel</button>
-                    <button class="centered-button" onclick="LiveModel.warningResolve(false)" style="height: 25px;">Delete results</button>
-                    <button class="centered-button" onclick="LiveModel.warningResolve(true)" style="height: 25px;">Open new window</button>
-                </div>
+            <div class="main-panel-noresize" style="max-height: 550px; height: fit-content; max-width: 550px; width: fit-content; margin: auto; font-family: 'FiraMono'; ">
+                <div id="warning-text" style="text-align: center;"></div>
+                
+                <div id="warning-buttons" class="doubleContainer" style="margin-top: 5px;"></div>
             </div>
         </div>
     </body>

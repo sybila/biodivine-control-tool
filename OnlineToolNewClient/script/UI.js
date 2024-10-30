@@ -10,15 +10,15 @@ const DOUBLE_CLICK_DELAY = 400;
 	Allows access to operations with the global UI (i.e. operating the menus, showing content panels, etc.).
 */
 let UI = {
-	// Element where the cytoscape editor resides.
+	/** Element where the cytoscape editor resides. */
 	cytoscapeEditor: undefined,
 	// Element of the menu that is displayed for each node/edge when selected.
 	_nodeMenu: undefined,
 	_edgeMenu: undefined,
-	// Contains pairs of elements of the form { button: ..., tab: ... } corresponding to the side menu.
+	/** Contains pairs of elements of the form { button: ..., tab: ... } corresponding to the side menu.
 	_tabsAndButtons: undefined,
 
-	//Array containing divs od different pages [model-div, control-results-div, explorer-div, tree-explorer-div]
+	/** Array containing divs od different pages [model-div, control-results-div, explorer-div, tree-explorer-div] */
 	_pageDivs: undefined,
 
 	isMouseDown: false,
@@ -33,7 +33,7 @@ let UI = {
 				fr.onload = (e) => {
 					let error = LiveModel.Import.importAeon(e.target.result);
 					if (error !== undefined) {
-						alert(error);
+						Warning.displayWarning(error);
 					}
 					element.value = null;
 				};
@@ -55,7 +55,7 @@ let UI = {
 							error = LiveModel.Import.importAeon(aeonModel);
 						}
 						if (error !== undefined) {
-							alert(error);
+							Warning.displayWarning(error);
 						}
 						element.value = null;
 					});        	
@@ -78,7 +78,7 @@ let UI = {
 							error = LiveModel.Import.importAeon(aeonModel);
 						}
 						if (error !== undefined) {
-							alert(error);
+							Warning.displayWarning(error);
 						}
 						element.value = null;
 					});        	
@@ -94,7 +94,7 @@ let UI = {
 		downloadAeon() {
 			let modelFile = LiveModel.Export.exportAeon();
 			if (modelFile === undefined) {
-				alert(Strings.modelEmpty);
+				Warning.displayWarning(Strings.modelEmpty);
 				return;
 			}
 			let filename = ModelEditor.getModelName();
@@ -107,7 +107,7 @@ let UI = {
 		downloadSBML() {
 			let modelFile = LiveModel.Export.exportAeon();
 			if (modelFile === undefined) {
-				alert(Strings.modelEmpty);
+				Warning.displayWarning(Strings.modelEmpty);
 				return;
 			}
 			let filename = ModelEditor.getModelName();
@@ -118,7 +118,7 @@ let UI = {
 			ComputeEngine.Format.aeonToSbml(modelFile, (error, result) => {
 				UI.isLoading(false);
 				if (error !== undefined) {
-					alert(error);
+					Warning.displayWarning(error);
 				}
 				if (result !== undefined) {
 					let sbml = result.model;
@@ -130,7 +130,7 @@ let UI = {
 		downloadBnet() {
 			let modelFile = LiveModel.Export.exportAeon();
 			if (modelFile === undefined) {
-				alert(Strings.modelEmpty);
+				Warning.displayWarning(Strings.modelEmpty);
 				return;
 			}
 			let filename = ModelEditor.getModelName();
@@ -141,7 +141,7 @@ let UI = {
 			ComputeEngine.Format.aeonToBnet(modelFile, (error, result) => {
 				UI.isLoading(false);
 				if (error !== undefined) {
-					alert(error);
+					Warning.displayWarning(error);
 				}
 				if (result !== undefined) {
 					let bnet = result.model;
@@ -154,7 +154,7 @@ let UI = {
 		downloadSBMLInstantiated() {
 			let modelFile = LiveModel.Export.exportAeon();
 			if (modelFile === undefined) {
-				alert(Strings.modelEmpty);
+				Warning.displayWarning(Strings.modelEmpty);
 				return;
 			}
 			let filename = ModelEditor.getModelName();
@@ -165,7 +165,7 @@ let UI = {
 			ComputeEngine.Format.aeonToSbmlInstantiated(modelFile, (error, result) => {
 				UI.isLoading(false);
 				if (error !== undefined) {
-					alert(error);
+					Warning.displayWarning(error);
 				}
 				if (result !== undefined) {
 					let sbml = result.model;
@@ -232,6 +232,116 @@ let UI = {
 		}
 	},
 
+	/** Functions used for changing and testing visibility of elements. */
+	Visible: {
+
+		/** If given a position, show the center of the node menu at that position.
+		 If no position is given, hide the menu.
+		 ([Num, Num], Float = 1.0)*/
+		toggleNodeMenu: function(position, zoom = 1.0) {
+			let menu = UI._nodeMenu;
+			if (position === undefined) {
+				menu.classList.add("invisible");			
+				menu.style.left = "-100px";	// move it somewhere out of clickable area
+				menu.style.top = "-100px";
+			} else {
+				menu.classList.remove("invisible");
+				menu.style.left = position[0] + "px";
+				menu.style.top = (position[1] + (60 * zoom)) + "px";
+				// Scale applies current zoom, translate ensures the middle point of menu is 
+				// actually at postion [left, top] (this makes it easier to align).
+				// Note the magic constant next to zoom: It turns out we needed smaller font
+				// size on the editor nodes (to make import more reasonable).
+				// However, that made the menu much too big, so we are sticking with "zooming out"
+				// the menu and keeping smaller sizes in the graph.
+				menu.style.transform = "scale(" + (zoom * 0.75) + ") translate(-50%, -50%)";			
+			}			
+		},
+
+		/** Show the edge menu at the specified position with the provided data { observability, monotonicity }
+		If data or position is indefined, hide menu. */
+		toggleEdgeMenu(data, position, zoom = 1.0) {
+			let menu = UI._edgeMenu;
+			if (position === undefined || data === undefined) {
+				menu.classList.add("invisible");
+				menu.style.left = "-100px";	// move it somewhere out of clickable area
+				menu.style.top = "-100px";
+			} else {
+				menu.classList.remove("invisible");
+				menu.style.left = position[0] + "px";
+				menu.style.top = (position[1] + (60 * zoom)) + "px";
+				// Scale applies current zoom, translate ensures the middle point of menu is 
+				// actually at postion [left, top] (this makes it easier to align).			
+				menu.style.transform = "scale(" + (zoom * 0.75) + ") translate(-50%, -50%)";
+				menu.observabilityButton.updateState(data);
+				menu.monotonicityButton.updateState(data);
+			}
+		},
+
+		isEdgeMenuVisible() {
+			return !UI._edgeMenu.classList.contains("invisible");
+		},
+	
+		isNodeMenuVisible() {
+			return !UI._nodeMenu.classList.contains("invisible");
+		},
+	
+		/** A small utility method to show quick help. */
+		setQuickHelpVisible(visible) {
+			if (visible || LiveModel.isEmpty()) {
+				document.getElementById("quick-help").classList.remove("gone");
+			} else {
+				document.getElementById("quick-help").classList.add("gone");
+			}
+		},
+	
+		/** Make sure the given content tab is open (for example because there is content in it that needs to be seen). */
+		ensureContentTabOpen(tabId) {
+			for (var i = 0; i < UI._tabsAndButtons.length; i++) {
+				let item = UI._tabsAndButtons[i];
+				if (item.tab.getAttribute("id") == tabId) {
+					item.button.classList.add("selected");
+					item.tab.classList.remove("gone");
+				} else {
+					item.button.classList.remove("selected");
+					item.tab.classList.add("gone");
+				}			
+			}	
+		},
+
+		/** Close any content tab, if open. */
+		closeContent() {
+			this.ensureContentTabOpen(undefined);
+		},
+
+
+		_switchVisibleDiv(divIndex) {
+			for (let i = 0; i < UI._pageDivs.length; i++) {
+				if (i == divIndex) {
+					UI._pageDivs[i].style.display = "";
+				} else {
+					UI._pageDivs[i].style.display = "none";
+				}
+			}
+		},
+	
+		/** Toggles between data shown in the window. (used when inner tabs are switched) */
+		toggleDiv(type, data) {
+			if (type == "model") {
+				this._switchVisibleDiv(0);
+				LiveModel.Import.importAeon(data, true);
+			} else if (type == "control results") {
+				this._switchVisibleDiv(1);
+				ControlResults.insertData(data);
+			} else if (type == "explorer") {
+				this._switchVisibleDiv(2);
+				Explorer.insertData(data)
+			} else {
+				this._switchVisibleDiv(3);
+			}
+		},
+	},
+
 	init: function() {
 		this.cytoscapeEditor = document.getElementById("cytoscape-editor");		
 		this._nodeMenu = document.getElementById("node-menu");
@@ -258,8 +368,8 @@ let UI = {
 		this._initSideMenu(sideMenu);	
 	},
 
-	// Add a listener to each button to display hint texts when hovered.
-	// For toggle buttons, add functions that enable actual toggling of the state value.
+	/** Add a listener to each button to display hint texts when hovered.
+	For toggle buttons, add functions that enable actual toggling of the state value. */
 	_initEdgeMenu(menu) {
 		// make hint work
 		let hint = menu.getElementsByClassName("hint")[0];
@@ -320,8 +430,8 @@ let UI = {
 		});
 	},
 
-	// Add a listener to each button which displays its alt as hint text when hovered
-	// and make the buttons actually clickable with actions.
+	/** Add a listener to each button which displays its alt as hint text when hovered
+	and make the buttons actually clickable with actions. */
 	_initNodeMenu: function(menu) {
 		// make hint work
 		let hint = menu.getElementsByClassName("hint")[0];
@@ -362,8 +472,8 @@ let UI = {
 		})
 	},
 
-	// Add a hover listener to all side menu items to show hint when needed.
-	// Add a click listener that will toggle the appropriate tab for each button.
+	/** Add a hover listener to all side menu items to show hint when needed.
+	Add a click listener that will toggle the appropriate tab for each button. */
 	_initSideMenu: function(menu) {
 		let groups = menu.getElementsByClassName("button-group");
 		for (var i = 0; i < groups.length; i++) {
@@ -388,9 +498,9 @@ let UI = {
 			button.addEventListener("click", (e) => {
 				let selected = button.classList.contains("selected");
 				if (selected) {
-					UI.closeContent();
+					UI.Visible.closeContent();
 				} else {
-					UI.ensureContentTabOpen(tabId);
+					UI.Visible.ensureContentTabOpen(tabId);
 					// Also, hide the hint popup
 					group.style.width = "59px";
 					hint.classList.add("invisible");
@@ -545,85 +655,6 @@ let UI = {
 		}
 	},
 
-	isEdgeMenuVisible() {
-		return !this._edgeMenu.classList.contains("invisible");
-	},
-
-	isNodeMenuVisible() {
-		return !this._nodeMenu.classList.contains("invisible");
-	},
-
-	// Close any content tab, if open.
-	closeContent() {
-		this.ensureContentTabOpen(undefined);
-	},
-
-	// A small utility method to show quick help.
-	setQuickHelpVisible(visible) {
-		if (visible || LiveModel.isEmpty()) {
-			document.getElementById("quick-help").classList.remove("gone");
-		} else {
-			document.getElementById("quick-help").classList.add("gone");
-		}
-	},
-
-	// Make sure the given content tab is open (for example because there is content in it that
-	// needs to be seen).
-	ensureContentTabOpen(tabId) {
-		for (var i = 0; i < this._tabsAndButtons.length; i++) {
-			let item = this._tabsAndButtons[i];
-			if (item.tab.getAttribute("id") == tabId) {
-				item.button.classList.add("selected");
-				item.tab.classList.remove("gone");
-			} else {
-				item.button.classList.remove("selected");
-				item.tab.classList.add("gone");
-			}			
-		}	
-	},	
-
-	// If given a position, show the center of the node menu at that position.
-	// If no position is given, hide the menu.
-	// ([Num, Num], Float = 1.0)
-	toggleNodeMenu: function(position, zoom = 1.0) {
-		let menu = this._nodeMenu;
-		if (position === undefined) {
-			menu.classList.add("invisible");			
-			menu.style.left = "-100px";	// move it somewhere out of clickable area
-			menu.style.top = "-100px";
-		} else {
-			menu.classList.remove("invisible");
-			menu.style.left = position[0] + "px";
-			menu.style.top = (position[1] + (60 * zoom)) + "px";
-			// Scale applies current zoom, translate ensures the middle point of menu is 
-			// actually at postion [left, top] (this makes it easier to align).
-			// Note the magic constant next to zoom: It turns out we needed smaller font
-			// size on the editor nodes (to make import more reasonable).
-			// However, that made the menu much too big, so we are sticking with "zooming out"
-			// the menu and keeping smaller sizes in the graph.
-			menu.style.transform = "scale(" + (zoom * 0.75) + ") translate(-50%, -50%)";			
-		}			
-	},
-
-	// Show the edge menu at the specified position with the provided data { observability, monotonicity }
-	// If data or position is indefined, hide menu.
-	toggleEdgeMenu(data, position, zoom = 1.0) {
-		let menu = this._edgeMenu;
-		if (position === undefined || data === undefined) {
-			menu.classList.add("invisible");
-			menu.style.left = "-100px";	// move it somewhere out of clickable area
-			menu.style.top = "-100px";
-		} else {
-			menu.classList.remove("invisible");
-			menu.style.left = position[0] + "px";
-			menu.style.top = (position[1] + (60 * zoom)) + "px";
-			// Scale applies current zoom, translate ensures the middle point of menu is 
-			// actually at postion [left, top] (this makes it easier to align).			
-			menu.style.transform = "scale(" + (zoom * 0.75) + ") translate(-50%, -50%)";
-			menu.observabilityButton.updateState(data);
-			menu.monotonicityButton.updateState(data);
-		}
-	},
 
 	isLoading(status) {
 		if (status) {
@@ -633,39 +664,13 @@ let UI = {
 		}
 	},
 
-	//Tests if results are available. If not, then alerts the user.
+	/** Tests if results are available. If not, then alerts the user. */
 	testResultsAvailable() {
 		if (!ComputeEngine.Computation.hasActiveComputation()) {
-			alert("Results no longer available.");
+			Warning.displayWarning("Results no longer available.");
 			return false;
 		}
 
 		return true;
-	},
-
-	_switchVisibleDiv(divIndex) {
-		for (let i = 0; i < this._pageDivs.length; i++) {
-			if (i == divIndex) {
-				this._pageDivs[i].style.display = "";
-			} else {
-				this._pageDivs[i].style.display = "none";
-			}
-		}
-	},
-
-	//Toggles between data shown in the window. (used when inner tabs are switched)
-	toggleDiv(type, data) {
-		if (type == "model") {
-			this._switchVisibleDiv(0);
-			LiveModel.Import.importAeon(data, true);
-		} else if (type == "control results") {
-			this._switchVisibleDiv(1);
-			ControlResults.insertData(data);
-		} else if (type == "explorer") {
-			this._switchVisibleDiv(2);
-			Explorer.insertData(data)
-		} else {
-			this._switchVisibleDiv(3);
-		}
 	},
 }

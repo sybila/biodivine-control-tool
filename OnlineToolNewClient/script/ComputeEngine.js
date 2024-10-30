@@ -10,7 +10,7 @@ let ComputeEngine = {
 		_address: "http://localhost:8000",
 		_pingRepeatToken: undefined,
 
-		// Open or close connection connection, depending on current status.
+		/** Open or close connection connection, depending on current status. */
 		toggleConnection(callback = undefined) {
 			if (this._connected) {
 				this._closeConnection();
@@ -19,8 +19,8 @@ let ComputeEngine = {
 			}
 		},
 
-		// Open connection, taking up to date address from user input.
-		// Callback is called upon first ping.
+		/** Open connection, taking up to date address from user input.
+		Callback is called upon first ping. */
 		openConnection(callback = undefined, address = undefined) {
 			if (address !== undefined && address !== null) {
 				this._address = address;
@@ -29,12 +29,10 @@ let ComputeEngine = {
 			}
 			this._ping(true, 2000, function(error, ping) {
 				if (ping !== undefined && ping["version"] != EXPECTED_ENGINE_VERSION) {
-					alert(
-						"Your AEON client version is " + EXPECTED_ENGINE_VERSION + 
-						", but your compute engine version is " + ping["version"] + ". \n\n" +
-						"You may encounter compatibility issues. For best experience, please " +
-						"download recommended engine binary from the `Compute Engine` panel."
-					);
+					Warning.displayWarning(`Your AEON client version is ${EXPECTED_ENGINE_VERSION}, 
+											but your compute engine version is ${ping["version"]}.
+											You may encounter compatibility issues. For best experience, please
+											download recommended engine binary from the 'Compute Engine' panel.`);
 				}
 				if (callback !== undefined) {
 					callback(error, ping);
@@ -42,7 +40,7 @@ let ComputeEngine = {
 			});		
 		},
 
-		// Close current connection - return true if really closed.
+		/** Close current connection - return true if really closed. */
 		_closeConnection() {
 			if (this._pingRepeatToken !== undefined) {
 				clearTimeout(this._pingRepeatToken);
@@ -61,10 +59,10 @@ let ComputeEngine = {
 		 * 	If last computation was control, then creates new data for the UI function, else uses given ping response. */
 		_updateComputationStatus(status, response) {
 			if (ComputeEngine.Computation._computationType == "control") {
-				ComputeEngine.getControlComputationStatus((e, r) => {
+				ComputeEngine.Computation.Control.getControlComputationStatus((e, r) => {
 					if (e !== undefined) {
 						console.log(e);
-						alert("Error: "+e);					
+						Warning.displayWarning("Error: "+e);					
 					};
 
 					if (r != undefined) {
@@ -79,8 +77,8 @@ let ComputeEngine = {
 			}
 		},
 
-		// Send a ping request. If interval is set, the ping will be repeated
-		// until connection is closed. (Callback is called only once)
+		/** Send a ping request. If interval is set, the ping will be repeated
+		 until connection is closed. (Callback is called only once) */
 		_ping(keepAlive = false, interval = 2000, callback = undefined) {
 			// if this is a keepAlive ping, cancel any previous pings...
 			if (keepAlive && this._pingRepeatToken !== undefined) {
@@ -112,7 +110,7 @@ let ComputeEngine = {
 			return this._address;
 		},
 
-		// Return current connection status.
+		/** Return current connection status.*/
 		_isConnected() {
 			return this._connected;
 		},
@@ -164,11 +162,25 @@ let ComputeEngine = {
 			/** Cancels now running control computation and saves partial results.
 			*/
 			_cancelControlComputation(callback = undefined) {
-				this._backendRequest("/cancel_control_computation", (error, response) => {
+				console.log("haha");
+				return ComputeEngine._backendRequest("/cancel_control_computation", (error, response) => {
 					if (callback !== undefined) {
 						callback(error, response);
 					}			
 				}, "POST");
+			},
+
+			/** Returns status of the computation at the moment. Only works if the computation is running or finished.
+			 * 
+			 * Returns an object with "computationStarted" (int; unix timestamp), "computationCancelled" (bool)
+			 * "isRunning" (bool), "elapsed" (int; milliseconds), "version" (string),
+			 * */
+			getControlComputationStatus(callback = undefined) {		
+				ComputeEngine._backendRequest("/get_control_computation_status", (error, response) => {
+					if (callback !== undefined) {
+						callback(error, response);
+					}
+				}, "GET");
 			},
 
 			/** Sets minimal robustness limit of the control computation. */
@@ -206,23 +218,38 @@ let ComputeEngine = {
 					this._numberResults = convertedNum;
 				}
 			},
+
+			/** Resets value of the control computation parameters. (this._minRobustness, this._maxSize, this._numberResults) */
+			resetParameters() {
+				this._minRobustness = 0.0;
+				this._maxSize = 1000;
+				this._numberResults = 1000000;
+				document.getElementById("min-robustness-input").value = "";
+				document.getElementById("max-size-input").value = "";
+				document.getElementById("num-results-input").value = "";
+			},
 		},
 
 		startComputation(aeonString) {	
 			if (aeonString === undefined) {
-				alert("Empty model.");
+				Warning.displayWarning("Empty model.");
 				return undefined;
 			}
 			if (!ComputeEngine.Connection._isConnected()) {
-				alert("Compute engine not connected.");
+				Warning.displayWarning("Compute engine not connected.");
 				return undefined;
 			} else {
+				if (this._computateControl && PhenotypeEditor.isPhenotypeEmpty()) {
+					Warning.displayWarning("Phenotype is empty. Add variables into the phenotype before performing control computation.");
+					return;
+				}
+
 				Results.clear();
 				var callback = function(e, r) {
 					if (e !== undefined) {
 						console.log(e);
 						ComputeEngine.Computation._computationType = undefined;
-						alert("Computation error: "+e);		
+						Warning.displayWarning("Computation error: "+e);		
 					} else {
 						console.log("Started computation ",r.timestamp);
 						ComputeEngine.Computation._lastComputation = r.timestamp;
@@ -247,13 +274,13 @@ let ComputeEngine = {
 
 		cancelComputation() {
 			if (!ComputeEngine.Connection._isConnected()) {
-				alert("Compute engine not connected.");
+				Warning.displayWarning("Compute engine not connected.");
 				return undefined;
 			} else {
 				const callback = function(e, r) {
 					if (e !== undefined) {
 						console.log(e);
-						alert("Error: "+e);					
+						Warning.displayWarning("Error: "+e);					
 					}
 
 					ComputeEngine.Connection._ping();
@@ -418,6 +445,65 @@ let ComputeEngine = {
 		},	
 	},
 
+	/** Functions for requesting results from the compute engine. */
+	Results: {
+		/** Returns stats about the computation. Only works if a computation has completed.
+		 * 
+		 * Returns an object with "allColorsCount" (int), "perturbationCount" (int), "minimalPerturbationSize" (int), 
+		 * "maximalPerturbationRobustness" (float), and "elapsed" (int; milliseconds).
+		*/
+		getControlStats(callback = undefined) {
+			ComputeEngine._backendRequest("/get_control_stats", (error, response) => {
+				if (callback !== undefined) {
+					callback(error, response);
+				}			
+			}, "GET");
+		},
+
+		/** Returns all computed perturbations in iterable form (for example array of dicts, array of arrays, iterator of objects...)
+		 * 
+		 * The result is an array of objects, such that each object contains a "perturbation" (dictionary of fixed variables),
+		 * "color_count" (number of colors for which the perturbation works), and "robustness" (float, 0-1).
+		*/
+		_getControlResults(callback = undefined) {
+			ComputeEngine._backendRequest("/get_control_results", (error, response) => {
+				if (callback !== undefined) {
+					const data = {stats: undefined, results: undefined};
+
+					this.getControlStats((e, r) => {
+						if (e !== undefined) {
+							console.log(e);
+							Warning.displayWarning("Error: "+e);			
+						}
+
+						data.stats = r;
+						data.results = response;
+						callback(error, ComputeEngine.Computation._computationType, data);
+					})
+				}			
+			}, "GET");
+		},
+
+		/** Request results from the compute engine. */
+		getResults(callback) {
+			if (!ComputeEngine.Connection._isConnected()) {
+				callback("Compute engine not connected.");
+				return undefined;
+			} else {
+				if (ComputeEngine.Computation._computationType == "attractor") {
+					return ComputeEngine._backendRequest("/get_results", (e, r) => {
+						console.log(e, ComputeEngine.Computation._computationType, r);
+						if (callback !== undefined) {
+							callback(e, ComputeEngine.Computation._computationType, r);
+						}
+					}, "GET");
+				}
+
+				return ComputeEngine.Results._getControlResults(callback);
+			}
+		},
+	},
+
 	/** Build and return an asynchronous request with given parameters. */
 	_backendRequest(url, callback = undefined, method = 'GET', postData = undefined) {
         var req = new XMLHttpRequest();
@@ -453,98 +539,6 @@ let ComputeEngine = {
 
     	return req;
     },
-
-	/** Returns all computed perturbations in iterable form (for example array of dicts, array of arrays, iterator of objects...)
-	 * 
-	 * The result is an array of objects, such that each object contains a "perturbation" (dictionary of fixed variables),
-	 * "color_count" (number of colors for which the perturbation works), and "robustness" (float, 0-1).
-	*/
-	_getControlResults(callback = undefined) {
-		this._backendRequest("/get_control_results", (error, response) => {
-			if (callback !== undefined) {
-				const data = {stats: undefined, results: undefined};
-
-				this.getControlStats((e, r) => {
-					if (e !== undefined) {
-						console.log(e);
-						alert("Error: "+e);			
-					}
-
-					data.stats = r;
-					data.results = response;
-					callback(error, this.Computation._computationType, data);
-				})
-			}			
-		}, "GET");
-	},
-
-	getResults(callback) {
-		if (!ComputeEngine.Connection._isConnected()) {
-			callback("Compute engine not connected.");
-			return undefined;
-		} else {
-			/*if (this.Computation._computationType == "control") {
-				callback(undefined, this.Computation._computationType, {
-					'elapsed': this.Computation._lastComputation,
-					'parNum':500000000000000000000,
-					'perturbations':[[["GcrA:true", "CtrC:false"], 500, 60], 
-									[["GcrA:true", "LmDsd:true"], 90, 40],
-									[["dsadasd:true", "LmDsd:false", "CtrC:true"], 90000, 30],
-									[["CtrC:false"], 1, 40],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadadddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddsd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90],
-									[["GcrA:true", "CtrC:false", "LmDsd:true", "dsadasd:false"], 2000000, 90]],
-					'controllable':["GcrA", "GcrfdA", "GcrAsd", "GcrAv", "GcrAb", "CtsdrC","CtsadrC","CtfdasrC", "CtrC", "LmDsd", "dsadasd", "dsadasddd"],
-					'phenotype':["GcrA:true", "CtrC:false", "LmDsd:true", "dsddsddsddsddsddsddsddsddsddsddsddsddsddsddsddsd:false", "dsadasd:false"],
-					'oscillation':"All",
-				});
-
-				return;
-			}*/
-
-			if (this.Computation._computationType == "attractor") {
-				return this._backendRequest("/get_results", (e, r) => {
-					console.log(e, this.Computation._computationType, r);
-					if (callback !== undefined) {
-						callback(e, this.Computation._computationType, r);
-					}
-				}, "GET");
-			}
-
-			return this._getControlResults(callback);
-		}
-	},
 
 	/** Send a validation request for a model fragment. */ 
 	validateUpdateFunction(modelFragment, callback) {
@@ -583,32 +577,4 @@ let ComputeEngine = {
 			}, "GET");	
 		}
 	},
-
-	// Control function headers.
-
-	/** Returns stats about the computation. Only works if a computation has completed.
-	 * 
-	 * Returns an object with "allColorsCount" (int), "perturbationCount" (int), "minimalPerturbationSize" (int), 
-	 * "maximalPerturbationRobustness" (float), and "elapsed" (int; milliseconds).
-	*/
-	getControlStats(callback = undefined) {
-		this._backendRequest("/get_control_stats", (error, response) => {
-			if (callback !== undefined) {
-				callback(error, response);
-			}			
-		}, "GET");
-	},
-
-	/** Returns status of the computation at the moment. Only works if the computation is running or finished.
-	 * 
-	 * Returns an object with "computationStarted" (int; unix timestamp), "computationCancelled" (bool)
-	 * "isRunning" (bool), "elapsed" (int; milliseconds), "version" (string),
-	 * */
-	getControlComputationStatus(callback = undefined) {		
-		this._backendRequest("/get_control_computation_status", (error, response) => {
-			if (callback !== undefined) {
-				callback(error, response);
-			}
-		}, "GET");
-	}
 }

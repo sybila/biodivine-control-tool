@@ -4,7 +4,7 @@ function init() {
 	// Safari security alert
 	let isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 	if (isSafari) {
-		alert(
+		Warning.displayWarning(
 			"At the moment, security measures in Safari may prevent you from connecting to the AEON compute engine.\n\n" +
 			"You can still use the editor to view, modify and export models. While we work on this issue, you " +
 			"can access full AEON functionaliy in Google Chrome."
@@ -96,18 +96,20 @@ function init() {
 	Results.init();
 	ControlResults.init();
 	TabBar.init();
+	Warning.init();
 	ComputeEngine.Connection.openConnection();	// Try to automatically connect when first opened.
+	ComputeEngine.Computation.Control.resetParameters();
 
 	let witnessCallback = function(e, r) {
 		UI.isLoading(false);
 		if (e !== undefined) {
-			alert(e);
+			Warning.displayWarning(e);
 		} else {
 			let error = LiveModel.Import.importAeon(r.model);
 			if (error !== undefined) {
-        		alert(error);
+        		Warning.displayWarning(error);
         	}
-        	UI.ensureContentTabOpen(ContentTabs.modelEditor);
+        	UI.Visible.ensureContentTabOpen(ContentTabs.modelEditor);
 		}
 	}
 
@@ -169,68 +171,5 @@ function ensurePlaceholder(el) {
 	}
 */
 
-hotkeys('e', function(event, handler) {	
-	if (UI.isNodeMenuVisible()) {
-		event.preventDefault();
-		fireEvent(document.getElementById("node-menu-edit-name"), "click");
-	}	
-});
-
-hotkeys('f', function(event, handler) {	
-	if (UI.isNodeMenuVisible()) {
-		event.preventDefault();
-		fireEvent(document.getElementById("node-menu-edit-function"), "click");
-	}	
-});
-
-hotkeys('backspace', function(event, handler) {	
-	if (UI.isNodeMenuVisible()) {
-		event.preventDefault();
-		fireEvent(document.getElementById("node-menu-remove"), "click");
-	}	
-	if (UI.isEdgeMenuVisible()) {
-		event.preventDefault();
-		fireEvent(document.getElementById("edge-menu-remove"), "click");
-	}
-});
-
-hotkeys('o', function(event, handler) {	
-	if (UI.isEdgeMenuVisible()) {
-		event.preventDefault();
-		fireEvent(document.getElementById("edge-menu-observability"), "click");
-	}	
-});
-
-hotkeys('m', function(event, handler) {	
-	if (UI.isEdgeMenuVisible()) {
-		event.preventDefault();
-		fireEvent(document.getElementById("edge-menu-monotonicity"), "click");
-	}	
-});
-
-hotkeys('n,+', function(event, handler) {	
-	event.preventDefault();
-	let id = LiveModel.Variables.addVariable(false);
-	CytoscapeEditor.showNode(id);
-});
-
-hotkeys('h', { keyup: true }, function(event, handler) {
-	if (event.type === 'keydown') {
-		UI.setQuickHelpVisible(true);
-	}
-	if (event.type === 'keyup') {
-		UI.setQuickHelpVisible(false);
-	}	
-});
 
 
-// utility function to fire events on UI elements - we mainly need it to simulate clicks
-function fireEvent(el, etype){
-  if (el.fireEvent) {
-    el.fireEvent('on' + etype);
-  } else {
-    var evObj = document.createEvent('Events');
-    evObj.initEvent(etype, true, false);
-    el.dispatchEvent(evObj);
-  }
-}

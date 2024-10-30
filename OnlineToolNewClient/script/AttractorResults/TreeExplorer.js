@@ -314,7 +314,7 @@ let TreeExplorer = {
 
 				CytoscapeTreeEditor.applyTreeLayout(fit);
 			} else {
-				alert(e);
+				Warning.displayWarning(e);
 			}
 			loading.classList.add("invisible");
 			CytoscapeTreeEditor.refreshSelection();
@@ -459,7 +459,7 @@ let TreeExplorer = {
 				loading.classList.add("invisible");
 				if (e !== undefined) {
 					console.log(e);
-					alert("Cannot load stability data: "+e);                   
+					Warning.displayWarning("Cannot load stability data: "+e);                   
 				} else {
 					console.log(r);
 					let content = "<h4>Stability analysis:</h4>";
@@ -499,183 +499,4 @@ let TreeExplorer = {
 		}
 		CytoscapeTreeEditor.applyTreeLayout();
 	},
-/*
-	// Keyboard shortcuts for basic navigation:
-
-	hotkeys('up', function(event, handler) {	
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected == undefined) {
-			CytoscapeTreeEditor.selectNode("0");	
-		} else {
-			let parent = CytoscapeTreeEditor.getParentNode(selected);
-			if (parent == undefined) { return; }
-			CytoscapeTreeEditor.selectNode(parent);
-			event.preventDefault();
-		}	
-	});
-
-	hotkeys('left', function(event, handler) {
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected == undefined) {
-			CytoscapeTreeEditor.selectNode("0");	
-		} else {
-
-			let sibling = CytoscapeTreeEditor.getSiblingNode(selected);
-			if (sibling == undefined) { return; }
-			CytoscapeTreeEditor.selectNode(sibling);
-			event.preventDefault();
-		}	
-	});
-
-	hotkeys('right', function(event, handler) {
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected == undefined) {
-			CytoscapeTreeEditor.selectNode("0");	
-		} else {
-			let sibling = CytoscapeTreeEditor.getSiblingNode(selected);
-			if (sibling == undefined) { return; }
-			CytoscapeTreeEditor.selectNode(sibling);
-			event.preventDefault();
-		}	
-	});
-
-	hotkeys('down', function(event, handler) {
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected == undefined) {
-			CytoscapeTreeEditor.selectNode("0");	
-		} else {
-			let child = CytoscapeTreeEditor.getChildNode(selected, true);
-			if (child == undefined) { return; }
-			CytoscapeTreeEditor.selectNode(child);
-			event.preventDefault();
-		}	
-	});
-
-	hotkeys('shift+down', function(event, handler) {
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected == undefined) {
-			CytoscapeTreeEditor.selectNode("0");	
-		} else {
-			let child = CytoscapeTreeEditor.getChildNode(selected, false);
-			if (child == undefined) { return; }
-			CytoscapeTreeEditor.selectNode(child);
-			event.preventDefault();
-		}	
-	});
-
-	hotkeys('backspace', function(event, handler) {	
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected !== undefined && CytoscapeTreeEditor.getNodeType(selected) == "decision") {
-			event.preventDefault();
-			if (confirm("Delete this node?")) {
-				TreeExplorer.removeNode(selected);		
-			}		
-		}	
-	});
-
-	hotkeys('h', { keyup: true }, function(event, handler) {
-		if (event.type === 'keydown') {
-			document.getElementById("quick-help-tree-explorer").classList.remove("gone");
-		}
-		if (event.type === 'keyup') {
-			document.getElementById("quick-help-tree-explorer").classList.add("gone");
-		}	
-	});
-
-	hotkeys('s', function(event, handler) {
-		let panel = document.getElementById("mixed-info");
-		if (!panel.classList.contains("gone")) {
-			fireEvent(document.getElementById("mixed-stability-analysis-button"), "click");
-		}
-
-		panel = document.getElementById("decision-info");
-		if (!panel.classList.contains("gone")) {
-			fireEvent(document.getElementById("decision-stability-analysis-button"), "click");
-		}
-
-		panel = document.getElementById("leaf-info");
-		if (!panel.classList.contains("gone")) {
-			fireEvent(document.getElementById("leaf-stability-analysis-button"), "click");
-		}
-	});
-
-	hotkeys('d', function(event, handler) {
-		let panel = document.getElementById("mixed-info");
-		if (!panel.classList.contains("gone")) {
-			fireEvent(document.getElementById("make-decision-button"), "click");
-		}
-	})
-
-	// add extra spacing
-	hotkeys("k", function(event, handler) {
-		event.preventDefault();
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected == undefined) {
-			return false;
-		}
-		TreeExplorer._moveNode(selected, 1)
-		return false;
-	});
-
-	// subtract extra spacing
-	hotkeys("i", function(event, handler) {
-		event.preventDefault();
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected == undefined) {
-			return false;
-		}
-		TreeExplorer._moveNode(selected, -1)
-		return false;
-	});
-
-	// switch selected and sibling's order
-	hotkeys("j, l", function(event, handler) {
-		event.preventDefault();
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected == undefined) {
-			return false;
-		}
-		let parent = CytoscapeTreeEditor.getParentNode(selected);
-		if (parent == undefined) { 
-			return false;
-		}
-		const switchedIds = CytoscapeTreeEditor.layoutSettings.switchChildren;
-		if (!switchedIds.delete(parent)) {
-			switchedIds.add(parent);
-		}
-		CytoscapeTreeEditor.applyTreeLayout();
-		return false;
-	});
-
-	// switch children's order
-	hotkeys("r", function(event, handler) {
-		event.preventDefault();
-		let selected = CytoscapeTreeEditor.getSelectedNodeId();
-		if (selected == undefined) {
-			return false;
-		}
-		const switchedIds = CytoscapeTreeEditor.layoutSettings.switchChildren;
-		if (!switchedIds.delete(selected)) {
-			switchedIds.add(selected);
-		}
-		CytoscapeTreeEditor.applyTreeLayout();
-		return false;
-	});
-
-	hotkeys("f", function(event, handler) {
-		event.preventDefault();
-		CytoscapeTreeEditor.fit();
-		return false
-	});
-
-	// utility function to fire events on UI elements - we mainly need it to simulate clicks
-	function fireEvent(el, etype){
-	if (el.fireEvent) {
-		el.fireEvent('on' + etype);
-	} else {
-		var evObj = document.createEvent('Events');
-		evObj.initEvent(etype, true, false);
-		el.dispatchEvent(evObj);
-	}
-	}*/
 }

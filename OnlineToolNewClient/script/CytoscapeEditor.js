@@ -153,7 +153,7 @@ let CytoscapeEditor = {
 			ModelEditor.selectVariable(id, true);
 		})
 		node.on('unselect', (e) => {
-			UI.toggleNodeMenu();
+			UI.Visible.toggleNodeMenu();
 			ModelEditor.selectVariable(id, false);
 		})
 		node.on('click', (e) => {						
@@ -323,7 +323,7 @@ let CytoscapeEditor = {
 		let zoom = CytoscapeEditor._cytoscape.zoom();			
 		let position = node.renderedPosition();
 		let height = node.height() * zoom;			
-		UI.toggleNodeMenu([position["x"], position["y"]], zoom);
+		UI.Visible.toggleNodeMenu([position["x"], position["y"]], zoom);
 	},
 
 	// Update the edge menu to be shown exactly for the currently selected edge.
@@ -336,7 +336,7 @@ let CytoscapeEditor = {
 		let zoom = CytoscapeEditor._cytoscape.zoom();
 		let boundingBox = edge.renderedBoundingBox();
 		let position = [ (boundingBox.x1 + boundingBox.x2) / 2, (boundingBox.y1 + boundingBox.y2) / 2 ];
-		UI.toggleEdgeMenu(edge.data(), position, zoom);
+		UI.Visible.toggleEdgeMenu(edge.data(), position, zoom);
 	},
 
 	// Implements functionality of buttons responsible for highlighting of nodes in the graph.
@@ -407,7 +407,7 @@ let CytoscapeEditor = {
 			this._renderMenuForSelectedEdge(edge);
 		});
 		edge.on("unselect", (e) => {
-			UI.toggleEdgeMenu();	// hide menu
+			UI.Visible.toggleEdgeMenu();	// hide menu
 		});
 		edge.on("mouseover", (e) => {
 			edge.addClass("hover");

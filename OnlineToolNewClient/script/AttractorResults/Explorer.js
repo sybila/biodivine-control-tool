@@ -41,7 +41,7 @@ let Explorer = {
 
 		let callback = function(e, r) {
             if (e !== undefined) {
-                alert(e);
+                Warning.displayWarning(e);
             } else {
                 Explorer._processData(r);
                 TabBar.addTab("explorer", r);
@@ -96,7 +96,7 @@ let Explorer = {
         this._loadedResult = result;
 
         if(this._loadedResult["has_large_attractors"]) {
-            alert("Some attractors were too large to draw. These will be shown only as two states with the constant and non-constant variables differentiated.");
+            Warning.displayWarning("Some attractors were too large to draw. These will be shown only as two states with the constant and non-constant variables differentiated.");
         }
 
         this._displayAll();
