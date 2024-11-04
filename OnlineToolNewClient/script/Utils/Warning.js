@@ -18,9 +18,14 @@ let Warning = {
         switch (warningType) {
             case "resultsAvailable":
                 return {text: "Results available. If you want to modify the model you have to close all results or open model in a new window.",
-                        buttons:    `<button class='centered-button' onclick='Warning.resultsAvailableResolve(null)' style='height: 25px;'>Cancel</button>
+                        buttons:    `<button class='centered-button' onclick='Warning.closeWarning()' style='height: 25px;'>Cancel</button>
                                     <button class='centered-button' onclick='Warning.resultsAvailableResolve(false)' style='height: 25px;'>Delete results</button>
                                     <button class='centered-button' onclick='Warning.resultsAvailableResolve(true)' style='height: 25px;'>Open new window</button>`};
+            case "tooManyControlRes":
+                return {text: "You calculated more than 1000 results. Opening results in one tab may cause performance issues.",
+                            buttons: `<button class='centered-button' onclick='Warning.closeWarning()' style='height: 25px;'>Cancel</button>
+                            <button class='centered-button' onclick='Warning.tooManyControlResolve(true)' style='height: 25px;'>Open in one tab</button>
+                            <button class='centered-button' onclick='Warning.tooManyControlResolve(false)' style='height: 25px;'>Export results in .csv</button>`};
             default:
                 return {text: warningType, buttons: "<button class='centered-button' onclick='Warning.closeWarning()' style='height: 25px; margin: auto;'>Close</button>"};
         }
@@ -38,6 +43,19 @@ let Warning = {
 
         this.closeWarning();
 	},
+
+    /** Resolves resultsAvailable warning. If resolveMode is true puts all results into one tab, 
+     *  else if is false exports control results into .csv file,
+     *  else closes warning wihout performing any action. */
+    tooManyControlResolve(resolveMode) {
+        if (resolveMode == true) {
+            TabBar.addTab('control results', Results.loadedResults.data);
+        } else if (resolveMode == false) {
+            UI.DownloadFile.downloadControlResCSV();
+        }
+        
+        this.closeWarning();
+    },
 
     closeWarning() {
         this.warningDiv.style.display = "none";

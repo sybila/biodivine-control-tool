@@ -124,6 +124,14 @@ let Results = {
 		})
 	},
 
+	openControlTab() {
+		if (this.loadedResults.data.stats.perturbationCount > 1000) {
+			Warning.displayWarning("tooManyControlRes");
+		} else {
+			TabBar.addTab('control results', Results.loadedResults.data);
+		}
+	},
+
 	/** Gets results from the ComputeEngine and inserts them into results module. */
 	download() {
 		console.log("Download...")
@@ -150,6 +158,34 @@ let Results = {
 		}
 
 		return "#!results:" + this.loadedResults.type + ":" + JSON.stringify(this.loadedResults.data) + "\n";
+	},
+
+	/** Exports results into .csv.
+	 *  'id, perturbation, size, parametrizations, rob(%)'
+	*/
+	exportControlResCsv() {
+		if (this.loadedResults.type != "control") {
+			return null;
+		}
+
+		let id = 1;
+		let csvContent = "id, perturbation, size, parametrizations, rob(%)\n";
+
+		for (pert of this.loadedResults.data.results) {
+			csvContent += `${id},`;
+			const variables = Object.keys(pert.perturbation);
+
+			for (variable of variables) {
+				csvContent += `${variable}:${pert.perturbation[variable]} `
+			}
+
+			csvContent.trimEnd();
+			csvContent += `,${variables.length},${pert.color_count},${pert.robustness * 100}\n`;
+
+			id += 1;
+		}
+
+		return csvContent;
 	},
 
 	/** Resets results module to its initial state. */

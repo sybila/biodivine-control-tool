@@ -47,7 +47,7 @@ let ComputeEngine = {
 				this._pingRepeatToken = undefined;
 				this._connected = false;
 				if (typeof UI !== 'undefined') {
-					UI.updateComputeEngineStatus("disconnected");
+					UI.UpdateStatus.updateComputeEngineStatus("disconnected");
 				}			
 				return true;
 			} else {
@@ -66,14 +66,16 @@ let ComputeEngine = {
 					};
 
 					if (r != undefined) {
-						UI.updateComputeEngineStatus(status, {timestamp: r.isRunning == true ? r.elapsed : r.computationStarted + r.elapsed, 
+						UI.UpdateStatus.updateComputeEngineStatus(status, {type: "control",
+																timestamp: r.isRunning == true ? r.elapsed : r.computationStarted + r.elapsed, 
 																is_running: r.isRunning, 
 																is_cancelled: r.computationCancelled, 
 																error: e});
 					}
 				});
 			} else {
-				UI.updateComputeEngineStatus(status, response);
+				response.type = ComputeEngine.Computation._computationType;
+				UI.UpdateStatus.updateComputeEngineStatus(status, response);
 			}
 		},
 
@@ -162,7 +164,6 @@ let ComputeEngine = {
 			/** Cancels now running control computation and saves partial results.
 			*/
 			_cancelControlComputation(callback = undefined) {
-				console.log("haha");
 				return ComputeEngine._backendRequest("/cancel_control_computation", (error, response) => {
 					if (callback !== undefined) {
 						callback(error, response);
@@ -224,9 +225,9 @@ let ComputeEngine = {
 				this._minRobustness = 0.0;
 				this._maxSize = 1000;
 				this._numberResults = 1000000;
-				document.getElementById("min-robustness-input").value = "";
-				document.getElementById("max-size-input").value = "";
-				document.getElementById("num-results-input").value = "";
+				document.getElementById("min-robustness-input").value = "0.00";
+				document.getElementById("max-size-input").value = "1000";
+				document.getElementById("num-results-input").value = "1000000";
 			},
 		},
 
@@ -510,8 +511,14 @@ let ComputeEngine = {
 
         req.onload = function() {
         	if (callback !== undefined) {
-				//console.log(req.response);
-        		let response = JSON.parse(req.response);
+        		let response = undefined;
+				
+				try {
+					response = JSON.parse(req.response);
+				} catch (e) {
+					response = req.response;
+				}
+				
         		if (response.status) {
         			callback(undefined, response.result);
         		} else {	// server returned an error

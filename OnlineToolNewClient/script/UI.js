@@ -174,6 +174,21 @@ let UI = {
 			});
 		},
 
+		downloadControlResCSV() {
+			csvContent = Results.exportControlResCsv();
+
+			if (csvContent == null) {
+				return;
+			}
+
+			let filename = ModelEditor.getModelName();
+			if (filename === undefined) {
+				filename = "model";
+			}
+	
+			this._downloadFile(filename + "ControlResults.csv", csvContent)
+		},
+
 		_downloadFile(name, content) {
 			var el = document.createElement('a');
 			el.setAttribute('href', 'data:text/plain;charset=utf-8,'+encodeURIComponent(content));
@@ -338,6 +353,180 @@ let UI = {
 				Explorer.insertData(data)
 			} else {
 				this._switchVisibleDiv(3);
+			}
+		},
+	},
+
+	/** Functions used for updating the status of the compute engine */
+	UpdateStatus: {
+		/** Gets time from ms timestamp in this format HOURS:MINUTES:SECONDS.
+		 * 	If UTC is true, then converts independently on the time zone.*/
+		_getTime(timestamp, UTC = false) {
+			const date = new Date(timestamp);
+
+			let addZero = function(number) {
+				return number < 10 ? "0" + number : number;
+			}
+
+			if (UTC) {
+				return addZero(date.getUTCHours()) + ":" + addZero(date.getUTCMinutes()) + ":" + addZero(date.getUTCSeconds());
+			}
+
+			return addZero(date.getHours()) + ":" + addZero(date.getMinutes()) + ":" + addZero(date.getSeconds());
+		},
+
+		/** Shows/hiddes download results button in the ComputeEngine menu. 
+		 * 	Show download button if there is a job, but unless it is done, show "partial" in the button
+		*/
+		_toggleResultsDownload(status, data) {
+			let cmpDownload = document.getElementById("computation-download");
+
+			if (data["timestamp"] !== null && !(data.type == "control" && status != "done" && status != "cancelled")) {
+				cmpDownload.classList.remove("gone");
+				if (status == "done") {
+					cmpDownload.innerHTML = "Show result <img src=\"img/cloud_download-24px.svg\">";
+				} else {
+					cmpDownload.innerHTML = "Show partial result <img src=\"img/cloud_download-24px.svg\">";
+				}
+			} else {
+				cmpDownload.classList.add("gone");
+			}
+		},
+
+		/** Updates progress status of the ComputeEngine module and the status bar. */
+		_updateProgress() {
+
+		},
+
+		/** Updates status of the ComputeEngine module and the progress bar. */
+		updateComputeEngineStatus(status, data) {
+			let connectButton = document.getElementById("button-connect");
+			let statusComp = document.getElementById("compute-engine-status");
+			let statusBar = document.getElementById("status-bar");
+			let addressInput = document.getElementById("engine-address");
+			let dot = document.getElementById("engine-dot");
+			let cmp = document.getElementById("computation");
+			let cmpStatus = document.getElementById("computation-status");
+			let cmpProgress = document.getElementById("computation-progress");
+			let cmpClasses = document.getElementById("computation-classes");
+			let cmpCancel = document.getElementById("computation-cancel");
+			
+			// Reset classes
+			statusBar.classList.remove("red", "green", "orange");
+			statusComp.classList.remove("red", "green", "orange");
+			dot.classList.remove("red", "green", "orange");
+			cmpStatus.classList.remove("red", "green", "orange");
+			if (status == "connected") {
+				addressInput.setAttribute("disabled", "1");
+				// Also do this for parent, because we want to apply some css based on this
+				// to the container as well.
+				addressInput.parentElement.setAttribute("disabled", "1");
+				statusComp.textContent = " ● Connected";
+				connectButton.innerHTML = "Disconnect <img src='img/cloud_off-24px.svg'>";
+				if (data !== undefined) {
+					// data about computation available
+					let status = "(none)";
+					// If there is a computation, it is probably running...
+					if (data["timestamp"] !== null) {
+						status = "running";
+						// ...but, if it is cancelled, we are awaiting cancellation...
+						if (data["is_cancelled"]) {
+							status = "awaiting cancellation";
+						}
+						// ...but, if it is not running and it is not cancelled, then it must be done...
+						if (!data["is_running"] && !data["is_cancelled"]) {
+							status = "done";
+						}
+						// ...and, if it is not running and it is cancelled, the it is actualy cancelled.
+						if (!data["is_running"] && data["is_cancelled"]) {
+							status = "cancelled";
+						}
+					}
+					// Update server status color depending on current computation status.
+					if (status == "(none)" || status == "done" || status == "cancelled") {
+						statusBar.classList.add("green");
+						statusComp.classList.add("green");
+						dot.classList.add("green");
+					} else {
+						statusBar.classList.add("orange");
+						statusComp.classList.add("orange");
+						dot.classList.add("orange");
+					}
+					// Make status green/orange depending on state of computation.
+					if (status == "done") {
+						cmpStatus.classList.add("green");
+					} else if (status != "(none)") {
+						cmpStatus.classList.add("orange");
+					}
+	
+					if (data.error !== undefined && data.error !== null) {
+						status += ", error: "+ data.error;
+					}
+	
+					// Progress is only shown when we are running...
+					if (data["is_running"] && data.progress != undefined) {
+						statusBar.textContent = status + " " + data.progress.slice(0, 6);
+						cmpStatus.innerHTML = status;
+						cmpProgress.parentElement.classList.remove("gone");
+					} else {
+						if (status != "(none)") {
+							const timeStatus = status + " " + this._getTime(data.timestamp, data["is_running"] == true);
+							cmpStatus.innerHTML = timeStatus;
+							statusBar.textContent = timeStatus;
+						} else {
+							cmpStatus.innerHTML = status;
+							statusBar.textContent = " ● Connected";
+						}
+						
+						cmpProgress.parentElement.classList.add("gone");
+					}
+					cmp.classList.remove("gone");
+
+					if (data.progress != undefined) {
+						cmpProgress.textContent = data.progress;
+					}
+					
+					if (data.num_classes !== null) {
+						cmpClasses.textContent = data.num_classes;
+					} else {
+						cmpClasses.textContent = "-";
+					}
+					// Show cancel button if job is running and not cancelled 
+					if (data["is_running"] && !data["is_cancelled"]) {
+						cmpCancel.classList.remove("gone");
+					} else {
+						cmpCancel.classList.add("gone");
+					}
+
+					this._toggleResultsDownload(status, data);
+	
+					if (data["timestamp"] !== undefined && Results.hasResults()) {
+						// show warning if data is out of date
+						ComputeEngine.Computation.setActiveComputation(data["timestamp"]);
+						if (ComputeEngine.Computation.hasActiveComputation()) {
+							document.getElementById("results-expired").classList.add("gone");
+						} else {
+							document.getElementById("results-expired").classList.remove("gone");
+						}
+					} else {
+						document.getElementById("results-expired").classList.add("gone");
+					}			
+	
+					if (status == "done" && ComputeEngine.Computation.waitingForResult) {
+						ComputeEngine.Computation.waitingForResult = false;
+						Results.download();
+					}
+				}
+			} else {
+				addressInput.removeAttribute("disabled");
+				addressInput.parentElement.removeAttribute("disabled");
+				statusBar.textContent = " ● Disconnected";
+				statusBar.classList.add("red");
+				statusComp.textContent = " ● Disconnected";
+				statusComp.classList.add("red");
+				dot.classList.add("red");
+				connectButton.innerHTML = "Connect <img src='img/cloud-24px.svg'>";
+				cmp.classList.add("gone");
 			}
 		},
 	},
@@ -508,153 +697,6 @@ let UI = {
 			});
 		};
 	},
-
-	/** Gets time from ms timestamp in this format HOURS:MINUTES:SECONDS.
-	 * 	If UTC is true, then converts independently on the time zone.*/
-	_getTime(timestamp, UTC = false) {
-		const date = new Date(timestamp);
-
-		let addZero = function(number) {
-			return number < 10 ? "0" + number : number;
-		}
-
-		if (UTC) {
-			return addZero(date.getUTCHours()) + ":" + addZero(date.getUTCMinutes()) + ":" + addZero(date.getUTCSeconds());
-		}
-
-		return addZero(date.getHours()) + ":" + addZero(date.getMinutes()) + ":" + addZero(date.getSeconds());
-	},
-
-	updateComputeEngineStatus(status, data) {
-		let connectButton = document.getElementById("button-connect");
-		let statusComp = document.getElementById("compute-engine-status");
-		let statusBar = document.getElementById("status-bar");
-		let addressInput = document.getElementById("engine-address");
-		let dot = document.getElementById("engine-dot");
-		let cmp = document.getElementById("computation");
-		let cmpStatus = document.getElementById("computation-status");
-		let cmpProgress = document.getElementById("computation-progress");
-		let cmpClasses = document.getElementById("computation-classes");
-		let cmpCancel = document.getElementById("computation-cancel");
-		let cmpDownload = document.getElementById("computation-download");
-		// Reset classes
-		statusBar.classList.remove("red", "green", "orange");
-		statusComp.classList.remove("red", "green", "orange");
-		dot.classList.remove("red", "green", "orange");
-		cmpStatus.classList.remove("red", "green", "orange");
-		if (status == "connected") {
-			addressInput.setAttribute("disabled", "1");
-			// Also do this for parent, because we want to apply some css based on this
-			// to the container as well.
-			addressInput.parentElement.setAttribute("disabled", "1");
-			statusComp.textContent = " ● Connected";
-			connectButton.innerHTML = "Disconnect <img src='img/cloud_off-24px.svg'>";
-			if (data !== undefined) {
-				// data about computation available
-				let status = "(none)";
-				// If there is a computation, it is probably running...
-				if (data["timestamp"] !== null) {
-					status = "running";
-					// ...but, if it is cancelled, we are awaiting cancellation...
-					if (data["is_cancelled"]) {
-						status = "awaiting cancellation";
-					}
-					// ...but, if it is not running and it is not cancelled, then it must be done...
-					if (!data["is_running"] && !data["is_cancelled"]) {
-						status = "done";
-					}
-					// ...and, if it is not running and it is cancelled, the it is actualy cancelled.
-					if (!data["is_running"] && data["is_cancelled"]) {
-						status = "cancelled";
-					}
-				}
-				// Update server status color depending on current computation status.
-				if (status == "(none)" || status == "done" || status == "cancelled") {
-					statusBar.classList.add("green");
-					statusComp.classList.add("green");
-					dot.classList.add("green");
-				} else {
-					statusBar.classList.add("orange");
-					statusComp.classList.add("orange");
-					dot.classList.add("orange");
-				}
-				// Make status green/orange depending on state of computation.
-				if (status == "done") {
-					cmpStatus.classList.add("green");
-				} else if (status != "(none)") {
-					cmpStatus.classList.add("orange");
-				}
-
-				if (data.error !== undefined && data.error !== null) {
-					status += ", error: "+ data.error;
-				}
-
-				// Progress is only shown when we are running...
-				if (data["is_running"] && data.progress != undefined) {
-					statusBar.textContent = status + " " + data.progress.slice(0, 6);
-					cmpProgress.parentElement.classList.remove("gone");
-				} else {
-					statusBar.textContent = status != "(none)" ? status + " " + this._getTime(data.timestamp, data["is_running"] == true):
-																	statusBar.textContent = " ● Connected";
-					cmpProgress.parentElement.classList.add("gone");
-				}
-				cmp.classList.remove("gone");
-				cmpStatus.innerHTML = status;
-				cmpProgress.textContent = data.progress;
-				if (data.num_classes !== null) {
-					cmpClasses.textContent = data.num_classes;
-				} else {
-					cmpClasses.textContent = "-";
-				}
-				// Show cancel button if job is running and not cancelled 
-				if (data["is_running"] && !data["is_cancelled"]) {
-					cmpCancel.classList.remove("gone");
-				} else {
-					cmpCancel.classList.add("gone");
-				}
-				// Show download button if there is a job, but unless it is done, show "partial" in the button
-				if (data["timestamp"] !== null) {
-					cmpDownload.classList.remove("gone");
-					if (status == "done") {
-						cmpDownload.innerHTML = "Show result <img src=\"img/cloud_download-24px.svg\">";
-					} else {
-						cmpDownload.innerHTML = "Show partial result <img src=\"img/cloud_download-24px.svg\">";
-					}
-				} else {
-					cmpDownload.classList.add("gone");
-				}
-			
-
-				if (data["timestamp"] !== undefined && Results.hasResults()) {
-					// show warning if data is out of date
-					ComputeEngine.Computation.setActiveComputation(data["timestamp"]);
-					if (ComputeEngine.Computation.hasActiveComputation()) {
-						document.getElementById("results-expired").classList.add("gone");
-					} else {
-						document.getElementById("results-expired").classList.remove("gone");
-					}
-				} else {
-					document.getElementById("results-expired").classList.add("gone");
-				}			
-
-				if (status == "done" && ComputeEngine.Computation.waitingForResult) {
-					ComputeEngine.Computation.waitingForResult = false;
-					Results.download();
-				}
-			}
-		} else {
-			addressInput.removeAttribute("disabled");
-			addressInput.parentElement.removeAttribute("disabled");
-			statusBar.textContent = " ● Disconnected";
-			statusBar.classList.add("red");
-			statusComp.textContent = " ● Disconnected";
-			statusComp.classList.add("red");
-			dot.classList.add("red");
-			connectButton.innerHTML = "Connect <img src='img/cloud-24px.svg'>";
-			cmp.classList.add("gone");
-		}
-	},
-
 
 	isLoading(status) {
 		if (status) {
