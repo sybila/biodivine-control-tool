@@ -1,5 +1,5 @@
 Directory containing things for running Aeon Online Tool.
-You need to download the whole OnlineTool directory (frontend of the aplication) and one of the precompiled compute engines from ComputeEngines directory (backend of the aplication).
+You need to download the whole OnlineTool directory (frontend of the aplication) and one of the precompiled compute engines from ComputeEngines directory (backend of the aplication). For the aplication to work you need to run both of these components at the same time.
 
 #AeonOnlineTool
 
