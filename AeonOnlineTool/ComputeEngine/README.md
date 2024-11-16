@@ -1,4 +1,4 @@
-# Compute Engine for Biodivine/Aeon Online Tool
+# Compute Engine for the Biodivine/Aeon Online Tool
 
 This directory contains precompiled Compute Engines for various operating systems. If you cannot find a compatible Compute Engine for your OS, you can compile one yourself by following the instructions in the <a href="https://github.com/sybila/biodivine-aeon-server">Biodivine Aeon Server GitHub repository</a>.
 
