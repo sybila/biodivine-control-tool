@@ -42,7 +42,9 @@ Bypass Security Warning: Windows may flag the executable as a potential security
 
 ### MacOS (x86-64)
 
-To run the Compute Engine on MacOS with an x86-64 architecture (Intel-based Macs, not Apple M processors).
+To run  this version of Compute Engine on MacOS with an x86-64 architecture (Intel-based Macs, not Apple M processors).
+
+Run the Compute Engine: After unzipping, navigate to the folder and run the compute-engine file.
 
 Bypass Security Warning: MacOS may block the execution of the file if it is from an unidentified developer. If this happens:
 
