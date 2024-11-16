@@ -1,14 +1,27 @@
-Directory containing things for running Aeon Online Tool.
-You need to download the whole OnlineTool directory (frontend of the aplication) and one of the precompiled compute engines from ComputeEngines directory (backend of the aplication). For the aplication to work you need to run both of these components at the same time.
+# Biodivine/Aeon Online Tool
 
-#AeonOnlineTool
+Biodivine/Aeon Online Tool is a web-based application for performing operations on Boolean networks (both fully and partially defined). It allows users to modify networks, perform attractor analysis, and compute control strategies.
 
-Web based tool for performing operations over boolean networks (fully and partialy defined).
+## Overview
 
-Functions:
+The tool consists of two main components:
 
-modification of the network (model) - adding nodes, adding regulations, renaming nodes, modification of the update functions
+**Frontend:** The web interface for interacting with the tool (located in the OnlineTool directory).
+    
+**Backend:** The Compute Engine, which processes the data and executes operations (located in the ComputeEngines directory).
 
-attractor analysis - analysis of possible attractors of the network, visualisation of the attractor analysis results (with bifurcation tree and attractor explorer)   
+## Setup guide
 
-control computation - setting controllable nodes, setting phenotype, setting parameters of the control computation, visualisation of the computed control results
+To get the application running, you need to download both components and run them simultaneously.
+
+1) Download the Components
+
+**Frontend:** Download the entire OnlineTool directory. This contains the web-based user interface for the application.
+    
+**Backend:** Download one of the precompiled Compute Engines from the ComputeEngines directory. This will handle the backend operations.
+
+2) Run the Components
+
+To run the application, you need to run both the frontend and backend simultaneously. Detailed instructions for setting up and running both the frontend and backend can be found in the README files within their respective directories.
+
+Once both are running, the tool will be fully functional.
