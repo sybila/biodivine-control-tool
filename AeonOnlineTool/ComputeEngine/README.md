@@ -8,7 +8,9 @@ This directory contains precompiled Compute Engines for various operating system
 
 ### Windows (x86-64) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/Windows-x86-64bit-Compute-Engine.zip">Download here</a>
 
-### MacOs (x86-64) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/MacOs-x86-64bit-Compute-Engine.zip">Download here</a>
+### MacOs (x86-64 - Intel-based) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/MacOs-x86-64bit-Compute-Engine.zip">Download here</a>
+
+### MacOS (arm64 - Apple Silicon) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/MacOs-arm64-Compute-Engine.zip">Download here</a>
 
 ## Setup guide
 
@@ -40,9 +42,23 @@ Bypass Security Warning: Windows may flag the executable as a potential security
 
 3) Click the Run button, and the Compute Engine should start.
 
-### MacOS (x86-64)
+### MacOS (x86-64 - Intel-based)
 
 To run  this version of Compute Engine on MacOS with an x86-64 architecture (Intel-based Macs, not Apple M processors).
+
+Run the Compute Engine: After unzipping, navigate to the folder and run the compute-engine file.
+
+Bypass Security Warning: MacOS may block the execution of the file if it is from an unidentified developer. If this happens:
+
+1) Open System Preferences and go to Security & Privacy.
+
+2) Under the General tab, look for a message saying the compute-engine was blocked.
+
+3) Click Open Anyway, and the Compute Engine should run.
+
+### MacOS (arm64 - Apple Silicon)
+
+To run  this version of Compute Engine on MacOS with an arm64 (aarch64) architecture (Apple Silicon M processors).
 
 Run the Compute Engine: After unzipping, navigate to the folder and run the compute-engine file.
 
