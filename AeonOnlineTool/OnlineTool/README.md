@@ -2,17 +2,21 @@
 
 The Aeon Client is a web-based user interface for the Aeon tool, designed for Boolean network operations. This project includes a static HTML+JS website for easy deployment and use.
 
+## Download link <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/OnlineTool/OnlineToolClient.zip">Download here</a>
+
 ## Getting Started
 ### Running the GUI Locally
-1) Download the repository contents.
+1) Download the OnlineToolClient.zip file either manually or by clicking on the provided download link.
 
-2) Open a terminal in the project directory.
+2) Extract the contents of the downloaded OnlineToolClient.zip file.
 
-3) Run the following command to start a local server:
+3) Open a terminal in the extracted project directory.
+
+4) Run the following command to start a local server:
     
         python3 -m http.server 8080
 
-4) Open your browser and navigate to: http://localhost:8080.
+5) Open your browser and navigate to: http://localhost:8080.
 
 
 ### Deploying on a Server
