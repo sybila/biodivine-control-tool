@@ -2,8 +2,6 @@
 
 The Aeon Client is a web-based user interface for the Aeon tool, designed for Boolean network operations. This project includes a static HTML+JS website for easy deployment and use.
 
-## Download link - <a href="https://downgit.github.io/#/home?url=https://github.com/sybila/biodivine-control-tool/tree/main/AeonOnlineTool/OnlineTool">Download here</a>
-
 ## Getting Started
 ### Running the GUI Locally
 1) Download the repository contents.
