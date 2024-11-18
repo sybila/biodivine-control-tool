@@ -8,7 +8,7 @@ The tool consists of two main components:
 
 **Frontend:** The web interface for interacting with the tool (located in the OnlineTool directory).
     
-**Backend:** The Compute Engine, which processes the data and executes operations (located in the ComputeEngines directory).
+**Backend:** The Compute Engine, which processes the data and executes operations (located in the ComputeEngine directory).
 
 ## Setup guide
 
@@ -18,7 +18,7 @@ To get the application running, you need to download both components and run the
 
 **Frontend:** Download the entire OnlineTool directory. This contains the web-based user interface for the application.
     
-**Backend:** Download one of the precompiled Compute Engines from the ComputeEngines directory. This will handle the backend operations.
+**Backend:** Download one of the precompiled Compute Engines from the ComputeEngine directory. This will handle the backend operations.
 
 2) Run the Components
 
