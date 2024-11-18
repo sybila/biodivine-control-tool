@@ -1,7 +1,43 @@
-## Aeon Client
+# Biodivine/Aeon Online Tool Client
 
-This is a web based user interface for the [Aeon](http://biodivine.fi.muni.cz/aeon) tool. The project contains a static HTML+JS website. To run the GUI locally, you simply need to download the contents of this repository, run `python3 -m http.server 8080` and open `http://localhost:8080` in your favourite browser. To deploy the GUI on your server, proceed as with any other static website (i.e. copy the files to the desired directory and configure the server to make them publicly available).
+The Aeon Client is a web-based user interface for the Aeon tool, designed for Boolean network operations. This project includes a static HTML+JS website for easy deployment and use.
 
-### AEON WASM
+## Download link - <a href="https://downgit.github.io/#/home?url=https://github.com/sybila/biodivine-control-tool/tree/main/AeonOnlineTool/OnlineTool">Download here</a>
 
-Some of the features are delegated to a WASM library which exports the native AEON features so that we don't have to re-implement them in JavaScript. This funcitonality is in the `aeon-wasm` folder. Currently, our strategy is to have the fully built version of `aeon-wasm` in the repository so that it can be deployed directly. Hence, if you change some of the code in `aeon-wasm/src/`, you need to run `wasm-pack build --target web` in the `aeon-wasm` folder to rebuild the package. The "main" JS project will then automatically see the updated files. However, note that deployments therefore also need to include the `aeon-wasm` folder.
+## Getting Started
+### Running the GUI Locally
+1) Download the repository contents.
+
+2) Open a terminal in the project directory.
+
+3) Run the following command to start a local server:
+    
+        python3 -m http.server 8080
+
+4) Open your browser and navigate to: http://localhost:8080.
+
+
+### Deploying on a Server
+
+To host the GUI on your server:
+1) Copy all files from the repository to the desired directory.
+
+2) Configure your server to serve these files as a static website.
+
+## AEON WASM Integration
+
+Some features rely on a WebAssembly (WASM) library, located in the aeon-wasm folder. This library exports native AEON functionalities, avoiding the need for re-implementation in JavaScript.
+
+Ensure the aeon-wasm folder is included when deploying the GUI, as it is critical for WASM functionality.
+
+### Rebuilding the WASM Package
+
+If you modify the code in aeon-wasm/src/, follow these steps to rebuild the package:
+1) Navigate to the aeon-wasm folder.
+
+2) Run:
+
+        wasm-pack build --target web
+
+3) The updated package will be automatically detected by the main JS project.
+
