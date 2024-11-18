@@ -1,12 +1,27 @@
-The biodivine-control-tool repository offers tools for controlling Boolean networks, supporting both fully and partially specified networks.
+# Biodivine Control Tool
 
- #AeonOnlineTool
+The biodivine-control-tool repository provides tools for working with Boolean networks, including support for both fully and partially specified networks.
 
-    Purpose: A web-based tool for operations on Boolean networks.
-    Capabilities: Includes network modification, attractor analysis, and control computation.
-    Frontend: Developed using HTML, CSS, and JavaScript.
-    Backend: Written in Rust.
+## Tools Overview
 
-#PythonTool
+### Aeon Online Tool
 
-    Purpose: A Python-based tool specifically for computing control strategies over Boolean networks.
+A web-based application for performing operations on Boolean networks.
+
+#### Features:
+
+Network Modification: Edit and refine the structure of Boolean networks.
+
+Attractor Analysis: Identify stable states or recurring patterns in network dynamics.
+
+Control Computation: Determine control strategies to guide network behavior.
+
+#### Technology Stack:
+
+Frontend: Developed with HTML, CSS, and JavaScript.
+
+Backend: Powered by Rust.
+
+### Python Tool
+
+A Python-based tool designed specifically for computing control strategies in Boolean networks.
