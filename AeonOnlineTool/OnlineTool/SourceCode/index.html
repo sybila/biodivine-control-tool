@@ -138,40 +138,44 @@
 
             <div style="position: absolute;">
 
-                <div id="tab-computation" class="main-panel gone" style="max-height: 250px; height: 250px; resize: none;">
+                <div id="tab-computation" class="main-panel gone" style="max-height: 250px; height: fit-content; resize: none;">
                     <button class="centered-button" style="margin-left: 140px;" onclick="ComputeEngine.Computation.startComputation(LiveModel.Export.exportAeon());">
                         <h2 style="font-weight: 4000; font-size: 5px; margin: 0 auto; font-size: 20px; text-align: center;">Start Computation</h2>
                     </button>
-                    <div class="doubleContainer" style="margin-top: 20px;">
+                    <div class="doubleContainer" style="height: 50px; margin-top: 20px;">
                         <div>
-                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;"> ● Computation mode: </h3>
+                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px; margin-bottom: 12px;"> ● Computation mode: </h3>
                         </div>
                         
                         <div class="doubleContainer">
-                            <button id="button-attractor" class="centered-button" style="background-color: #B0BEC5;" onclick="ComputeEngine.Computation.toggleComputationMode(false);">Attractor</button>
-                            <button id="button-control" class="centered-button" style="margin-left: 30px; background-color: #ECEFF1;" onclick="ComputeEngine.Computation.toggleComputationMode(true);">Control</button>
+                            <button id="button-attractor" class="centered-button" style="margin: 3px; background-color: #B0BEC5;" onclick="ComputeEngine.Computation.toggleComputationMode(false);">Attractor</button>
+                            <div style="height: 40px; margin: 3px; visibility: invisible;">
+                                <div id="compute-mode-arrow" class="arrow left" style="margin-top: 16px; margin-left: 5px; margin-right: 10px; border: solid black; border-width: 0 3px 3px 0;"></div>
+                            </div>
+                            <button id="button-control" class="centered-button" style="margin: 3px; background-color: #ECEFF1;" onclick="ComputeEngine.Computation.toggleComputationMode(true);">Control</button>
                         </div>
                     </div>
 
-                    <div id="control-settings">
+
+                    <div id="control-settings" style="height: 118px; display: none;">
                         <div style="height: 30px;">
-                            <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Control Settings</h3>
+                            <h3 style="margin-top: 10px; margin-bottom: 10px; font-family: 'FiraMono'; text-transform: uppercase;"> ● Control Settings</h3>
                         </div>
 
                         <div>
-                            <div style="height: 20px;">
-                                <h4 style="max-width: 50%; width: 50%; position: absolute; top: 160px; left: 10px; font-family: 'FiraMono', monospace;">Minimal Robustness:</h4>
-                                <input id="min-robustness-input" class="filterInput" type="text" onclick="Warning.resultsAvailableWarning()" onkeyup="ComputeEngine.Computation.Control.setMinRobustness()" style="max-width: 46%; width: 46%; position: absolute; top: 180px; right: 8px;">
+                            <div class="doubleContainer" style="height: 25px">
+                                <h4 style="max-height: 20px; height: fit-content; max-width: 50%; width: 50%; margin: 3px; font-family: 'FiraMono', monospace;">Min Robustness (%):</h4>
+                                <input id="min-robustness-input" class="filterInput" type="text" onclick="Warning.resultsAvailableWarning()" onkeyup="ComputeEngine.Computation.Control.setMinRobustness()"  onblur="ComputeEngine.Computation.Control.updateParameterInputs()" style="max-width: 46%; width: 46%; float: right;">
                             </div>
 
-                            <div style="height: 20px;">
-                                <h4 style="max-width: 50%; width: 50%; position: absolute; top: 190px; left: 10px; font-family: 'FiraMono', monospace;">Maximal Size:</h4>
-                                <input id="max-size-input" class="filterInput" type="text" onclick="Warning.resultsAvailableWarning()" onkeyup="ComputeEngine.Computation.Control.setMaxSize()" style="max-width: 46%; width: 46%; position: absolute; top: 210px; right: 8px;">
+                            <div class="doubleContainer" style="height: 25px; margin-top: 7px;">
+                                <h4 style="max-height: 20px; height: fit-content; max-width: 50%; width: 50%; margin: 3px; font-family: 'FiraMono', monospace;">Max Size:</h4>
+                                <input id="max-size-input" class="filterInput" type="text" onclick="Warning.resultsAvailableWarning()" onkeyup="ComputeEngine.Computation.Control.setMaxSize(false)"  onblur="ComputeEngine.Computation.Control.updateParameterInputs()" style="max-width: 46%; width: 46%; float: right;">
                             </div>
 
-                            <div style="height: 20px;">
-                                <h4 style="max-width: 50%; width: 50%; position: absolute; top: 220px; left: 10px; font-family: 'FiraMono', monospace;">Maximal Number of Results:</h4>
-                                <input id="num-results-input" class="filterInput" type="text" onclick="Warning.resultsAvailableWarning()" onkeyup="ComputeEngine.Computation.Control.setNumberResults()" style="max-width: 46%; width: 46%; position: absolute; top: 240px; right: 8px;">
+                            <div class="doubleContainer" style="height: 25px; margin-top: 7px;">
+                                <h4 style="max-height: 20px; height: fit-content; max-width: 50%; width: 50%; margin: 3px; font-family: 'FiraMono', monospace;">Max Number of Results:</h4>
+                                <input id="num-results-input" class="filterInput" type="text" onclick="Warning.resultsAvailableWarning()" onkeyup="ComputeEngine.Computation.Control.setNumberResults()" onblur="ComputeEngine.Computation.Control.updateParameterInputs()" style="max-width: 46%; width: 46%; float: right;">
                             </div>
                         </div>
                     </div>
@@ -305,7 +309,7 @@
                         <button id="button-add-variable" class="image-button" onclick="let id = LiveModel.Variables.addVariable(false); CytoscapeEditor.showNode(id);" style="float: right;">Add variable (N) <img src="img/add_box-24px.svg"></button>
                     </div>
 
-                    <input type="text" id="variable-filter" class="filterInput" style="width: 98%;" onkeyup="ModelEditor.filterVariables()">
+                    <input type="text" id="variable-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="ModelEditor.Filter.filterVariables()" style="width: 98%;">
 
                     <div id="model-variables" class="scrolling-container" style="max-height: 340px;"></div>
                                         
@@ -362,8 +366,12 @@
                     
                     <div style="max-height: 30px; height: 30px; max-width: 100%; width: 100%; margin-bottom: 5px;">
                         <div style="max-height: 100%; height: 100%; float: left;">
-                            <button class="centered-button" onclick="ControllableEditor.setSelected(true)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; background-color: #FFFF66""></button>
-                            <button class="centered-button" onclick="ControllableEditor.setSelected(false)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px;  background-color: #B0BEC5;"></button>
+                            <button class="centered-button" onclick="ControllableEditor.setSelected(true)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; background-color: #FFFF66"">
+                                <div style="margin-left: -2px; font-weight: 400;">C</div>
+                            </button>
+                            <button class="centered-button" onclick="ControllableEditor.setSelected(false)" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; background-color: #B0BEC5;">
+                                <div style="margin-left: -2px; font-weight: 400;">U</div>
+                            </button>
                         </div>
 
                         <div style="max-height: 100%; height: 100%; float: right;">
@@ -373,7 +381,7 @@
                         </div>
                     </div>
 
-                    <input type="text" id="controllable-editor-filter" class="filterInput" onkeyup="ControllableEditor.filterTable()">
+                    <input type="text" id="controllable-editor-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="ControllableEditor.filterTable()">
 
                     <div class="scrolling-container" style="max-height: calc(100% - 170x); height: calc(100% - 170px);">
                         <table id="controllable-editor-table"class="table" style="height: 100%; width: 100%;">
@@ -409,9 +417,15 @@
 
                     <div style="max-height: 30px; height: 30px; max-width: 100%; width: 100%; margin-top: 5px; margin-bottom: 5px;">
                         <div style="max-height: 100%; height: 100%; float: left;">
-                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(true)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; background-color: green;"></button>
-                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(false)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; background-color: red;"></button>
-                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(null)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; background-color: #B0BEC5;"></button>
+                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(true)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; background-color: green;">
+                                <div style="margin-left: -2px; font-weight: 400;">T</div>
+                            </button>
+                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(false)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; background-color: red;">
+                                <div style="margin-left: -1px; font-weight: 400;">F</div>
+                            </button>
+                            <button class="centered-button" onclick="PhenotypeEditor.setSelected(null)" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; background-color: #B0BEC5;">
+                                <div style="margin-left: -2px; font-weight: 400;">N</div>
+                            </button>
                         </div>
 
                         <div style="max-height: 100%; height: 100%; float: right;">
@@ -421,7 +435,7 @@
                         </div>
                     </div>
 
-                    <input type="text" id="phenotype-editor-filter" class="filterInput" onkeyup="PhenotypeEditor.filterTable()">
+                    <input type="text" id="phenotype-editor-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="PhenotypeEditor.filterTable()">
 
                     <div class="scrolling-container" style="max-height: calc(100% - 218px); height: calc(100% - 218px); max-width: 100%; width: 100%;">
                         <table id="phenotype-editor-table"class="table" style="height: 100%; width: 100%;">
@@ -651,7 +665,7 @@
 
                 <div style="max-height: 100%; height: 100%; max-width: calc(70% - 5px); width: calc(70% - 5px); position: absolute; top: 0%; left: calc(30% + 5px); z-index: 200;">
                     <div style="max-height: 20px; height: 20px; max-width: 100%; width: 100%;">
-                        <input type="text" id="control-pert-filter-input"  class="filterInput" onkeyup="ControlResults.filterTable.filterPertFilterTable()" style="max-height: 20px; height: 20px; max-width: 50%; width: 50%; position: absolute; top: 2px; left: 0;">
+                        <input type="text" id="control-pert-filter-input"  class="filterInput" placeholder=" Filter Controllable Variables" onkeyup="ControlResults.filterTable.filterPertFilterTable()" style="max-height: 20px; height: 20px; max-width: 50%; width: 50%; position: absolute; top: 2px; left: 0;">
                         
                         <div style="max-height: 20px; height: 20px; max-width: 48%; width: 48%; position: absolute; top: 0; left: auto; right: 0;">
                             <div style="max-height: 100%; height: 100%; float: left;">

@@ -131,16 +131,16 @@ let ComputeEngine = {
 		 if status returns a different timestamp, we know results are out of date */
 		_lastComputation: undefined,
 		/** If is true, then computes control, else computes attractor analysis. */
-		_computateControl: false,
+		_computeControl: false,
 		//** If true then the computation is running or the results weren´t extracted yet. */
 		waitingForResult: false,
 
 		/** Functions used for computation of control. */
 		Control: {
 			//minRobustness (float) = minimal robustness of the computed perturbations
-			_minRobustness: 0,
+			_minRobustness: 0.0,
 			//maxSize (int) = maximal size of the computed perturbations
-			_maxSize: 1000,
+			_maxSize: 0,
 			//numberResults (int) = limits amount of computed perturbations. By default limited to 1_000_000, because we need to enumerate all results.
 			_numberResults: 1000000,
 
@@ -194,22 +194,40 @@ let ComputeEngine = {
 				const newMinRob = document.getElementById("min-robustness-input").value;
 				const convertedRob = parseFloat(newMinRob);
 
-				if (isNaN(convertedRob) || newMinRob < 0 || newMinRob > 100) {
-					this._minRobustness = 0;
+				if (isNaN(convertedRob) || newMinRob < 0) {
+					this._minRobustness = 0.0;
+				} else if (newMinRob > 100) {
+					this._minRobustness = 1;
 				} else {
 					this._minRobustness = convertedRob / 100;
 				}
 			},
 
-			/** Sets maximal size limit of the control computation. */
-			setMaxSize() {
-				const newMaxSize = document.getElementById("max-size-input").value;
-				const convertedSize = parseInt(newMaxSize);
+			/** Sets maximal size limit of the control computation.
+			 * 	contrCount (boolean) = if contrCount is true then sets this._maxSize to the number of controllable variables,
+			 * 							else sets it ot value from the "max-size-input" input field
+			 */
+			setMaxSize(contrCount) {
+				let newSize = undefined;
+				const inputField = document.getElementById("max-size-input");
+				const controllableCount = ControllableEditor.getCountValue(true);
 
-				if (isNaN(convertedSize) || convertedSize < 0) {
-					this._maxSize = 1000;
+				if (contrCount == false) {
+					newSize =  parseInt(inputField.value);
 				} else {
-					this._maxSize = convertedSize;
+					newSize = controllableCount;
+				}
+
+				if (isNaN(newSize) || newSize < 0) {
+					this._maxSize = 0;
+				} else if (newSize >= controllableCount) {
+					this._maxSize = controllableCount;
+				} else {
+					this._maxSize = newSize;
+				}
+
+				if (contrCount == true) {
+					this.updateParameterInputs();
 				}
 			},
 
@@ -225,14 +243,19 @@ let ComputeEngine = {
 				}
 			},
 
+			/** Sets values of all parameter inputs in the Start Computation module to current values. */
+			updateParameterInputs() {
+				document.getElementById("min-robustness-input").value = this._minRobustness * 100;
+				document.getElementById("max-size-input").value = this._maxSize;
+				document.getElementById("num-results-input").value = this._numberResults;
+			},
+
 			/** Resets value of the control computation parameters. (this._minRobustness, this._maxSize, this._numberResults) */
 			resetParameters() {
 				this._minRobustness = 0.0;
-				this._maxSize = 1000;
+				this._maxSize = 0;
 				this._numberResults = 1000000;
-				document.getElementById("min-robustness-input").value = "0.00";
-				document.getElementById("max-size-input").value = "1000";
-				document.getElementById("num-results-input").value = "1000000";
+				this.updateParameterInputs();
 			},
 		},
 
@@ -251,7 +274,7 @@ let ComputeEngine = {
 				return false;
 			}
 
-			if (this._computateControl && PhenotypeEditor.isPhenotypeEmpty()) {
+			if (this._computeControl && PhenotypeEditor.isPhenotypeEmpty()) {
 				Warning.displayWarning("Phenotype is empty. Add variables into the phenotype before performing control computation.");
 				return false;
 			}
@@ -279,7 +302,7 @@ let ComputeEngine = {
 			};
 
 			this.waitingForResult = true;
-			if (!this._computateControl) {
+			if (!this._computeControl) {
 				this._computationType = "attractor";
 				
 				return ComputeEngine._backendRequest("/start_computation", (e, r) => {
@@ -313,20 +336,42 @@ let ComputeEngine = {
 			}
 		},
 
-		/** Changes computation mode of the engine (changes value of the this._computateControl). */
-		toggleComputationMode(mode) {
-			this._computateControl = mode;
+		/** Updates direction of the mode arrow depending on the current computation mode. */
+		_updateModeArrow() {
+			const modeArrow = document.getElementById("compute-mode-arrow");
+
+			if (this._computeControl == true) {
+				modeArrow.style.marginLeft = "10px";
+				modeArrow.style.marginRight = "5px";
+				modeArrow.classList.remove("left");
+				modeArrow.classList.add("right");
+			} else {
+				modeArrow.style.marginLeft = "5px";
+				modeArrow.style.marginRight = "10px";
+				modeArrow.classList.remove("right");
+				modeArrow.classList.add("left");
+			}
+		},
+
+		/** Changes computation mode of the engine (changes value of the this._computeControl). */
+		toggleComputationMode(computeControl) {
+			this._computeControl = computeControl;
 
 			const atractorButton = document.getElementById("button-attractor");
 			const controlButton = document.getElementById("button-control");
+			const controlSettings = document.getElementById("control-settings");
 			
-			if (mode) {
+			if (computeControl) {
 				atractorButton.style.backgroundColor = "#ECEFF1";
 				controlButton.style.backgroundColor = '#B0BEC5';
+				controlSettings.style.display = "";
 			} else {
 				atractorButton.style.backgroundColor = '#B0BEC5';
 				controlButton.style.backgroundColor = '#ECEFF1';
+				controlSettings.style.display = "none";
 			}
+
+			this._updateModeArrow();
 		},
 
 		/** Indicate that this is the computation the server currently stores */

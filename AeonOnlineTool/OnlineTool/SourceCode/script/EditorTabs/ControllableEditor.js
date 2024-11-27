@@ -25,7 +25,7 @@ let ControllableEditor = {
     * Updates counters and CytoscapeEditor highlighting. */
     removeVariable(variable) {
         this._table.removeFromTable(variable.id);
-        this._counters[variable.controllable].decrement;
+        this._counters[variable.controllable].decrement();
         this._updateCounts();
         CytoscapeEditor.highlightControllable([variable]);
     },
@@ -84,4 +84,9 @@ let ControllableEditor = {
     changeSelectedAll(deselect) {
         this._table.changeSelectedAll(deselect);
     },
+
+    /** Returns current value of counter determined by the controllable (boolean) parameter. */
+    getCountValue(controllable) {
+        return this._counters[controllable].getCount();
+    }
 };

@@ -26,6 +26,11 @@ class CountWidget {
         this.updateCount();
     }
 
+    /** Returns current value of the counter. */
+    getCount() {
+        return this.count;
+    }
+
     /** Returns true if counter value is equal to 0. */
     isZero() {
         return this.count == 0;

@@ -41,6 +41,8 @@ let LiveModel = {
 			ModelEditor.addVariable(id, name);
 
 			ControllableEditor.addVariable(this._variables[id]);
+			ComputeEngine.Computation.Control.setMaxSize(true);
+
 			PhenotypeEditor.addVariable(this._variables[id]);
 
 			ModelEditor.updateStats();
@@ -76,6 +78,8 @@ let LiveModel = {
 				}
 
 				ControllableEditor.removeVariable(this._variables[id]);
+				ComputeEngine.Computation.Control.setMaxSize(true);
+
 				PhenotypeEditor.removeVariable(this._variables[id]);
 				delete this._variables[id];
 				delete LiveModel.UpdateFunctions._updateFunctions[id];
@@ -104,7 +108,7 @@ let LiveModel = {
 			if (typeof name !== "string") return "Name must be a string.";
 			let has_valid_chars = name.match(/^[a-z0-9{}_]+$/i) != null;
 			if (!has_valid_chars) return "Name can only contain letters, numbers and `_`, `{`, `}`.";
-			let existing_variable = this._variableFromName(name);
+			let existing_variable = this.variableFromName(name);
 			if (existing_variable !== undefined && existing_variable.id != id) {
 				return "Variable with this name already exists";
 			}		
@@ -187,7 +191,7 @@ let LiveModel = {
 		},
 
 		/** If variable with the given name exists, return the variable object, otherwise return undefined. */
-		_variableFromName(name) {
+		variableFromName(name) {
 			let keys = Object.keys(LiveModel.Variables._variables);
 			for (var i = 0; i < keys.length; i++) {
 				let key = keys[i];
@@ -315,7 +319,7 @@ let LiveModel = {
 			_extract_names_with_cardinalities(tokens, names);
 			let parameters = new Set();			
 			for (let item of names) {
-				let variable = LiveModel.Variables._variableFromName(item.name);
+				let variable = LiveModel.Variables.variableFromName(item.name);
 				if (variable === undefined) {	// item is a parameter - save it
 					for (let existing of parameters) {
 						if (existing.name == item.name && existing.cardinality != item.cardinality) {
@@ -538,6 +542,7 @@ let LiveModel = {
 			const variable = LiveModel.Variables.variableFromId(id);
 
 			ControllableEditor.changeVarControllable(variable, contrValue);
+			ComputeEngine.Computation.Control.setMaxSize(true);
 		},
 	},
 
@@ -560,7 +565,7 @@ let LiveModel = {
 		_insertNotConnected(positions, control) {
 			const vars = Object.keys(positions);
 			for (let variable of vars) {
-				this._addVariableImport(LiveModel.Variables._variableFromName(variable),
+				this._addVariableImport(LiveModel.Variables.variableFromName(variable),
 											variable, positions[variable], control[variable]);
 			}
 		},
@@ -568,10 +573,10 @@ let LiveModel = {
 		/** Add all regulations, creating variables if needed. */
 		_setRegulations(regulations, positions, control) {
 			for (let template of regulations) {
-				let regulator = this._addVariableImport(LiveModel.Variables._variableFromName(template.regulatorName), 
+				let regulator = this._addVariableImport(LiveModel.Variables.variableFromName(template.regulatorName), 
 														template.regulatorName, positions[template.regulatorName],
 														control[template.regulatorName]);
-				let target = this._addVariableImport(LiveModel.Variables._variableFromName(template.targetName),
+				let target = this._addVariableImport(LiveModel.Variables.variableFromName(template.targetName),
 														template.targetName, positions[template.targetName],
 														control[template.targetName]);
 				
@@ -584,7 +589,7 @@ let LiveModel = {
 		_setUpdateFunctions(updateFunctions, positions, control) {
 			let keys = Object.keys(updateFunctions);
 			for (let key of keys) {
-				let variable = this._addVariableImport(LiveModel.Variables._variableFromName(key), key, positions[key], control[key]);
+				let variable = this._addVariableImport(LiveModel.Variables.variableFromName(key), key, positions[key], control[key]);
 
 				// We actually have to also set the function in the model because we don't update it
 				// from the set method...
@@ -933,7 +938,7 @@ let LiveModel = {
 						if (arg.token !== "name") {	// argument must be a name.
 							return "Expected name, but found "+arg.text+".";
 						}
-						let variable = LiveModel.Variables._variableFromName(arg.data);
+						let variable = LiveModel.Variables.variableFromName(arg.data);
 						if (variable === undefined) {
 							return "Unknown argument '"+arg.data+"'. Only variables allowed as arguments.";
 						}

@@ -9,8 +9,7 @@
 let ModelEditor = {
 	// The element which contains all variable UI boxes.
 	_variables: undefined,
-	// Text bar for filter input.
-	_filterInput: undefined,
+
 	// Inputs for specifying model name and description
 	_modelName: undefined,
 	_modelDescription: undefined,
@@ -19,13 +18,81 @@ let ModelEditor = {
 	_variableTemplate: undefined,
 	_regulationTemplate: undefined,
 
+	/** Functions and properties for filtering variables from the model editor. */
+	Filter: {
+		// Text bar for filter input.
+		_filterInput: undefined,
+
+		/** Processes filter input in the form of string into array of variable names.
+		 * 	CutFromStart (int) determines how many characters should be removed from the start of the string.
+		*/
+		_processFilterInput(cutFromStart, filterValue) {
+			filterValue = filterValue.substring(cutFromStart);
+			return filterValue.split(",").map(item => item.trim())
+		},
+	
+		/** Gets all regulator ID of variables from the targetVariables array (array of variable name strings). */
+		_getRegulators(targetVariables) {
+			const regulatorIDs = new Set();
+
+			for (varName of targetVariables) {
+				const variable = LiveModel.Variables.variableFromName(varName);
+
+				if (variable != undefined) {
+					const regulations = LiveModel.Regulations.regulationsOf(variable.id);
+					regulations.forEach(regulation => { regulatorIDs.add(regulation.regulator); } );
+				}
+			}
+			
+			return regulatorIDs;
+		},
+
+		/** Tests if variableName string contains one of the strings in the namesToKeep array. */
+		_includesToKeep(namesToKeep, variableName) {
+			for (toKeepString of namesToKeep) {
+				if (variableName.includes(toKeepString)) {
+					return true;
+				}
+			}
+
+			return false;
+		},
+	
+		/** Filters variables from the ModelEditor depending on the this._filterInput value.
+		 * 	If this._filterInput value starts with "//target: " string then displays all regulators of the variables.
+		 */
+		filterVariables() {
+			const filterValue = this._filterInput.value;
+			const findRegulators = filterValue.startsWith("//target: ");
+
+			const variableNames = this._processFilterInput(findRegulators == true ? 9 : 0, filterValue);
+			const showAll = variableNames.length < 1 || variableNames[variableNames.length - 1] == "";
+
+			const regulatorIds = (showAll == false && findRegulators == true) ? this._getRegulators(variableNames) : undefined;
+			
+			console.log(regulatorIds);
+			LiveModel.Variables.getAllVariables().forEach(variable => {
+				const variableBox = ModelEditor._getVariableBox(variable.id);
+
+				if (showAll == true) {
+					variableBox.style.display = "";
+				} else if (findRegulators == true) {
+					variableBox.style.display = regulatorIds.has(variable.id) ? "" : "none";
+				} else {
+					variableBox.style.display = this._includesToKeep(variableNames, variable.name) ? "" : "none";
+				}
+			})
+		}
+	},
+
 	init() {
 		this._variables = document.getElementById("model-variables");
 		this._modelName = document.getElementById("model-name");
 		this._modelDescription = document.getElementById("model-description");
 		this._variableTemplate = document.getElementById("model-variable-template");
 		this._regulationTemplate = document.getElementById("model-regulation-template");
-		this._filterInput = document.getElementById("variable-filter");
+		this.Filter._filterInput = document.getElementById("variable-filter");
+		this.Filter._filterInput.value = "";
 		this._modelDescriptionShown = false;
 		ensurePlaceholder(document.getElementById("model-description"));
 	},
@@ -79,38 +146,6 @@ let ModelEditor = {
 			}
 			row4.children[1].textContent = parametersString;
 		}
-	},
-
-	filterVariables() {
-		const filterValue = this._filterInput.value;
-		const findRegulators = filterValue.startsWith("//target ");
-		let regulators = undefined;
-
-		if (findRegulators) {
-			const variable = LiveModel.Variables._variableFromName(filterValue.substring(9));
-
-			if (variable == undefined) {
-				return;
-			}
-
-			const regulations = LiveModel.Regulations.regulationsOf(variable.id);
-			regulators = new Set();
-
-			regulations.forEach(regulation => {
-				regulators.add(regulation.regulator);
-			});
-
-		}
-
-		LiveModel.Variables.getAllVariables().forEach( variable => {
-			const variableBox = this._getVariableBox(variable.id);
-
-			if (findRegulators) {
-				variableBox.style.display = regulators.has(variable.id) ? "" : "none";
-			} else {
-				variableBox.style.display = variable.name.includes(filterValue) ? "" : "none";
-			}
-		})
 	},
 
 	// Create a new variable box for the given id (without any regulations).

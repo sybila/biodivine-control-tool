@@ -1135,12 +1135,26 @@ div.center {
     margin-bottom: 4px;
   }
 
-  .up {
+.up {
     transform: rotate(-135deg);
     margin-top: 6px;
 }
 
- .down  { transform: rotate(45deg); }
+.left {
+    transform: rotate(135deg);
+    margin-top: 6px;
+}
+
+.right {
+    transform: rotate(-45deg);
+    margin-top: 6px;
+}
+
+.down {
+    transform: rotate(45deg);
+}
+
+ /* 
 
 /*========== Toggle button styles ===========*/
 
