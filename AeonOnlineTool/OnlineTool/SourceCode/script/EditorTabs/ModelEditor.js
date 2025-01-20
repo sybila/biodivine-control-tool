@@ -173,13 +173,21 @@ let ModelEditor = {
 		variablePhenotype.setAttribute("variable-id", id);
 
 		showVariableInfo.addEventListener("click", (e) => {
+			const buttonDivs = e.target.getElementsByTagName('div');
+			const buttonArrow = buttonDivs[0];
 			const variableBox = this._getVariableBox(e.target.getAttribute("variable-id"));
 			const variableInfo = variableBox.getElementsByClassName("scrolling-container")[0];
 
 			if (variableInfo.style.display == "none") {
 				variableInfo.style.display = "";
+				buttonArrow.classList.remove("down");
+				buttonArrow.classList.add("up");
+				buttonArrow.style.top = "20%";
 			} else {
 				variableInfo.style.display = "none";
+				buttonArrow.classList.remove("up");
+				buttonArrow.classList.add("down");
+				buttonArrow.style.top = "35%";
 			}
 		})
 
@@ -238,14 +246,33 @@ let ModelEditor = {
 			variableBox.classList.remove("hover");
 			CytoscapeEditor.hoverNode(id, false);
 		});
+
+		let variableShowButton = variableBox.getElementsByClassName("model-variable-show")[0];
 		// Enable show button
-		variableBox.getElementsByClassName("model-variable-show")[0].addEventListener("click", (e) => {
+		variableShowButton.addEventListener("click", (e) => {
 			CytoscapeEditor.showNode(id);
 		});
+
+		variableShowButton.addEventListener("mouseenter", (e) => {
+			UI.HoverHint.displayHover(e.target, 37, 0, 'Find variable');
+		});
+
+		variableShowButton.addEventListener("mouseleave", () => {
+			UI.HoverHint.hideHover();
+		});
+
+		let removeVarButton = variableBox.getElementsByClassName("model-variable-remove")[0];
 		// Enable remove button
-		variableBox.getElementsByClassName("model-variable-remove")[0].addEventListener("click", (e) => {
+		removeVarButton.addEventListener("click", () => {
 			LiveModel.Variables.removeVariable(id);
 		});
+		removeVarButton.addEventListener("mouseenter", (e) => {
+			UI.HoverHint.displayHover(e.target, 37, 0, 'Remove variable');
+		});
+		removeVarButton.addEventListener("mouseleave", () => {
+			UI.HoverHint.hideHover();
+		});
+
 		ensurePlaceholder(variableBox.getElementsByClassName("variable-function")[0]);
 		this._variables.appendChild(variableBox);
 	},
@@ -458,11 +485,14 @@ let ModelEditor = {
 		}
 	},
 
-	// Switches visibility of the model description.
-	showModelDescription() {
+	/** Toggles visibility of the model description. */
+	toggleModelDescription() {
+		const toggleButton = document.getElementById("button-model-description");
 		if (this._modelDescription.style.display == "") {
+			toggleButton.innerHTML = "Show model description";
 			this._modelDescription.style.display = "none";
 		} else {
+			toggleButton.innerHTML = "Hide model description";
 			this._modelDescription.style.display = "";
 		}
 	},

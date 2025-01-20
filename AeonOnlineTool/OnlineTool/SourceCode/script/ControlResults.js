@@ -11,6 +11,10 @@ let ControlResults = {
             let resultStr = "";
             const variables = Object.keys(pert);
 
+            if (variables.length < 1) {
+                return "{}";
+            }
+
             for (let i = 0; i < variables.length; i++) {
                 resultStr += variables[i];
 
@@ -282,7 +286,7 @@ let ControlResults = {
                                 document.getElementById("controlr-rob-filter")];
 
         this.sortTable._sortMode = [document.getElementById("primary-sort-switch"), document.getElementById("secondary-sort-switch")];
-        this.sortTable._orderArrows = document.getElementsByClassName("arrow");
+        this.sortTable._orderArrows = [document.getElementById("control-res-primary-arrow"), document.getElementById("control-res-secondary-arrow")];
         this._filterMenu = document.getElementById("control-res-filters");
         this.filterTable._pertFilterTable = new TableWidget(document.getElementById("control-pert-filter-table"),
                                                     document.getElementById("control-pert-filter-input"));
@@ -302,7 +306,8 @@ let ControlResults = {
 
             resultStr += ", ";
         }
-        return resultStr.substring(0, resultStr.length - 2);
+
+        return resultStr == "" ? "{}" : resultStr.substring(0, resultStr.length - 2);
     },
 
     /** Inserts control data into the stats widget and perturbations into the ControlResults._perturbTable.
@@ -323,17 +328,19 @@ let ControlResults = {
 
         for (variable of controlData.stats.controllable) {
             this.filterTable._pertFilterValues[variable] = "ignore";
-            this.filterTable._pertFilterTable.addVariable(variable, variable);
+            this.filterTable._pertFilterTable.addVariable(variable, variable, "phenotype");
         }
         const tableHead = document.getElementById("control-table-head");
         const tableDiv = document.getElementById("control-table-container");
         const table = document.getElementById("control-results-table");
-        const width = tableDiv.clientWidth / tableDiv.offsetWidth * 100;
 
-        tableHead.style.maxWidth = `${width}vw`;
-        tableHead.style.width =`${width}vw`;
-        table.style.maxWidth = `${width}vw`;
-        table.style.width =`${width}vw`;
+        if (tableDiv.clientWidth != 0 && tableDiv.offsetWidth != 0) {
+            const width = tableDiv.clientWidth / tableDiv.offsetWidth * 100;
+            tableHead.style.maxWidth = `${width}px`;
+            tableHead.style.width =`${width}px`;
+            table.style.maxWidth = `${width}vw`;
+            table.style.width =`${width}vw`;
+        }
         
         this.initTable._fillTable(controlData.results);
     },
@@ -355,8 +362,9 @@ let ControlResults = {
         button.setAttribute("colorShown", !(button.getAttribute("colorShown") == "true"));
     },
 
-    /** Switch which changes the visibility of ControlResults._filterMenu. */
-    showFilters() {
+    /** Toggles visibility of the ControlResults._filterMenu. */
+    toggleFilters() {
         this._filterMenu.style.display = this._filterMenu.style.display == "none" ? "" : "none";
+        UI.Visible.showHideManual("manual-control-results", null, null, "");
     },
 }

@@ -15,7 +15,7 @@ let UI = {
 	// Element of the menu that is displayed for each node/edge when selected.
 	_nodeMenu: undefined,
 	_edgeMenu: undefined,
-	/** Contains pairs of elements of the form { button: ..., tab: ... } corresponding to the side menu.
+	/** Contains pairs of elements of the form { button: ..., tab: ... } corresponding to the side menu.*/
 	_tabsAndButtons: undefined,
 
 	/** Array containing divs od different pages [model-div, control-results-div, explorer-div, tree-explorer-div] */
@@ -249,6 +249,29 @@ let UI = {
 
 	/** Functions used for changing and testing visibility of elements. */
 	Visible: {
+		/** Shows/Hides manual (sets display to none or ""). Manual is hidden if the textId parameter is "" or manual is already being displayed.
+		 * 	manualId (string) = defines which manual on which page should be shown/hidden (for example model page, controllable results page,...)
+		 * 	headlineId (nullable string) = element id of the manual header
+		 * 	headline (nullable string) = title for the manual
+		 * 	textId (string) = defines which text should be displayed in the manual, if is "", then hiddes the manual.
+		*/
+		showHideManual(manualId, headlineId, headline, textId) {
+			const manualElement = document.getElementById(manualId);
+
+			if (textId == "" || manualElement.style.display == "") {
+				manualElement.style.display = "none";
+			} else {
+				document.getElementById(headlineId).textContent = "Manual - " + headline;
+				
+				if (manualElement.openText != undefined) {
+					document.getElementById(manualElement.openText).style.display = "none";
+				}
+
+				document.getElementById(textId).style.display = "";
+				manualElement.openText = textId;
+				manualElement.style.display = "";
+			}
+		},
 
 		/** If given a position, show the center of the node menu at that position.
 		 If no position is given, hide the menu.
@@ -321,7 +344,9 @@ let UI = {
 					item.button.classList.remove("selected");
 					item.tab.classList.add("gone");
 				}			
-			}	
+			}
+			
+			this.showHideManual("manual-model", null, null, "");
 		},
 
 		/** Close any content tab, if open. */
@@ -341,20 +366,57 @@ let UI = {
 		},
 	
 		/** Toggles between data shown in the window. (used when inner tabs are switched) */
-		toggleDiv(type, data) {
+		toggleDiv(type) {
 			if (type == "model") {
 				this._switchVisibleDiv(0);
-				LiveModel.Import.importAeon(data, true);
 			} else if (type == "control results") {
 				this._switchVisibleDiv(1);
-				ControlResults.insertData(data);
 			} else if (type == "explorer") {
 				this._switchVisibleDiv(2);
-				Explorer.insertData(data)
 			} else {
 				this._switchVisibleDiv(3);
 			}
 		},
+	},
+
+	/** Functions for toggling display and changing position of the hint hover.
+	 * 	If you want HTML element to have hint add: onmouseenter="UI.HoverHint.displayHover(event.target, HoverPositionTop, HoverPostionLeft, HintText)" onmouseleave="UI.HoverHint.hideHover()" 
+	*/
+	HoverHint: {
+		hoverDiv: undefined,
+		/** Boolean value, true if the hover hint functionality is enabled. */
+		hoverEnabled: true,
+
+		/** Displays hover hint for the parent element. If this.hoverEnabled is false, then ends without displaying the hover hint.
+		 * 	parentElement (HTMLelement) = element for which the hover should be displayed (used for calculating the position of the hover)
+		 * 	topFromParent (signed int) = how many pixels over the parent element should the hover hint be displayed
+		 * 	leftFromParent (signed int) = how many pixels to the left from the parent element should be the hover hint displayed
+		 * 	hintText (string) = text which will appear in the hover
+		 */	
+		displayHover(parentElement, topFromParent, leftFromParent, hintText) {
+			if (this.hoverEnabled == false) { return; }
+
+			let parElPosition = parentElement.getBoundingClientRect();
+
+			this.hoverDiv.style.top = `${parElPosition.top + window.scrollY - topFromParent}px`;
+			this.hoverDiv.style.left = `${parElPosition.left + window.scrollX + leftFromParent}px`;
+			this.hoverDiv.textContent = hintText;
+			this.hoverDiv.style.display = "";
+		},
+
+		/** Hides the hover hint. */
+		hideHover() {
+			this.hoverDiv.style.display = "none";
+		},
+
+		/** Enables/Disables functionality of the hover hint.
+		 * 	button (HTML element) = button which turns of hovers, used for changing its text
+		 */
+		EnableDisableHover(button) {
+			this.hoverEnabled = !this.hoverEnabled;			
+			button.innerHTML = this.hoverEnabled == true ? "Disable Hover Hints" : "Enable Hover Hints";
+		},
+
 	},
 
 	/** Functions used for updating the status of the compute engine */
@@ -530,7 +592,7 @@ let UI = {
 		this.cytoscapeEditor = document.getElementById("cytoscape-editor");		
 		this._nodeMenu = document.getElementById("node-menu");
 		this._edgeMenu = document.getElementById("edge-menu");
-
+		this.HoverHint.hoverDiv = document.getElementById("hover-hint");
 		this._pageDivs = [document.getElementById("model-div"),
 							document.getElementById("control-results-div"),
 								document.getElementById("explorer-div"),

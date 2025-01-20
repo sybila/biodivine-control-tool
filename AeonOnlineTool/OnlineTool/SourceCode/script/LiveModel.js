@@ -281,6 +281,14 @@ let LiveModel = {
 			return fragment;
 		},
 
+		/** Validates update functions of all variables in the model. */
+		validateAllUpdateFunctions() {
+			const variables =  LiveModel.Variables.getAllVariables();
+			for (const variable of variables) {
+				this._validateUpdateFunction(variable.id);
+			}
+		},
+
 		/** Runs analysis of the update funciton asynchronously on server. */
 		_validateUpdateFunction(id) {
 			if (LiveModel._disable_dynamic_validation) return;

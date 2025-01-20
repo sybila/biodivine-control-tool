@@ -1,14 +1,24 @@
 /** Object responsible for the */
 let TabBar = {
-    // Contains elements for tab-bar-menu in the form { button:...., tabMenu: ...., tabTable:.... }
+    /**Contains elements for tab-bar-menu in the form { button:...., tabMenu: ...., tabTable:.... }*/
 	_tabBarElements: undefined,
-    //Dict containing all tabs {TABID: tab}
+    /**Dict containing all tabs {TABID: tab}*/
 	_tabs: undefined,
-    //ID of now active tab
+    /**ID of now active tab*/
 	_nowActiveTab: undefined,
-    //ID of the next created tab
-	_tabId: undefined,
     _draggedRow: undefined,
+
+    /** Saves ids of the tabs limited to one occurence in the tab menu. */
+    _tabIds: {
+        "model": 0,
+        "control results": 1,
+        "tree-explorer": 2,
+    },
+
+    /** Saves id of the current tab, whichs type is not limited to one occurence in the tab menu.
+     *  From the start set to high number (now 200) to ensure easier future implementation of the new limited tabs.
+     */
+    _unlimitedTabId: 200,
 
     init() {
         this._tabBarElements = {"button": null,
@@ -17,8 +27,7 @@ let TabBar = {
 
         this._draggedRow = null;
         this._tabs = {};
-        this._tabId = 1;
-        this._nowActiveTab = window.initialTabInfo.type == "model" ? 0 : 1;
+        this._nowActiveTab = this._tabIds[window.initialTabInfo.type];
 
         if (window.initialTabInfo.type == "tree-explorer") {
             UI.Open.openTreeExplorer();
@@ -28,11 +37,35 @@ let TabBar = {
         
     },
 
-    //Adds new tab into TabBar.
-    addTab(type, data) {
+    /** Inserts data into corresponding module. */
+    _insertData(type, data) {
+        if (type == "model") {
+            LiveModel.Import.importAeon(data, true);
+        } else if (type == "control results") {
+            ControlResults.insertData(data);
+        } else if (type == "explorer") {
+            Explorer.insertData(data)
+        }
+    },
+
+    /** Returns id by the type of the tab. Used only for initialization of a new tab.
+     *  If tab can be present multiple times in the tab menu, then uses value saved in this._unlimitedTabId and increments it by 1.
+    */
+    _getTabId(type) {
+        let tabID = this._tabIds[type];
+
+        if (tabID == undefined || tabID == null) {
+            tabID = this._unlimitedTabId;
+            this._unlimitedTabId += 1;
+        }
+
+        return tabID;
+    },
+
+    /** Creates new tab and appends it into the tab menu. */
+    _createTab(type, data, tabId) {
         const tabRow = document.createElement("tr");
         const tabDiv = document.createElement("div");
-        const tabId = type == "model" ? 0 : this._tabId++;
 
         tabRow.setAttribute("tabId", tabId);
         tabRow.setAttribute('draggable', 'true');
@@ -76,27 +109,43 @@ let TabBar = {
             tabRow.classList.remove('dragging');
         });
         
-        this.toggleActive(tabId, false);
+        this._insertData(type, data);
         tabRow.appendChild(tabDiv);
         this._tabBarElements.tabTable.appendChild(tabRow);
     },
 
-    //Changes active tab from this._tabs[this._nowActiveTab] to this._tabs[newActiveId]
+    /**Adds new tab into TabBar.*/
+    addTab(type, data) {
+        const tabId = this._getTabId(type);
+
+        if (this._tabs[this._tabIds[type]] == undefined || this._tabs[this._tabIds[type]] == null) {
+            this._createTab(type, data, tabId);
+        }
+        
+        this.toggleActive(tabId, false);
+    },
+
+    /** Makes now active tab not active. Changes only active status inside the tab menu and active hotkeys. */
+    _dissableNowActiveTab() {
+        const nowActiveTab = this._tabs[this._nowActiveTab];
+        nowActiveTab.changeStatus();
+
+        if (nowActiveTab.type == "model") {
+            InitHotkeys.disableHotkeys();
+            nowActiveTab.data = LiveModel.Export.exportAeon(true);
+        } else if (nowActiveTab.type == "tree-explorer") {
+            InitHotkeys.disableHotkeys();
+        }
+    },
+
+    /**Changes active tab from this._tabs[this._nowActiveTab] to this._tabs[newActiveId]*/
     toggleActive(newActiveId, returnEqual) {
         if (newActiveId == null) {
             return;
         }
 
         if (this._nowActiveTab != newActiveId) {
-            const oldTab = this._tabs[this._nowActiveTab];
-            oldTab.changeStatus();
-    
-            if (oldTab.type == "model") {
-                InitHotkeys.disableHotkeys();
-                oldTab.data = LiveModel.Export.exportAeon(true);
-            } else if (oldTab.type == "tree-explorer") {
-                InitHotkeys.disableHotkeys();
-            }
+            this._dissableNowActiveTab();
         } else if (returnEqual) {
             return;
         }
@@ -109,12 +158,16 @@ let TabBar = {
             InitHotkeys.initTreeHotkeys();
         }
 
+        if (this._tabIds[newTab.type] == undefined || this._tabIds[newTab.type] == null) {
+            this._insertData(newTab.type, newTab.data);
+        }
+
         newTab.changeStatus();
-        UI.Visible.toggleDiv(newTab.type, newTab.data);
+        UI.Visible.toggleDiv(newTab.type);
         this._nowActiveTab = newActiveId;
     },
 
-    //Close current tab.
+    /**Close current tab.*/
     closeTab() {
         const tabs =  Array.from(this._tabBarElements.tabTable.rows);
 
@@ -143,7 +196,7 @@ let TabBar = {
         this._tabBarElements.tabTable.deleteRow(deleteIndex);
     },
 
-    //Closes all tabs except the one with the model.
+    /**Closes all tabs except the one with the model.*/
     closeResults() {
         const tabs =  Array.from(this._tabBarElements.tabTable.rows);
 
@@ -155,8 +208,8 @@ let TabBar = {
         }
     },
 
+    /** Switches active tab to model tab. If model tab is not present in the tab menu opens new tab with the current model. */
     openModel() {
-        const resTab = TabBar.getTab(TabBar.getNowActiveId());
         const modelTab = TabBar.getTab(0);
 
         if (modelTab == undefined) {
@@ -166,6 +219,7 @@ let TabBar = {
         }
     },
 
+    /** Returns tab by its ID. */
     getTab(tabId) {
         return this._tabs[tabId];
     },

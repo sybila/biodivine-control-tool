@@ -24,7 +24,7 @@ let PhenotypeEditor = {
     /** Adds a variable to the PhenotypeEditor.
      *  Updates counters and CytoscapeEditor highlighting.*/
     addVariable(variable) {
-        this._table.addVariable(variable.id, variable.name);
+        this._table.addVariable(variable.id, variable.name, "phenotype");
         this._counters[variable.phenotype].increment();
         this._updateCounts();
 

@@ -14,7 +14,7 @@ let ControllableEditor = {
     /** Adds a variable to the ControllableEditor.
      *  Updates counters and CytoscapeEditor highlighting.*/
     addVariable(variable) {
-        this._table.addVariable(variable.id, variable.name);
+        this._table.addVariable(variable.id, variable.name, "controllable");
         this._counters[variable.controllable].increment();
         this._updateCounts();
         this._table.changeIndicatorColor(variable.id, variable.controllable == true ? "#FFFF66" : "#B0BEC5");

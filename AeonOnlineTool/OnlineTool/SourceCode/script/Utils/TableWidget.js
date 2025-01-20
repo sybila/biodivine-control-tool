@@ -25,7 +25,7 @@ class TableWidget {
     }
 
     /** Fills row with elements. */
-    _addRowElements(row, name) {
+    _addRowElements(row, name, type) {
         let cell = document.createElement("td");
         cell.textContent = name;
         cell.style.maxHeight = "19px";
@@ -34,37 +34,35 @@ class TableWidget {
 
         row.appendChild(cell);
 
-        const indicator = document.createElement("button");
-        indicator.classList.add("centered-button");
-        indicator.style.maxHeight = "18px";
-        indicator.style.height = "18px";
-        indicator.style.marginTop = "1px";
-        indicator.style.marginRight = "2px";
-        indicator.style.paddingLeft = "5px";
-        indicator.style.float = "right";
-        indicator.style.pointerEvents = "none";
+        const indicator = document.createElement("div");
+        indicator.classList.add("rounded-block");
+        indicator.classList.add("indicator");
+
+        if (type != null) {
+            let hintMessage = type == "controllable" ? 'Variable Controllable Status' : "Variable Phenotype Status";
+            indicator.addEventListener("mouseenter", (e) => {UI.HoverHint.displayHover(e.target, 35, 0, hintMessage)})
+            indicator.addEventListener("mouseleave", () => {UI.HoverHint.hideHover()})
+        }
 
         row.appendChild(indicator);
 
         const filterAdd = document.createElement("button");
         filterAdd.classList.add("centered-button");
-        filterAdd.style.maxHeight = "18px";
-        filterAdd.style.height = "18px";
-        filterAdd.style.marginTop = "1px";
-        filterAdd.style.marginRight = "2px";
-        filterAdd.style.paddingLeft = "5px";
-        filterAdd.style.float = "right";
+        filterAdd.classList.add("indicator");
 
         filterAdd.onclick = () => {
             row.classList.toggle("selected");
             this._addIntoFilter(name);
         };
 
+        filterAdd.addEventListener("mouseenter", (e) => {UI.HoverHint.displayHover(e.target, 35, 0, "Add Into Filter")})
+        filterAdd.addEventListener("mouseleave", () => {UI.HoverHint.hideHover()})
+
         row.appendChild(filterAdd);
     };
 
     /** Creates row for the table. */
-    _createRow(id, name) {
+    _createRow(id, name, type) {
         let row = document.createElement("tr");
         row.classList.add("row");
         row.setAttribute('data-id', id);
@@ -92,16 +90,14 @@ class TableWidget {
             UI.isMouseDown = false;
         });
 
-        this._addRowElements(row, name);
+        this._addRowElements(row, name, type);
 
         return row;
     }
 
     /** Add a variable to table determined by the controllability of the variable. */
-    addVariable(id, name) {
-        this.table.appendChild(this._createRow(id, name));
-
-
+    addVariable(id, name, type = null) {
+        this.table.appendChild(this._createRow(id, name, type));
     }
 
     /** Delete variable by its id from table. */
@@ -109,8 +105,6 @@ class TableWidget {
         const row = this.table.querySelector(`tr[data-id='${id}']`)
         this.table.removeChild(row);
     }
-
-
 
     /** Renames variable coresponding to id. */
     renameById(id, newName) {
@@ -153,7 +147,7 @@ class TableWidget {
     changeIndicatorColor(id, color) {
         const row = this.table.querySelector(`tr[data-id='${id}']`)
         
-        const button = row.getElementsByTagName("button")[0];
+        const button = row.getElementsByClassName("indicator")[0];
         button.style.backgroundColor = color;
     };
 
