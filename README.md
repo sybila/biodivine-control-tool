@@ -1,27 +1,27 @@
-# Biodivine Control Tool
+# Biodivine/Aeon Online Tool
 
-The biodivine-control-tool repository provides tools for working with Boolean networks, including support for both fully and partially specified networks.
+Biodivine/Aeon Online Tool is a web-based application for performing operations on Boolean networks (both fully and partially defined). It allows users to modify networks, perform attractor analysis, and compute control strategies.
 
-## Tools Overview
+## Overview
 
-### Aeon Online Tool
+The tool consists of two main components:
 
-A web-based application for performing operations on Boolean networks.
+**Frontend:** The web interface for interacting with the tool (located in the OnlineTool directory).
+    
+**Backend:** The Compute Engine, which processes the data and executes operations (located in the ComputeEngine directory).
 
-#### Features:
+## Setup guide
 
-Network Modification: Edit and refine the structure of Boolean networks.
+To get the application running, you need to download both components and run them simultaneously.
 
-Attractor Analysis: Identify stable states or recurring patterns in network dynamics.
+1) Download the Components
 
-Control Computation: Determine control strategies to guide network behavior.
+**Frontend:** Download the entire OnlineTool directory. This contains the web-based user interface for the application.
+    
+**Backend:** Download one of the precompiled Compute Engines from the ComputeEngine directory. This will handle the backend operations.
 
-#### Technology Stack:
+2) Run the Components
 
-Frontend: Developed with HTML, CSS, and JavaScript.
+To run the application, you need to run both the frontend and backend simultaneously. Detailed instructions for setting up and running both the frontend and backend can be found in the README files within their respective directories.
 
-Backend: Powered by Rust.
-
-### Python Tool
-
-A Python-based tool designed specifically for computing control strategies in Boolean networks.
+Once both are running, the tool will be fully functional.
