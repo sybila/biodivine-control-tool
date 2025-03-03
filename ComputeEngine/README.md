@@ -4,13 +4,13 @@ This directory contains precompiled Compute Engines for various operating system
 
 ## Download links
 
-### Linux (x86-64) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/Linux-x86-64bit-Compute-Engine.zip">Download here</a>
+### Linux (x86-64) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/ComputeEngine/Linux-x86-64bit-Compute-Engine.zip">Download here</a>
 
-### Windows (x86-64) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/Windows-x86-64bit-Compute-Engine.zip">Download here</a>
+### Windows (x86-64) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/ComputeEngine/Windows-x86-64bit-Compute-Engine.zip">Download here</a>
 
-### MacOs (x86-64 - Intel-based) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/MacOs-x86-64bit-Compute-Engine.zip">Download here</a>
+### MacOs (x86-64 - Intel-based) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/ComputeEngine/MacOs-x86-64bit-Compute-Engine.zip">Download here</a>
 
-### MacOS (arm64 - Apple Silicon) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/MacOs-arm64-Compute-Engine.zip">Download here</a>
+### MacOS (arm64 - Apple Silicon) <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/ComputeEngine/MacOs-arm64-Compute-Engine.zip">Download here</a>
 
 ## Setup guide
 
