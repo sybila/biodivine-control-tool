@@ -915,6 +915,7 @@ let LiveModel = {
 			window.modelCalc[window.modelId]--;
 			window.modelId = window.nextModelId.value++;
 			window.modelCalc[window.modelId] = 1;
+			TabBar.changeTabText(0, "model " + "" + window.modelId)
 			document.title = "Biodivine/Aeon: model " + window.modelId;
 		}
 

@@ -17,10 +17,10 @@ let Warning = {
     _getWarningContent(warningType) {
         switch (warningType) {
             case "resultsAvailable":
-                return {text: "Results available. If you want to start new computation or modify the model you have to close all results or open model in a new window.",
+                return {text: "There are existing results in the Results module. To proceed, you must either delete the results or open a copy of this model without results in a new browser tab.",
                         buttons:    `<button class='centered-button' onclick='Warning.closeWarning()' style='height: 25px;'>Cancel</button>
                                     <button class='centered-button' onclick='Warning.resultsAvailableResolve(false)' style='height: 25px;'>Delete results</button>
-                                    <button class='centered-button' onclick='Warning.resultsAvailableResolve(true)' style='height: 25px;'>Open new window</button>`};
+                                    <button class='centered-button' onclick='Warning.resultsAvailableResolve(true)' style='height: 25px;'>Open new browser tab</button>`};
             case "tooManyControlRes":
                 return {text: "You calculated more than 1000 results. Opening results in one tab may cause performance issues.",
                             buttons: `<button class='centered-button' onclick='Warning.closeWarning()' style='height: 25px;'>Cancel</button>

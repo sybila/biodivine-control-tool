@@ -77,7 +77,12 @@ let TabBar = {
         tabDiv.style.paddingTop = "4px";
         tabDiv.style.marginTop = "5px";
         tabDiv.style.pointerEvents = "none";
-        tabDiv.innerText = type + " " + window.modelId;
+        tabDiv.innerText = type;
+
+        if (type == "model") {
+            tabDiv.innerText += " " + window.modelId;
+        }
+
         this._tabs[tabId] = new Tab(type, data, tabDiv);
         
         tabRow.addEventListener("click", (e) => {
@@ -123,6 +128,13 @@ let TabBar = {
         }
         
         this.toggleActive(tabId, false);
+    },
+
+    /** Changes inner text of inner tab to newName. */
+    changeTabText(id, newName) {
+        const tab = this.getTab(id);
+
+        tab.tabWidget.innerText = newName;
     },
 
     /** Makes now active tab not active. Changes only active status inside the tab menu and active hotkeys. */

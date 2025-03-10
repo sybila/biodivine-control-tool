@@ -772,4 +772,16 @@ let UI = {
 
 		return true;
 	},
+
+	/** Sets content of input element determined by the inputElementId.
+	 * 	Also runs the callFunction if defined. (used for example for reseting filters).
+	 */
+	resetInput(inputElementId, callFunction = null) {
+		inputElement = document.getElementById(inputElementId);
+		inputElement.value = "";
+		
+		if (callFunction != null) {
+			callFunction();
+		}
+	}
 }

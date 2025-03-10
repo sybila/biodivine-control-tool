@@ -142,7 +142,7 @@
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="font-weight: 4000; font-size: 5px; margin: 0 auto; font-size: 20px; text-align: center;">Start Computation</h2>
 
-                    <button class="centered-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Start Computation', 'manual-text-computation');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; top: 4px; right: 4px;" ><div style="margin-left: -2px; font-weight: 400;">H</div></button>
+                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Start Computation', 'manual-text-computation');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div class="doubleContainer" style="height: 50px; margin-top: 20px;">
                         <div>
@@ -189,7 +189,7 @@
                 <div id="tab-engine" class="main-panel gone" style="height: fit-content; resize: none;">
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Compute Engine</h2>
-                    <button class="centered-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Compute Engine', 'manual-text-engine');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; top: 4px; right: 4px;"><div style="margin-left: -2px; font-weight: 400;">H</div></button>            
+                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Compute Engine', 'manual-text-engine');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;"><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>            
                     
                     <div class="invisible-input full-line" style="margin-top: 4px; margin-bottom: 4px; font-size: 16px;">
                         <input id="engine-address" class="center" type="text" name="engine-address" value="http://localhost:8000" placeholder="(engine address)">
@@ -226,7 +226,7 @@
                 <div id="tab-import-export" class="main-panel gone" style="max-height: 570px; height: fit-content; resize: none;">
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Model File</h2>
-                    <button class="centered-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Import/Export', 'manual-text-import-export');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; top: 4px; right: 4px;" ><div style="margin-left: -2px; font-weight: 400; pointer-events: none;">H</div></button>
+                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Import/Export', 'manual-text-import-export');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div style="max-width: 100%; width: 100%;">
                         <table style="text-align: center; margin-left: -4px;">
@@ -304,7 +304,7 @@
                     </div>
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">                
                     <div class="invisible-input full-line" id="model-description" style="display: none;" contenteditable data-placeholder="(model description)" style="margin-top: 4px; margin-bottom: 4px;"></div>      
-                    <button class="centered-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Model Editor', 'manual-text-model-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; top: 4px; right: 4px;" ><div style="margin-left: -2px; font-weight: 400;">H</div></button>
+                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Model Editor', 'manual-text-model-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div class="doubleContainer">
                         <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;" onclick="ModelEditor.showModelOverview()"> ● Overview</h3>
@@ -321,7 +321,10 @@
                         <button id="button-add-variable" class="image-button" onclick="let id = LiveModel.Variables.addVariable(false); CytoscapeEditor.showNode(id);" style="float: right;">Add variable (N) <img src="img/add_box-24px.svg"></button>
                     </div>
 
-                    <input type="text" id="variable-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="ModelEditor.Filter.filterVariables()" style="width: 98%;">
+                    <div class="space-between-flexbox input-with-reset-box">
+                        <input type="text" id="variable-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="ModelEditor.Filter.filterVariables()" style="width: 98%;">
+                        <button class="round-button" onclick="UI.resetInput('variable-filter', () => {ModelEditor.Filter.filterVariables()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
+                    </div>
 
                     <div id="model-variables" class="scrolling-container" style="max-height: calc(100% - 270px);"></div>
                                         
@@ -365,9 +368,9 @@
                 </div>
 
                 <div id="tab-model-controllable" class="main-panel gone">
-                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Controllable variables</h2> 
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Controllable Variables</h2> 
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">                
-                    <button class="centered-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Controllable Editor', 'manual-text-controllable-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; top: 4px; right: 4px;" ><div style="margin-left: -2px; font-weight: 400;">H</div></button>
+                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Controllable Editor', 'manual-text-controllable-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div>
                         <div style="height: 30px;">
@@ -395,8 +398,12 @@
                             <button class="centered-button" onclick="ControllableEditor.changeSelectedAll(true)" onmouseenter="UI.HoverHint.displayHover(event.target, 34, 0, 'Deselect All')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; right: 10px;"><img src="img/deselectAll-100px.svg" alt="D" style="max-width: 20px; position: absolute; top: 5px; left: 5px;"></button>
                         </div>
                     </div>
-
-                    <input type="text" id="controllable-editor-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="ControllableEditor.filterTable()">
+                    
+                    <div class="space-between-flexbox input-with-reset-box">
+                        <input type="text" id="controllable-editor-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="ControllableEditor.filterTable()">
+                        <button class="round-button" onclick="UI.resetInput('controllable-editor-filter', () => {ControllableEditor.filterTable()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
+                    </div>
+                    
 
                     <div class="scrolling-container" style="max-height: calc(100% - 170x); height: calc(100% - 170px);">
                         <table id="controllable-editor-table"class="table" style="height: 100%; width: 100%;">
@@ -409,7 +416,7 @@
                 <div id="tab-model-phenotype" class="main-panel gone">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Phenotype</h2> 
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">                
-                    <button class="centered-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Phenotype Editor', 'manual-text-phenotype-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; top: 4px; right: 4px;" ><div style="margin-left: -2px; font-weight: 400;">H</div></button>
+                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Phenotype Editor', 'manual-text-phenotype-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div>
                         <div style="height: 30px;">
@@ -451,8 +458,10 @@
                         </div>
                     </div>
 
-                    <input type="text" id="phenotype-editor-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="PhenotypeEditor.filterTable()">
-
+                    <div class="space-between-flexbox input-with-reset-box">
+                        <input type="text" id="phenotype-editor-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="PhenotypeEditor.filterTable()">
+                        <button class="round-button" onclick="UI.resetInput('phenotype-editor-filter', () => {PhenotypeEditor.filterTable()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
+                    </div>
                     <div class="scrolling-container" style="max-height: calc(100% - 218px); height: calc(100% - 218px); max-width: 100%; width: 100%;">
                         <table id="phenotype-editor-table"class="table" style="height: 100%; width: 100%;">
                             <tbody>
@@ -464,7 +473,7 @@
                 <div id="tab-model-visual" class="main-panel gone" style="height: fit-content; resize: none;">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Visual Options</h2> 
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
-                    <button class="centered-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Visual Options', 'manual-text-visual-options');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; top: 4px; right: 4px;" ><div style="margin-left: -2px; font-weight: 400;">H</div></button>
+                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Visual Options', 'manual-text-visual-options');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div style="height: 30px;">
                         <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Layout</h3>
@@ -498,7 +507,7 @@
                 <div id="tab-results" class="main-panel gone" style="height: fit-content;">
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Results</h2>
-                    <button class="centered-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Results', 'manual-text-results');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 30px; height: 30px; max-width: 30px; width: 30px; position: absolute; top: 4px; right: 4px;" ><div style="margin-left: -2px; font-weight: 400;">H</div></button>
+                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Results', 'manual-text-results');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div class="scrolling-container" style="max-height: 50%; margin-top: 0;">
                         <div style="text-align: center; padding: 12px; display: none;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>               
@@ -520,6 +529,8 @@
                             <div id="control-results-input"></div>
                             <h4 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px; margin-top: 5px;">Visualization options</h4>
                             <button class="centered-button" style="width: 99%; height: 30px;" onclick="Results.openControlTab()">Table</button>
+                            <h4 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px; margin-top: 5px;">Export options</h4>
+                            <button class="centered-button" style="width: 99%; height: 30px;" onclick="UI.DownloadFile.downloadControlResCSV();">CSV</button>
                         </div>
 
                     </div>
@@ -588,7 +599,7 @@
 
                     <div class="button-group">
                         <img alt="Controllable" id="side-menu-controllable" src="img/controllable-48px.svg" class="button" tab-id="tab-model-controllable">
-                        <span class="hint invisible">Controllable</span>
+                        <span class="hint invisible" style="line-height: 25px; margin-top: 12px;">Controllable Variables</span>
                     </div>
 
                     <div class="button-group">
@@ -1036,71 +1047,63 @@ Parameters ::= Name | Parameters, Parameters</pre>
             <div class="doubleContainer" style="max-height: 30px; height: 30px; max-width: 100%; width: 100%; margin: 0; position: absolute; top: 150px;" >
                 <button id="button-filters" class="centered-button" onclick="ControlResults.toggleFilters()" style="max-height: 90%; position: absolute; left: auto; right: 9px;">Filters</button>
                 <button id="return-to-model" class="centered-button" onclick="TabBar.openModel()" style="max-height: 90%; position: absolute; left: auto; right: 98px;">Return to model</button>
-                <button class="centered-button" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results', 'manual-text-control-results');" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Compute Engine', 'manual-text-engine');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, 35, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 28px; height: 28px; max-width: 28px; width: 28px; position: absolute; top: 0px; left: 9px; right: auto;" ><div style="margin-left: -4px; font-weight: 400;">H</div></button>
+                <button class="square-button" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results', 'manual-text-control-results');" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Compute Engine', 'manual-text-engine');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, 35, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 0px; left: 9px; right: auto;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
             </div>
     
-            <div id="control-res-filters" class="main-panel" style="max-height: 150px; height: 150px; max-width: calc(100% - 450px); width: calc(100% - 450px); margin: 0; position: fixed; top: 5px; left: 5px; display: none; resize: none; z-index: 200;">
-                <div style="max-height: 100%; height: 100%; max-width: 30%; width: 30%; position: absolute; top: 0%; left: 0%;">
-                        <div style="max-height: 30px; height: 30px; max-width: 100%; width: 100%; position: absolute; top: 0%; left: 0%;">
-                            <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="ControlResults.toggleFilters()" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results Filters', 'manual-text-control-results-filters');" onmouseenter="UI.HoverHint.displayHover(event.target, 1, 68, 'Close Filters')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 20px; height: 20px; max-width: 20px; width: 20px;">
-                            <button class="centered-button" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results Filters', 'manual-text-control-results-filters');" onmouseenter="UI.HoverHint.displayHover(event.target, 2, 31, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 25px; height: 25px; max-width: 25px; width: 25px; position: absolute; top: 5px; left: 40px;" ><div style="margin-left: -5px; font-weight: 400;">H</div></button>
-                        </div>
-
-                        <div style="max-width: 100%; width: 100%; position: absolute; top: 33px; left: 0%;">
-                            <div class="doubleContainer" style="margin-top: 8px; margin-bottom: 0px;">
-                                <h4 style="margin-top: 3px;  margin-bottom: 0;"> Max Size:</h4>
-                                <input type="text" id="controlr-size-filter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable.filterTable()">    
-                            </div>
-                            <div class="doubleContainer" style="margin-top: 8px; margin-bottom: 0px;">
-                                <h4 style="margin-top: 0; margin-bottom: 0;"> Min NoI:</h4>
-                                <input type="text" id="controlr-NoI-filter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable.filterTable()">    
-                            </div>
-                            <div class="doubleContainer" style="margin-top: 8px; margin-bottom: 0px;">
-                                <h4 style="margin-top: 0px;  margin-bottom: 0;""> Min Robustness (%):</h4>
-                                <input type="text" id="controlr-rob-filter" class="filterInput" style="width: 50%; margin-top: 0;" onkeyup="ControlResults.filterTable.filterTable()">    
-                            </div>
-                            <div class="doubleContainer" style="height: 30px; margin-top: 12px; margin-bottom: 0px;">
-                                <h4 style="margin-top: 1px; margin-bottom: 0px; margin-right: 3px;"> Sort:</h4>
-                                
-                                <input id="primary-sort-switch" type="button" class="centered-button" onclick="ControlResults.sortTable.switchSortMode(0)" onmouseenter="UI.HoverHint.displayHover(event.target, -25, -5, 'Primary Sort')" onmouseleave="UI.HoverHint.hideHover()" style="width: 190px; height: 20px; padding-left: 4%; margin-right: 0px; font-size: 14px;" value="ID"></input>
-                                <button class="centered-button" id="primary-order" onclick="ControlResults.sortTable.switchOrder(0)" onmouseenter="UI.HoverHint.displayHover(event.target, -25, -66, 'Primary Sort Order')" onmouseleave="UI.HoverHint.hideHover()" style="height: 20px; margin-top: 1px; margin-bottom: 1px; margin-left: 2px; margin-right: 3px;">
-                                    <div id="control-res-primary-arrow" class="arrow up"></div>
-                                </button>
-                
-                                <input id="secondary-sort-switch" type="button" class="centered-button" onclick="ControlResults.sortTable.switchSortMode(1)" onmouseenter="UI.HoverHint.displayHover(event.target, -25, -16, 'Secondary Sort')" onmouseleave="UI.HoverHint.hideHover()" style="width: 190px; height: 20px; padding-left: 4%; margin-top: 2px; margin-bottom: 2px; margin-right: 0px; font-size: 14px;" value="ID"></input>
-                                <button class="centered-button" id="secondary-order" onclick="ControlResults.sortTable.switchOrder(1)" onmouseenter="UI.HoverHint.displayHover(event.target, -25, -78, 'Secondary Sort Order')" onmouseleave="UI.HoverHint.hideHover()" style="height: 20px; margin-top: 1px; margin-bottom: 1px; margin-left: 1px;">
-                                    <div id="control-res-secondary-arrow" class="arrow up" style="border-color: #808080;"></div>
-                                </button>
-                            </div>   
-                        </div>
-
+            <div id="control-res-filters" class="filters-menu rounded-block" style="display: none;">
+                <div class="flex-start-flexbox filters-menu__help-close-header">
+                    <button class="filters-menu__close-button" onclick="ControlResults.toggleFilters()" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results Filters', 'manual-text-control-results-filters');" onmouseenter="UI.HoverHint.displayHover(event.target, 1, 68, 'Close Filters')" onmouseleave="UI.HoverHint.hideHover()"><img alt="close" src="img/close-24px.svg" style="max-height: 100%; height: 20px; max-width: 100%; width: 20px;"></button>
+                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results Filters', 'manual-text-control-results-filters');" onmouseenter="UI.HoverHint.displayHover(event.target, 2, 31, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: relative; " ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
                 </div>
 
-                <div style="max-height: 100%; height: 100%; max-width: calc(70% - 5px); width: calc(70% - 5px); position: absolute; top: 0%; left: calc(30% + 5px); z-index: 200;">
-                    <div style="max-height: 20px; height: 20px; max-width: 100%; width: 100%;">
-                        <input type="text" id="control-pert-filter-input"  class="filterInput" placeholder=" Filter Controllable Variables" onkeyup="ControlResults.filterTable.filterPertFilterTable()" style="max-height: 20px; height: 20px; max-width: 50%; width: 50%; position: absolute; top: 2px; left: 0;">
+                <div class="space-between-flexbox filters-menu__max-size">
+                    <h4 style="margin-top: 0px;  margin-bottom: 0;"> Max Size:</h4>
+                    <input id="controlr-size-filter" class="filters-menu__filter-number-input" type="number" onkeyup="ControlResults.filterTable.filterTable()">    
+                </div>
+
+                <div class="space-between-flexbox filters-menu__min-NoI">
+                    <h4 style="margin-top: 0; margin-bottom: 0;"> Min NoI:</h4>
+                    <input id="controlr-NoI-filter" class="filters-menu__filter-number-input" type="number" onkeyup="ControlResults.filterTable.filterTable()">    
+                </div>
+                            
+                <div class="space-between-flexbox filters-menu__min-robustness">
+                    <h4 style="margin-top: 0px;  margin-bottom: 0;"> Min Robustness (%):</h4>
+                    <input id="controlr-rob-filter"  class="filters-menu__filter-number-input" type="number" onkeyup="ControlResults.filterTable.filterTable()">    
+                </div>
+                            
+                <div class="space-between-flexbox filters-menu__sorting">
+                    <h4 style="margin-top: 1px; margin-bottom: 0px; margin-right: 3px;"> Sort:</h4>
+                                
+                    <input id="primary-sort-switch" type="button" class="centered-button" onclick="ControlResults.sortTable.switchSortMode(0)" onmouseenter="UI.HoverHint.displayHover(event.target, -25, -5, 'Primary Sort')" onmouseleave="UI.HoverHint.hideHover()" style="width: 190px; height: 20px; padding-left: 4%; margin-right: 0px; font-size: 14px;" value="ID"></input>
+                    <button class="centered-button" id="primary-order" onclick="ControlResults.sortTable.switchOrder(0)" onmouseenter="UI.HoverHint.displayHover(event.target, -25, -66, 'Primary Sort Order')" onmouseleave="UI.HoverHint.hideHover()" style="height: 20px; margin-top: 1px; margin-bottom: 1px; margin-left: 2px; margin-right: 3px;">
+                        <div id="control-res-primary-arrow" class="arrow up"></div>
+                    </button>
+            
+                    <input id="secondary-sort-switch" type="button" class="centered-button" onclick="ControlResults.sortTable.switchSortMode(1)" onmouseenter="UI.HoverHint.displayHover(event.target, -25, -16, 'Secondary Sort')" onmouseleave="UI.HoverHint.hideHover()" style="width: 190px; height: 20px; padding-left: 4%; margin-top: 2px; margin-bottom: 2px; margin-right: 0px; font-size: 14px;" value="ID"></input>
+                    <button class="centered-button" id="secondary-order" onclick="ControlResults.sortTable.switchOrder(1)" onmouseenter="UI.HoverHint.displayHover(event.target, -25, -78, 'Secondary Sort Order')" onmouseleave="UI.HoverHint.hideHover()" style="height: 20px; margin-top: 1px; margin-bottom: 1px; margin-left: 1px;">
+                        <div id="control-res-secondary-arrow" class="arrow up" style="border-color: #808080;"></div>
+                    </button>
+                </div>   
+
+                <div class="flex-start-flexbox filters-menu__table-header-box">
+                    <input type="text" id="control-pert-filter-input"  class="filterInput" placeholder=" Filter Controllable Variables" onkeyup="ControlResults.filterTable.filterPertFilterTable()">
                         
-                        <div style="max-height: 20px; height: 20px; max-width: 48%; width: 48%; position: absolute; top: 0; left: auto; right: 0;">
-                            <div style="max-height: 100%; height: 100%; float: left;">
-                                <button class="centered-button" onclick="ControlResults.filterTable.setSelected(true)" onmouseenter="UI.HoverHint.displayHover(event.target, 1, 138, 'Set as True in Phenotype')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: green;"><div style="margin-left: -2px; font-weight: 400;">T</div></button>
-                                <button class="centered-button" onclick="ControlResults.filterTable.setSelected(false)"  onmouseenter="UI.HoverHint.displayHover(event.target, 1, 103, 'Set as False in Phenotype')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: red;"><div style="margin-left: -1px; font-weight: 400;">F</div></button>
-                                <button class="centered-button" onclick="ControlResults.filterTable.setSelected('present')"  onmouseenter="UI.HoverHint.displayHover(event.target, 1, 69, 'Set as Present in Phenotype')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: #B0BEC5;"><div style="margin-left: -2px; font-weight: 400;">C</div></button>
-                                <button class="centered-button" onclick="ControlResults.filterTable.setSelected('ignore')" onmouseenter="UI.HoverHint.displayHover(event.target, 1, 34, 'Remove from Filter')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; background-color: #ECEFF1;"><div style="margin-left: 0px; font-weight: 400;">I</div></button>
-                            </div>
-    
-                            <div style="max-height: 100%; height: 100%; float: right;">
-                                <button class="centered-button" onclick="ControlResults.filterTable.changeSelectedAll(null)" onmouseenter="UI.HoverHint.displayHover(event.target, 1, -155, 'Toggle Selection')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 78px;"><img src="img/toggle-100px.svg" alt="T" style="max-width: 26px; position: absolute; top: 2px; left: 2px;"></button>
-                                <button class="centered-button" onclick="ControlResults.filterTable.changeSelectedAll(false)" onmouseenter="UI.HoverHint.displayHover(event.target, 1, -135, 'Select All')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 44px;"><img src="img/selectAll-100px.svg" alt="A" style="max-width: 26px; position: absolute; top: 2px; left: auto; right: 2px;"></button>
-                                <button class="centered-button" onclick="ControlResults.filterTable.changeSelectedAll(true)" onmouseenter="UI.HoverHint.displayHover(event.target, 1, -188, 'Deselect All')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 28px; height: 28px; max-width: 30px; width: 30px; position: absolute; right: 10px;"><img src="img/deselectAll-100px.svg" alt="D" style="max-width: 20px; position: absolute; top: 5px; left: 5px;"></button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="scrolling-container" style="max-height: calc(100% - 35px); height: calc(100% - 35px);  max-width: 100%; width: 100%; margin: 0; position: absolute; bottom: 5px; left: auto; right: 0%;">
+                    <button class="round-button" onclick="UI.resetInput('control-pert-filter-input', () => {ControlResults.filterTable.filterPertFilterTable()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
+                    <button class="filters-menu__button green-background" onclick="ControlResults.filterTable.setSelected(true)" onmouseenter="UI.HoverHint.displayHover(event.target, 1, 138, 'Set as True in Phenotype')" onmouseleave="UI.HoverHint.hideHover()">T</button>
+                    <button class="filters-menu__button red-background" onclick="ControlResults.filterTable.setSelected(false)"  onmouseenter="UI.HoverHint.displayHover(event.target, 1, 103, 'Set as False in Phenotype')" onmouseleave="UI.HoverHint.hideHover()">F</button>
+                    <button class="filters-menu__button light-blue-background" onclick="ControlResults.filterTable.setSelected('present')"  onmouseenter="UI.HoverHint.displayHover(event.target, 1, 69, 'Set as Present in Phenotype')" onmouseleave="UI.HoverHint.hideHover()">C</button>
+                    <button class="filters-menu__button light-gray-background" onclick="ControlResults.filterTable.setSelected('ignore')" onmouseenter="UI.HoverHint.displayHover(event.target, 1, 34, 'Remove from Filter')" onmouseleave="UI.HoverHint.hideHover()">I</button>
+                
+                    <button class="filters-menu__button" onclick="ControlResults.filterTable.changeSelectedAll(null)" onmouseenter="UI.HoverHint.displayHover(event.target, 1, -155, 'Toggle Selection')" onmouseleave="UI.HoverHint.hideHover()"><img src="img/toggle-100px.svg" alt="T" style="max-width: 30px;"></button>
+                    <button class="filters-menu__button" onclick="ControlResults.filterTable.changeSelectedAll(false)" onmouseenter="UI.HoverHint.displayHover(event.target, 1, -135, 'Select All')" onmouseleave="UI.HoverHint.hideHover()"><img src="img/selectAll-100px.svg" alt="A" style="max-width: 21px"></button>
+                    <button class="filters-menu__button" onclick="ControlResults.filterTable.changeSelectedAll(true)" onmouseenter="UI.HoverHint.displayHover(event.target, 1, -188, 'Deselect All')" onmouseleave="UI.HoverHint.hideHover()"><img src="img/deselectAll-100px.svg" alt="D" style="max-width: 16px;"></button>
+                </div>
+
+                <div class="scrolling-container" style="grid-column: 2; grid-row-start: 2; grid-row-end: 6; max-width: 100%; width: 100%; margin-top: 0; margin-bottom: 2px; margin-left: 2px;">
                         <table id="control-pert-filter-table" class="table" style="height: 100%; max-width: 100%; width: 100%;">
                             <tbody>
                             </tbody>
                         </table>
-                    </div>
                 </div>
             </div>
 
@@ -1296,7 +1299,7 @@ Parameters ::= Name | Parameters, Parameters</pre>
 
         <div id="explorer-div" style="display: none;">
             <div style="position:absolute" id="explorer-witness-panel" class="main-panel gone">
-                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="witnessPanelVisible(false)">
+                <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="Explorer.witnessPanelVisible(false)">
                         <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Witness update functions</h2>
                         <ul id='explorer-update-functions' style='list-style:none'></ul>
             </div>
