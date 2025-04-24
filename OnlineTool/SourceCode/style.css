@@ -1101,13 +1101,29 @@ div.center {
 
 /** Control Table Page Elements */
 
+#control-results-div {
+    display: grid;
+    grid-template-rows: 70px 85px 40px 1fr;
+}
+
+#control-table-stats-box {
+    height: 100%;
+    width: 100%;
+    grid-row: 2;
+}
+
+#control-table-stats-frame {
+    height: 89%;
+    width: 98%;
+}
+
 .filters-menu {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
     max-height: 150px;
     height: 150px;
-    max-width: 100%;
+    max-width: 80%;
     width: fit-content;
     margin: 0;
     position: fixed;
@@ -1205,6 +1221,31 @@ div.center {
     width: 400px;
 }
 
+#control-table-button-row {
+    height: 100%;
+    width: 100%;
+    grid-row: 3;
+}
+
+.button-box {
+    height: 70%;
+    width: fit-content;
+}
+
+.button-box > *  {
+    margin-right: 7px;
+}
+
+#control-table-help-button {
+    height: 70%;
+    margin-left: 7px;
+}
+
+#control-table-container {
+    grid-row: 4;
+    user-select: none;
+}
+
 /** General Elements */
 
 #hover-hint {
@@ -1236,6 +1277,15 @@ div.center {
 
 /** Element Utils */
 
+.page-base {
+    height: 100vh;
+    width: 100vw;
+    z-index: 0;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
 .rounded-block {
     background-color: #ECEFF1;
     border-radius: 12px;
@@ -1256,13 +1306,55 @@ div.center {
     align-items: center;
 }
 
+.flex-end-flexbox {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
 .space-between-flexbox {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
+.space-around-flexbox {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.space-around-flexbox-column {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+}
+
+.center-flexbox {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.scroll-box {
+    max-height: 100%;
+    height: 100%;
+    max-width: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
 .square-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    aspect-ratio: 1 / 1;
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0px 2px 5px #d0d0d0;
+}
+
+.square-button-fixed-size {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1291,6 +1383,11 @@ div.center {
 .fit-into-parent {
     max-height: 100%;
     max-width: 100%;
+}
+
+.half-width {
+    height: 100%;
+    width: 50%;
 }
 
 /** Status */
@@ -1337,6 +1434,14 @@ div.center {
 
 .light-grey-background {
     background-color: #ECEFF1;
+}
+
+.button-hover {
+    transition: background-color 0.3s;
+}
+
+.button-hover:hover.light-grey-background {
+    background-color: #B0BEC5;
 }
 
 .manual-headline {

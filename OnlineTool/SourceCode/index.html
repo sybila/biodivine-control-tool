@@ -128,7 +128,7 @@
                     <li>(E) Edit name of the selected variable.</li>
                     <li>(F) Edit update function of the selected variable.</li>
                     <li>(A,S,D) Change phenotype value of the selected variable. (A-not in, S-false, D-true)</li>
-                    <li>(C) Toggle controllable value of the selected variable. </li>
+                    <li>(C) Toggle control-enabled value of the selected variable. </li>
                     <li>(O) Change observability of the selected regulation.</li>
                     <li>(M) Change monotonicity of the selected regulation.</li>
                     <li>(H) Show this help message.</li>                
@@ -142,7 +142,7 @@
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="font-weight: 4000; font-size: 5px; margin: 0 auto; font-size: 20px; text-align: center;">Start Computation</h2>
 
-                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Start Computation', 'manual-text-computation');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+                    <button class="square-button-fixed-size button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Start Computation', 'manual-text-computation');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div class="doubleContainer" style="height: 50px; margin-top: 20px;">
                         <div>
@@ -189,7 +189,7 @@
                 <div id="tab-engine" class="main-panel gone" style="height: fit-content; resize: none;">
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Compute Engine</h2>
-                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Compute Engine', 'manual-text-engine');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;"><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>            
+                    <button class="square-button-fixed-size button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Compute Engine', 'manual-text-engine');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;"><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>            
                     
                     <div class="invisible-input full-line" style="margin-top: 4px; margin-bottom: 4px; font-size: 16px;">
                         <input id="engine-address" class="center" type="text" name="engine-address" value="http://localhost:8000" placeholder="(engine address)">
@@ -217,16 +217,16 @@
                     <div style="clear: both;"></div>
                     <div style="text-align: center; margin-top: 48px;">
                         <h3 style="margin: 0 auto; font-size: 14px; text-align: center; margin-bottom: 4px;">No engine running? Download binary:</h3>                                        
-                        <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/Windows-x86-64bit-Compute-Engine.zip" id="engine-link-windows" target="blank"><button id="download-windows" class="image-button" style="display: inline-block; margin: 4px;">Windows <img src="img/windows-24px.svg"></button></a>
-                        <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/MacOs-arm64-Compute-Engine.zip" id="engine-link-macos" target="blank"><button id="download-mac" class="image-button" style="display: inline-block; margin: 4px;">MacOS <img src="img/macos-24px.svg"></button></a>
-                        <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/AeonOnlineTool/ComputeEngine/Linux-x86-64bit-Compute-Engine.zip" id="engine-link-linux" target="blank"><button id="download-linux" class="image-button" style="display: inline-block; margin: 4px;">Linux <img src="img/linux-24px.svg"></button></a>
+                        <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/ComputeEngine/Windows-x86-64bit-Compute-Engine.zip" id="engine-link-windows" target="blank"><button id="download-windows" class="image-button" style="display: inline-block; margin: 4px;">Windows <img src="img/windows-24px.svg"></button></a>
+                        <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/ComputeEngine/MacOs-arm64-Compute-Engine.zip" id="engine-link-macos" target="blank"><button id="download-mac" class="image-button" style="display: inline-block; margin: 4px;">MacOS <img src="img/macos-24px.svg"></button></a>
+                        <a href="https://github.com/sybila/biodivine-control-tool/raw/refs/heads/main/ComputeEngine/Linux-x86-64bit-Compute-Engine.zip" id="engine-link-linux" target="blank"><button id="download-linux" class="image-button" style="display: inline-block; margin: 4px;">Linux <img src="img/linux-24px.svg"></button></a>
                     </div>
                 </div>         
 
                 <div id="tab-import-export" class="main-panel gone" style="max-height: 570px; height: fit-content; resize: none;">
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center; margin-bottom: 8px;">Model File</h2>
-                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Import/Export', 'manual-text-import-export');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+                    <button class="square-button-fixed-size button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Import/Export', 'manual-text-import-export');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div style="max-width: 100%; width: 100%;">
                         <table style="text-align: center; margin-left: -4px;">
@@ -304,7 +304,7 @@
                     </div>
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">                
                     <div class="invisible-input full-line" id="model-description" style="display: none;" contenteditable data-placeholder="(model description)" style="margin-top: 4px; margin-bottom: 4px;"></div>      
-                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Model Editor', 'manual-text-model-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+                    <button class="square-button-fixed-size button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Model Editor', 'manual-text-model-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div class="doubleContainer">
                         <h3 style="font-family: 'FiraMono'; text-transform: uppercase; margin-top: 12px;" onclick="ModelEditor.showModelOverview()"> ● Overview</h3>
@@ -323,7 +323,7 @@
 
                     <div class="space-between-flexbox input-with-reset-box">
                         <input type="text" id="variable-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="ModelEditor.Filter.filterVariables()" style="width: 98%;">
-                        <button class="round-button" onclick="UI.resetInput('variable-filter', () => {ModelEditor.Filter.filterVariables()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
+                        <button class="round-button button-hover light-grey-background" onclick="UI.resetInput('variable-filter', () => {ModelEditor.Filter.filterVariables()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
                     </div>
 
                     <div id="model-variables" class="scrolling-container" style="max-height: calc(100% - 270px);"></div>
@@ -339,7 +339,7 @@
                                 </div>
 
                                 <div style="position: absolute; top: 4px; right: 55px;">
-                                    <button class="centered-button" onmouseenter="UI.HoverHint.displayHover(event.target, 34, 0, 'Change Variable Controllability')" onmouseleave="UI.HoverHint.hideHover()" style="height: 25px; margin-top: 0%; margin-left: 50px; margin-right: 5px; background-color: #B0BEC5;"><img style="max-width: 50px; pointer-events: none;" src="img/controller.svg" alt="controllable"></button>
+                                    <button class="centered-button" onmouseenter="UI.HoverHint.displayHover(event.target, 34, 0, 'Change Variable Control-Enabled status')" onmouseleave="UI.HoverHint.hideHover()" style="height: 25px; margin-top: 0%; margin-left: 50px; margin-right: 5px; background-color: #B0BEC5;"><img style="max-width: 50px; pointer-events: none;" src="img/controller.svg" alt="controllable"></button>
                                     <button class="centered-button" onmouseenter="UI.HoverHint.displayHover(event.target, 34, 0, 'Change Variable Phenotype Status')" onmouseleave="UI.HoverHint.hideHover()" style="height: 25px; margin-top: 0%; margin-right: 20px; background-color: #B0BEC5;"><img style="max-height: 23px; pointer-events: none;" src="img/phenotype-button-100px.svg" alt="phenotype"></button>
                                 </div>
                             </div>
@@ -368,27 +368,27 @@
                 </div>
 
                 <div id="tab-model-controllable" class="main-panel gone">
-                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Controllable Variables</h2> 
+                    <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Control-Enabled Variables</h2> 
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">                
-                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Controllable Editor', 'manual-text-controllable-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+                    <button class="square-button-fixed-size button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Control-Enabled Variables', 'manual-text-controllable-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div>
                         <div style="height: 30px;">
                             <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Overview</h3>
                         </div>
                         <table id="model-stats">
-                            <tr class="row"><td>Controllable: </td> <td id="controllable-count" class="value" style="overflow-x: auto;">-</td> 
-                                            <td>Uncontrollable: </td><td id="uncontrollable-count" class="value" style="overflow-x: auto;">-</td></tr>
+                            <tr class="row"><td>Control-Enabled: </td> <td id="controllable-count" class="value" style="overflow-x: auto;">-</td> 
+                                            <td>Not-Control-Enabled: </td><td id="uncontrollable-count" class="value" style="overflow-x: auto;">-</td></tr>
                         </table>
                     </div>
                     
                     <div style="max-height: 30px; height: 30px; max-width: 100%; width: 100%; margin-bottom: 5px;">
                         <div style="max-height: 100%; height: 100%; float: left;">
-                            <button class="centered-button" onclick="ControllableEditor.setSelected(true)" onmouseenter="UI.HoverHint.displayHover(event.target, 34, 0, 'Set as Controllable')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; background-color: #FFFF66;">
+                            <button class="centered-button" onclick="ControllableEditor.setSelected(true)" onmouseenter="UI.HoverHint.displayHover(event.target, 34, 0, 'Set as Control-Enabled')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; background-color: #FFFF66;">
                                 <div style="margin-left: -2px; font-weight: 400;">C</div>
                             </button>
-                            <button class="centered-button" onclick="ControllableEditor.setSelected(false)" onmouseenter="UI.HoverHint.displayHover(event.target, 34, 0, 'Set as Uncontrollable')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; background-color: #B0BEC5;">
-                                <div style="margin-left: -2px; font-weight: 400;">U</div>
+                            <button class="centered-button" onclick="ControllableEditor.setSelected(false)" onmouseenter="UI.HoverHint.displayHover(event.target, 34, 0, 'Set as Not-Control-Enabled')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 100%; height: 100%; max-width: 30px; width: 30px; background-color: #B0BEC5;">
+                                <div style="margin-left: -2px; font-weight: 400;">N</div>
                             </button>
                         </div>
 
@@ -401,7 +401,7 @@
                     
                     <div class="space-between-flexbox input-with-reset-box">
                         <input type="text" id="controllable-editor-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="ControllableEditor.filterTable()">
-                        <button class="round-button" onclick="UI.resetInput('controllable-editor-filter', () => {ControllableEditor.filterTable()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
+                        <button class="round-button button-hover light-grey-background" onclick="UI.resetInput('controllable-editor-filter', () => {ControllableEditor.filterTable()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
                     </div>
                     
 
@@ -416,7 +416,7 @@
                 <div id="tab-model-phenotype" class="main-panel gone">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Phenotype</h2> 
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">                
-                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Phenotype Editor', 'manual-text-phenotype-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+                    <button class="square-button-fixed-size button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Phenotype Editor', 'manual-text-phenotype-editor');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div>
                         <div style="height: 30px;">
@@ -460,7 +460,7 @@
 
                     <div class="space-between-flexbox input-with-reset-box">
                         <input type="text" id="phenotype-editor-filter" class="filterInput" placeholder=" Filter Variables" onkeyup="PhenotypeEditor.filterTable()">
-                        <button class="round-button" onclick="UI.resetInput('phenotype-editor-filter', () => {PhenotypeEditor.filterTable()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
+                        <button class="round-button button-hover light-grey-background" onclick="UI.resetInput('phenotype-editor-filter', () => {PhenotypeEditor.filterTable()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
                     </div>
                     <div class="scrolling-container" style="max-height: calc(100% - 218px); height: calc(100% - 218px); max-width: 100%; width: 100%;">
                         <table id="phenotype-editor-table"class="table" style="height: 100%; width: 100%;">
@@ -473,7 +473,7 @@
                 <div id="tab-model-visual" class="main-panel gone" style="height: fit-content; resize: none;">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Visual Options</h2> 
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
-                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Visual Options', 'manual-text-visual-options');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+                    <button class="square-button-fixed-size button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Visual Options', 'manual-text-visual-options');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div style="height: 30px;">
                         <h3 style="font-family: 'FiraMono'; text-transform: uppercase;"> ● Layout</h3>
@@ -483,7 +483,7 @@
                         <button id="button-organic-layout" class="centered-button" style="margin-left: 73px;" onclick="CytoscapeEditor.layoutCose();">Organic layout </button>
                         <button id="button-hierarchical-layout" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.layoutDagre();">Hierarchical layout </button>
                         <button id="button-phenotype-layout" class="centered-button" style="margin-left: 50px;margin-top: 10px;" onclick="CytoscapeEditor.layoutPhenotype();">Phenotype layout </button>
-                        <button id="button-controllable-layout" class="centered-button" style="margin-left: 30px;margin-top: 10px;" onclick="CytoscapeEditor.layoutControllable();">Controllable layout </button>
+                        <button id="button-controllable-layout" class="centered-button" style="margin-left: 30px;margin-top: 10px;" onclick="CytoscapeEditor.layoutControllable();">Control-Enabled layout </button>
                     </div>
 
                     <div style="height: 30px;">
@@ -492,7 +492,7 @@
 
                     <div style="height: 40px;">
                         <button id="button-highlight-phenotype" class="centered-button" style="margin-left: 55px;" onclick="CytoscapeEditor.highlightButton(this, true);">Show Phenotype </button>
-                        <button id="button-highlight-controllable" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.highlightButton(this, false);">Show Controllable </button>
+                        <button id="button-highlight-controllable" class="centered-button" style="margin-left: 30px;" onclick="CytoscapeEditor.highlightButton(this, false);">Show Control-Enabled</button>
                     </div>
 
                     <div style="height: 30px;">
@@ -507,7 +507,7 @@
                 <div id="tab-results" class="main-panel gone" style="height: fit-content;">
                     <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="UI.Visible.closeContent()">
                     <h2 style="margin: 0 auto; font-size: 20px; text-align: center;">Results</h2>
-                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Results', 'manual-text-results');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+                    <button class="square-button-fixed-size button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Results', 'manual-text-results');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, -65, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 4px; right: 4px;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
 
                     <div class="scrolling-container" style="max-height: 50%; margin-top: 0;">
                         <div style="text-align: center; padding: 12px; display: none;"><span id="results-expired" class="orange center gone">The computation has been overwritten. <br>These results are no longer available!</span></div>               
@@ -562,7 +562,7 @@
                     <li>(E) Edit name of the selected variable.</li>
                     <li>(F) Edit update function of the selected variable.</li>
                     <li>(A,S,D) Change phenotype value of the selected variable. (A-not in, S-false, D-true)</li>
-                    <li>(C) Toggle controllable value of the selected variable. </li>
+                    <li>(C) Toggle Control-Enabled status value of the selected variable. </li>
                     <li>(O) Change observability of the selected regulation.</li>
                     <li>(M) Change monotonicity of the selected regulation.</li>
                     <li>(H) Show this help message.</li>  
@@ -598,8 +598,8 @@
                     </div>  
 
                     <div class="button-group">
-                        <img alt="Controllable" id="side-menu-controllable" src="img/controllable-48px.svg" class="button" tab-id="tab-model-controllable">
-                        <span class="hint invisible" style="line-height: 25px; margin-top: 12px;">Controllable Variables</span>
+                        <img alt="Control-Enabled" id="side-menu-controllable" src="img/controllable-48px.svg" class="button" tab-id="tab-model-controllable">
+                        <span class="hint invisible" style="line-height: 25px; margin-top: 12px;">Control-Enabled Variables</span>
                     </div>
 
                     <div class="button-group">
@@ -748,7 +748,7 @@
                             <ul>
                                 <li><strong>Display/hide variable information button:</strong> Shows or hides details about regulators and the update function of the variable.</li>
                                 <li><strong>Variable name:</strong> Editable name of the variable, which can be changed by clicking on it.</li>
-                                <li><strong>Change Controllability button:</strong> Toggles the controllability of the variable. If the button is yellow, the variable is controllable (may appear in computed control perturbations). Otherwise, it is uncontrollable (excluded from control perturbations).</li>
+                                <li><strong>Change Control-Enabled status button:</strong> Toggles the Control-Enabled status of the variable. If the button is yellow, the variable is Control-Enabled (may appear in computed control perturbations). Otherwise, it is Not-Control-Enabled (excluded from control perturbations).</li>
                                 <li><strong>Change Phenotype button:</strong> Toggles the phenotype of the variable:
                                     <ul>
                                         <li>Green: The variable is in the phenotype as <em>true</em>.</li>
@@ -781,18 +781,18 @@ Parameters ::= Name | Parameters, Parameters</pre>
 
                         <div id="manual-text-controllable-editor" style="display: none">
                             <p>
-                                This menu is used for setting the controllability of variables. If a variable is controllable, it can be fixed to a boolean value during the control process. For simplification, this means that the variable may appear in the computed control perturbations.
+                                This menu is used for setting the Control-Enabled status of variables. If a variable is Control-Enabled, it can be fixed to a boolean value during the control process. For simplification, this means that the variable may appear in the computed control perturbations.
                             </p>
 
                             <h3>Overview</h3>
                             <p>
-                                The overview displays the number of controllable and uncontrollable variables in the model.
+                                The overview displays the number of Control-Enabled and Not-Control-Enabled variables in the model.
                             </p>
 
-                            <h3>Controllability Buttons</h3>
+                            <h3>Control-Enabled status Buttons</h3>
                             <ul>
-                                <li><strong>Set as controllable button:</strong> Yellow button with a "C" inside. Clicking on it sets all selected variables as controllable.</li>
-                                <li><strong>Set as uncontrollable button:</strong> Grey button with a "U" inside. Clicking on it sets all selected variables as uncontrollable.</li>
+                                <li><strong>Set as Control-Enabled button:</strong> Yellow button with a "C" inside. Clicking on it sets all selected variables as Control-Enabled.</li>
+                                <li><strong>Set as Not-Control-Enabled button:</strong> Grey button with a "N" inside. Clicking on it sets all selected variables as Not-Control-Enabled.</li>
                                 <li><strong>Toggle selected button:</strong> Button with a toggle switch icon. It toggles the selection state of variables, making selected variables unselected and vice versa.</li>
                                 <li><strong>Select all button:</strong> Button with lines inside a square. Clicking it selects all variables.</li>
                                 <li><strong>Deselect all button:</strong> Button with crossed lines inside a square. Clicking it deselects all variables.</li>
@@ -810,10 +810,10 @@ Parameters ::= Name | Parameters, Parameters</pre>
                             <ul>
                                 <li><strong>Select/Unselect:</strong> Click on a variable to select or unselect it. You can also select or unselect multiple variables by dragging over them. Selected variables are highlighted in blue.</li>
                                 <li><strong>Add into filter button:</strong> The first circle to the right of a variable name. Clicking it adds the variable's name to the Filter Variables input bar.</li>
-                                <li><strong>Controllability indicator:</strong> The second circle to the right of a variable name. Its color indicates the variable's controllability:
+                                <li><strong>Control-Enabled indicator:</strong> The second circle to the right of a variable name. Its color indicates the variable's Control-Enabled status:
                                     <ul>
-                                        <li><strong>Yellow:</strong> The variable is controllable.</li>
-                                        <li><strong>Grey:</strong> The variable is uncontrollable.</li>
+                                        <li><strong>Yellow:</strong> The variable is Control-Enabled.</li>
+                                        <li><strong>Grey:</strong> The variable is Not-Control-Enabled.</li>
                                     </ul>
                                 </li>
                             </ul>
@@ -903,10 +903,10 @@ Parameters ::= Name | Parameters, Parameters</pre>
                                     </ul>
                                 </li>
                                 <li>
-                                    <strong>Controllable Layout:</strong> A concentric layout that separates nodes into two circles based on the controllability of their corresponding variables:
+                                    <strong>Control-Enabled Layout:</strong> A concentric layout that separates nodes into two circles based on the Control-Enabled status of their corresponding variables:
                                     <ul>
-                                        <li>The <strong>central circle</strong> consists of nodes for uncontrollable variables.</li>
-                                        <li>The <strong>outer circle</strong> consists of nodes for controllable variables.</li>
+                                        <li>The <strong>central circle</strong> consists of nodes for Not-Control-Enabled variables.</li>
+                                        <li>The <strong>outer circle</strong> consists of nodes for Control-Enabled variables.</li>
                                     </ul>
                                 </li>
                             </ul>
@@ -925,10 +925,10 @@ Parameters ::= Name | Parameters, Parameters</pre>
                                     </ul>
                                 </li>
                                 <li>
-                                    <strong>Show Controllable:</strong> Changes the color of nodes based on the controllability of their corresponding variables:
+                                    <strong>Show Control-Enabled:</strong> Changes the color of nodes based on the Control-Enabled status of their corresponding variables:
                                     <ul>
-                                        <li><strong>Yellow:</strong> Variable is controllable.</li>
-                                        <li><strong>Grey:</strong> Variable is not controllable.</li>
+                                        <li><strong>Yellow:</strong> Variable is Control-Enabled.</li>
+                                        <li><strong>Grey:</strong> Variable is Not-Control-Enabled.</li>
                                     </ul>
                                 </li>
                             </ul>
@@ -1005,28 +1005,26 @@ Parameters ::= Name | Parameters, Parameters</pre>
             </div>
         </div>
 
-        <div id="control-results-div" class="page-div" style="display: none;">
-            <div style="max-height: 70px; height: 70px; max-width: 100%; width: 100%; position: absolute; top: 0;">
-                <h1 id="model-name"></h1>
-            </div>
-    
-            <div class="doubleContainer" style="max-height: 85px; height: 85px; max-width: 100%; width: 100%; margin-bottom: 1%; position: absolute; top: 70px; left: 0;">
-                <div class="main-panel-noresize" style="max-height: 70px; height: 70px; max-width: 55%; width: 55%; padding: 0; position: absolute; left: 10px;">
-                    <table class="model-stats" style="max-height: 60px; height: 60px;">
-                        <tbody style="max-height: 60px; height: 60px;">
-                            <tr style="max-height: 2px; height: 2px;">
-                                <td style="width: 20%;">Number of Interpretations: </td><td class="value" id="InterNumberStat" style="width: 20%;"> -</td> 
-                                <td style="width: 20%;">Maximal Robustness: </td>   <td class="value" id="MaxRobStat" style="width: 5%;">-</td></tr>
-                            <tr style="max-height: 2px;">
-                                <td style="width: 20%; ">Number of Perturbations: </td><td class="value" id="PertNumberStat" style="width: 20%;">-</td> <td style="width: 20%;">Oscillation: </td>   <td class="value" id="OscillationStat" style="width: 5%;">-</td> </tr>
-                            <tr style="max-height: 2px;">
-                                <td style="width: 20%;">Minimal Size: </td><td class="value" id="MinSizeStat" style="width: 20%;">-</td> </tr>
-                        </tbody>
-                    </table>
+        <div id="control-results-div" class="page-base" style="display: none;">    
+            <div id="control-table-stats-box" class="space-around-flexbox">
+                <div class="center-flexbox half-width">
+                    <div id="control-table-stats-frame" class="rounded-block">
+                        <table class="model-stats" style="max-height: 60px; height: 60px;">
+                            <tbody style="max-height: 60px; height: 60px;">
+                                <tr style="max-height: 2px; height: 2px;" onclick="TabBar.closeTab();">
+                                    <td style="width: 20%;" onmouseenter="UI.HoverHint.displayHover(event.target, 35, 0, 'Number of interpretations of the model')" onmouseleave="UI.HoverHint.hideHover()">Number of Interpretations: </td><td class="value" id="InterNumberStat" style="width: 20%;"> -</td> 
+                                    <td style="width: 20%;" onmouseenter="UI.HoverHint.displayHover(event.target, 35, 0, 'Maximal robustness of perturbation')" onmouseleave="UI.HoverHint.hideHover()">Maximal Robustness: </td>   <td class="value" id="MaxRobStat" style="width: 5%;">-</td></tr>
+                                <tr style="max-height: 2px;">
+                                    <td style="width: 20%;" onmouseenter="UI.HoverHint.displayHover(event.target, 35, 0, 'Number of computed perturbations')" onmouseleave="UI.HoverHint.hideHover()">Number of Perturbations: </td><td class="value" id="PertNumberStat" style="width: 20%;">-</td> <td style="width: 20%;" onmouseenter="UI.HoverHint.displayHover(event.target, 35, 0, 'Oscillation status of the phenotype')" onmouseleave="UI.HoverHint.hideHover()">Oscillation: </td>   <td class="value" id="OscillationStat" style="width: 5%;">-</td> </tr>
+                                <tr style="max-height: 2px;">
+                                    <td style="width: 20%;" onmouseenter="UI.HoverHint.displayHover(event.target, 35, 0, 'Minimal size of perturbation')" onmouseleave="UI.HoverHint.hideHover()">Minimal Size: </td><td class="value" id="MinSizeStat" style="width: 20%;">-</td> </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-    
-                <div style="max-height: 65px; height: 65px; max-width: 43%; width: 43%; position: absolute; top:0; left:auto; right: 0; margin-left: 1%; margin-right: 0.5%; overflow: auto;">
-                    <div class="main-panel-noresize" style="max-height: 25px; max-width: 98%; width: 98%; padding-bottom: 0px; padding-top: 0; position: absolute; top: 4%; left: 0.5%; white-space: nowrap; overflow: hidden;">
+
+                <div class="space-around-flexbox-column half-width">
+                    <div class="main-panel-noresize" style="grid-column: 2; grid-row: 1; max-height: 25px; max-width: 98%; width: 98%; padding-bottom: 0px; padding-top: 0;white-space: nowrap; overflow: hidden;">
                         <div class="scrolling-container" style="overflow-y: hidden; margin-top: -0.5px;">
                             <table class="model-stats">
                                 <tr class="row"><td>Phenotype:</td><td id="PhenotypeStat" class="value">-</td> </tr>
@@ -1034,26 +1032,29 @@ Parameters ::= Name | Parameters, Parameters</pre>
                         </div>
     
                     </div>
-                    <div class="main-panel-noresize" style="max-height: 25px; max-width: 98%; width: 98%; padding-bottom: 0px; padding-top: 0; position: absolute; bottom: 4%; left: 0.5%; white-space: nowrap; overflow: hidden;">
-                        <div class="scrolling-container" style="overflow-y: hidden; margin-top: -0.5px;">
-                            <table class="model-stats">
-                                <tr class="row"><td>Controllable:</td><td id="ControllableStat" class="value">-</td> </tr>
-                            </table>
-                        </div>
+                    <div class="main-panel-noresize" style="grid-column: 2; grid-row: 2; max-height: 25px; max-width: 98%; width: 98%; padding-bottom: 0px; padding-top: 0; white-space: nowrap; overflow: hidden;">
+                            <div class="scrolling-container" style="overflow-y: hidden; margin-top: -0.5px;">
+                                <table class="model-stats">
+                                    <tr class="row"><td>Control-Enabled:</td><td id="ControllableStat" class="value">-</td> </tr>
+                                </table>
+                            </div>
                     </div>
                 </div>
             </div>
     
-            <div class="doubleContainer" style="max-height: 30px; height: 30px; max-width: 100%; width: 100%; margin: 0; position: absolute; top: 150px;" >
-                <button id="button-filters" class="centered-button" onclick="ControlResults.toggleFilters()" style="max-height: 90%; position: absolute; left: auto; right: 9px;">Filters</button>
-                <button id="return-to-model" class="centered-button" onclick="TabBar.openModel()" style="max-height: 90%; position: absolute; left: auto; right: 98px;">Return to model</button>
-                <button class="square-button" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results', 'manual-text-control-results');" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Compute Engine', 'manual-text-engine');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, 35, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: absolute; top: 0px; left: 9px; right: auto;" ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+            <div id="control-table-button-row" class="space-between-flexbox">
+                <button id="control-table-help-button" class="square-button button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results', 'manual-text-control-results');" onclick="UI.Visible.showHideManual('manual-model', 'manual-model-headline', 'Compute Engine', 'manual-text-engine');" onmouseenter="UI.HoverHint.displayHover(event.target, 0, 35, 'Help')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+                
+                <div class="space-between-flexbox button-box">
+                    <button id="button-filters" class="centered-button" onclick="ControlResults.toggleFilters()" style="max-height: 90%;">Filters</button>
+                    <button id="return-to-model" class="centered-button" onclick="TabBar.openModel()" style="max-height: 90%; ">Return to model</button>
+                </div>    
             </div>
     
             <div id="control-res-filters" class="filters-menu rounded-block" style="display: none;">
                 <div class="flex-start-flexbox filters-menu__help-close-header">
                     <button class="filters-menu__close-button" onclick="ControlResults.toggleFilters()" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results Filters', 'manual-text-control-results-filters');" onmouseenter="UI.HoverHint.displayHover(event.target, 1, 68, 'Close Filters')" onmouseleave="UI.HoverHint.hideHover()"><img alt="close" src="img/close-24px.svg" style="max-height: 100%; height: 20px; max-width: 100%; width: 20px;"></button>
-                    <button class="square-button" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results Filters', 'manual-text-control-results-filters');" onmouseenter="UI.HoverHint.displayHover(event.target, 2, 31, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: relative; " ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
+                    <button class="square-button-fixed-size button-hover light-grey-background" onclick="UI.Visible.showHideManual('manual-control-results', 'manual-control-results-headline', 'Control Results Filters', 'manual-text-control-results-filters');" onmouseenter="UI.HoverHint.displayHover(event.target, 2, 31, 'Help')" onmouseleave="UI.HoverHint.hideHover()" style="position: relative; " ><img class="fit-into-parent" src="img/help-48px.svg" alt="H"></button>
                 </div>
 
                 <div class="space-between-flexbox filters-menu__max-size">
@@ -1086,9 +1087,9 @@ Parameters ::= Name | Parameters, Parameters</pre>
                 </div>   
 
                 <div class="flex-start-flexbox filters-menu__table-header-box">
-                    <input type="text" id="control-pert-filter-input"  class="filterInput" placeholder=" Filter Controllable Variables" onkeyup="ControlResults.filterTable.filterPertFilterTable()">
+                    <input type="text" id="control-pert-filter-input"  class="filterInput" placeholder=" Filter Control-Enabled Variables" onkeyup="ControlResults.filterTable.filterPertFilterTable()">
                         
-                    <button class="round-button" onclick="UI.resetInput('control-pert-filter-input', () => {ControlResults.filterTable.filterPertFilterTable()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
+                    <button class="round-button button-hover light-grey-background" onclick="UI.resetInput('control-pert-filter-input', () => {ControlResults.filterTable.filterPertFilterTable()})" onmouseenter="UI.HoverHint.displayHover(event.target, 3, 29, 'Reset Control-Enabled Variable Filter')" onmouseleave="UI.HoverHint.hideHover()"><img class="fit-into-parent" alt="close" src="img/close-24px.svg"></button>
                     <button class="filters-menu__button green-background" onclick="ControlResults.filterTable.setSelected(true)" onmouseenter="UI.HoverHint.displayHover(event.target, 1, 138, 'Set as True in Phenotype')" onmouseleave="UI.HoverHint.hideHover()">T</button>
                     <button class="filters-menu__button red-background" onclick="ControlResults.filterTable.setSelected(false)"  onmouseenter="UI.HoverHint.displayHover(event.target, 1, 103, 'Set as False in Phenotype')" onmouseleave="UI.HoverHint.hideHover()">F</button>
                     <button class="filters-menu__button light-blue-background" onclick="ControlResults.filterTable.setSelected('present')"  onmouseenter="UI.HoverHint.displayHover(event.target, 1, 69, 'Set as Present in Phenotype')" onmouseleave="UI.HoverHint.hideHover()">C</button>
@@ -1107,10 +1108,10 @@ Parameters ::= Name | Parameters, Parameters</pre>
                 </div>
             </div>
 
-            <div style="max-height: 1px; height: 1px; max-width: 100%; width: 100%; position: absolute; top: 185px; z-index: 10; background-color: black;"></div>
-            <div id="control-table-container" class="scrolling-container" style="max-height: calc(100% - 200px); height: calc(100% - 200px); max-width: 100vw; width: 100vw; position: absolute; top: 180px; left: 0; overflow-y: scroll; user-select: none;">
-                <table id="control-results-table" class="table borders" style="max-height: 100%; height: fit-content; max-width: 100%; width: 100%; position: absolute; top: 0;">
-                    <thead id="control-table-head" style="max-height: 23px; height: 23px; max-width: 100%; width: 100%; position: sticky; top: 0; left: 0; z-index: 5;">
+            <div style="max-height: 1px; height: 1px; max-width: 100%; width: 100%; position: absolute; top: 195px; z-index: 2; background-color: black;"></div>
+            <div id="control-table-container" class="scroll-box">
+                <table id="control-results-table" class="table borders" style="max-height: 100%; height: fit-content; max-width: 100%; width: 100%;">
+                    <thead id="control-table-head" style="max-height: 23px; height: 23px; max-width: 100%; width: 100%; position: sticky; top: 0; left: 0; z-index: 1;">
                         <tr style="max-width: 100%; width: 100%; background-color: #ECEFF1;">
                             <th style="max-width: 6%; width: 6%; resize: none; border: 1px solid black;">ID</th>
                             <th style="max-width: 70%; width: 70%; resize: none;" visualMode="false" onclick="ControlResults.changeContentModeAllPerts(this)">Perturbations</th>
@@ -1156,7 +1157,7 @@ Parameters ::= Name | Parameters, Parameters</pre>
                             </li>
                         </ul>
 
-                        <h3>Phenotype and Controllable Variables Overviews</h3>
+                        <h3>Phenotype and Control-Enabled Variables Overviews</h3>
                         <p>
                             On the right-hand side, two tables provide additional details:
                         </p>
@@ -1167,7 +1168,7 @@ Parameters ::= Name | Parameters, Parameters</pre>
                                     <li><span style="color: red;">Red:</span> False</li>
                                 </ul>
                             </li>
-                            <li><strong>Controllable Variables Overview:</strong> Displays the variables marked as controllable, which may appear in the computed perturbations.</li>
+                            <li><strong>Control-Enabled Variables Overview:</strong> Displays the variables marked as Control-Enabled, which may appear in the computed perturbations.</li>
                         </ul>
 
                         <h3>Action Buttons</h3>
@@ -1237,7 +1238,7 @@ Parameters ::= Name | Parameters, Parameters</pre>
                         </p>
                         <ul>
                             <li>
-                                <strong>Filter Controllable Variables:</strong> Use the input bar to search for variables by name. For multiple variables, separate their names with commas. It supports incomplete names to search for variables starting with specific characters.
+                                <strong>Filter Control-Enabled Variables:</strong> Use the input bar to search for variables by name. For multiple variables, separate their names with commas. It supports incomplete names to search for variables starting with specific characters.
                             </li>
                             <li>
                                 Next to the input bar are buttons to set the filter values for the selected variables:
@@ -1257,12 +1258,12 @@ Parameters ::= Name | Parameters, Parameters</pre>
                                 </ul>
                             </li>
                             <li>
-                                <strong>Variable Table:</strong> Contains all controllable variables. You can select/unselect individual variables by clicking on them or drag-select multiple variables. Selected variables are highlighted in blue.
+                                <strong>Variable Table:</strong> Contains all Control-Enabled variables. You can select/unselect individual variables by clicking on them or drag-select multiple variables. Selected variables are highlighted in blue.
                             </li>
                             <li>
                                 Each variable has two circles on the right side:
                                 <ul>
-                                    <li><strong>Add to Filter Button:</strong> Adds the variable name to the <em>Filter Controllable Variables</em> input bar.</li>
+                                    <li><strong>Add to Filter Button:</strong> Adds the variable name to the <em>Filter Control-Enabled Variables</em> input bar.</li>
                                     <li><strong>Filter Status Indicator:</strong> Displays the variable's filter status:
                                         <ul>
                                             <li><span style="color: green;">Green:</span> Variable must be true.</li>
@@ -1575,7 +1576,7 @@ Parameters ::= Name | Parameters, Parameters</pre>
             <div id="loading-indicator" class="invisible"><img src="img/progress.gif"/><br><br>Waiting for server...</div>           
         </div>
 
-        <div id="tab-menu" style="max-height: 30px; height: 30px; max-width: 270px; width: 270px; position: absolute; top: 0; right: 0; z-index: 100; overflow: hidden;">
+        <div id="tab-menu" style="max-height: 30px; height: 30px; max-width: 270px; width: 270px; position: absolute; top: 0; right: 0; z-index: 200; overflow: hidden;">
             <img alt="close" src="img/close-24px.svg" class="panel-close-button" onclick="TabBar.closeTab();" onmouseenter="UI.HoverHint.displayHover(event.target, -30, -125, 'Close Inner Tab')" onmouseleave="UI.HoverHint.hideHover()" style="max-height: 18px; top: 3px; left: auto; right: 10px;" onclick="TabBar.closeTab()"> 
     
             <button class="centered-button" style="height: 25px; position: absolute; right: 58px; top: 3px;" onclick="document.getElementById('tab-bar').style.display == 'none' ? 
@@ -1587,9 +1588,9 @@ Parameters ::= Name | Parameters, Parameters</pre>
 
         <h3 id="status-bar" style="position: absolute; right: 280px; top: 7px; margin: 0; font-family: 'FiraMono'; text-transform: uppercase; font-size: 15px; pointer-events: none;"> ● Disconnected</h3>
 
-        <h1 id='logo'>Aeon/<span id='title'>BIODIVINE</span></h1>
+        <h1 id='logo' style="z-index: 1;">Aeon/<span id='title'>BIODIVINE</span></h1>
 
-        <div id="tab-bar" class="model-tab-panel" style="display: none;">
+        <div id="tab-bar" class="model-tab-panel" style="display: none; z-index: 10;">
             <table id="tab-table" class="tab-table">
                 <tbody></tbody>
             </table>

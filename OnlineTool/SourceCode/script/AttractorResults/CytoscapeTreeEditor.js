@@ -184,7 +184,7 @@ let CytoscapeTreeEditor = {
 		document.getElementById("decision-info").classList.remove("gone");
 		document.getElementById("decision-attribute").innerHTML = data.treeData.attribute_name;
 		document.getElementById("decision-phenotype-label").innerHTML = 
-			"Phenotypes (" + data.treeData.classes.length + "):";
+			"Behavior Classes (" + data.treeData.classes.length + "):";
 		let behaviorTable = document.getElementById("decision-behavior-table");		
 		this._renderBehaviorTable(data.treeData.classes, data.treeData.cardinality, behaviorTable);
 
@@ -228,7 +228,7 @@ let CytoscapeTreeEditor = {
 
 	_showMixedPanel(data) {
 		document.getElementById("mixed-info").classList.remove("gone");
-		document.getElementById("mixed-type-label").innerHTML = data.treeData.classes.length + " Phenotypes";
+		document.getElementById("mixed-type-label").innerHTML = data.treeData.classes.length + " Behavior Classes";
 		let table = document.getElementById("mixed-behavior-table");
 		this._renderBehaviorTable(data.treeData.classes, data.treeData.cardinality, table);
 		let loading = document.getElementById("loading-indicator");
@@ -534,7 +534,7 @@ let CytoscapeTreeEditor = {
 		} else if (treeData.type == "decision") {
 			data.label = treeData.attribute_name;
 		} else if (treeData.type == "unprocessed" ) {
-			data.label = "Mixed Phenotype\n" + "(" + treeData.classes.length + " types)";
+			data.label = "Mixed Classes\n" + "(" + treeData.classes.length + " types)";
 		} else {
 			data.label = treeData.type + "(" + treeData.id + ")";
 		}
