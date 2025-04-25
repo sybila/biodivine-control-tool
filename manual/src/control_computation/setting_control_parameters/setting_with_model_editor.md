@@ -1,21 +1,21 @@
-# Setting Control Parameters with the Model Editor
+# Setting Control Settings with the Model Editor
 
-In Aeon, control parameters can be modified not only through dedicated editors but also directly within the Model Editor. This functionality allows for quick adjustments to the controllability and phenotype status of variables without switching to separate menus.
+In Aeon, some control settings can be modified not only through dedicated editors but also directly within the Model Editor. This functionality allows for quick adjustments to the Control-Enabled status and phenotype status of variables without switching to separate menus.
 
-Each row in the Model Editor’s variable table includes two buttons, each corresponding to a specific control parameter:
+Each row in the Model Editor’s variable table includes two buttons, each corresponding to a specific control setting:
 
-- Controllability Button – Toggles whether the variable is controllable.
+- Control-Enabled status Button – Toggles whether the variable is Control-Enabled.
 - Phenotype Button – Adjusts the phenotype status of the variable.
 
-## Controllability Button
+## Control-Enabled status Button
 
-The Controllability Button is represented by a controller icon and is used to toggle the controllability status of a variable. Clicking on this button changes whether the variable can be included in perturbations. The button also visually indicates the variable's controllability status through its color:
+The Control-Enabled status Button is represented by a controller icon and is used to toggle the Control-Enabled status of a variable. Clicking on this button changes whether the variable can be included in perturbations. The button also visually indicates the variable's Control-Enabled status through its color:
 
-- Yellow – The variable is controllable.
-- Grey – The variable is not controllable.
+- Yellow – The variable is Control-Enabled.
+- Grey – The variable is Not-Control-Enabled.
 
-![Setting Controllability Model Editor](../../assets/controllability_model_editor.gif)
-*Making controllable variables uncontrollable using the Model Editor*
+![Setting Control-Enabled status Model Editor](../../assets/control_enabled_model_editor.gif)
+*Making Control-Enabled variables Not-Control-Enabled using the Model Editor*
 
 ## Phenotype Button
 

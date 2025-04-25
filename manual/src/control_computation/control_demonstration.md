@@ -27,19 +27,19 @@ A model can be created using the Model Editor or imported through the Import/Exp
 *Import of the G2A example model*
 
 
-### 4. Setting Controllable Variables
+### 4. Setting Control-Enabled Variables
 
-The Controllable Editor module, accessible from the left panel, is used to define which variables are controllable and can be included in perturbations. By default, variables are set as controllable unless specified otherwise in the imported model.
+The Control-Enabled Editor module, accessible from the left panel, is used to define which variables are Control-Enabled and can be included in perturbations. By default, variables are set as Control-Enabled unless specified otherwise in the imported model.
 
-To change the controllability status of multiple variables, select them and use the Controllability Buttons.
+To change the Control-Enabled status of multiple variables, select them and use the Control-Enabled status Buttons.
 
-![Setting Controllability Controllable Editor](../assets/controllability_controllable_editor.gif)
-*Making controllable variables uncontrollable using the Controllable Editor*
+![Setting Control-Enabled status Control-Enabled Editor](../assets/control_enabled_control_enabled_editor.gif)
+*Making Control-Enabled variables Not-Control-Enabled using the Control-Enabled Editor*
 
-Alternatively, controllability can be modified for individual variables using the Model Editor module.
+Alternatively, Control-Enabled status can be modified for individual variables using the Model Editor module.
 
-![Setting Controllability Model Editor](../assets/controllability_model_editor.gif)
-*Making controllable variables uncontrollable using the Model Editor*
+![Setting Control-Enabled status Model Editor](../assets/control_enabled_model_editor.gif)
+*Making Control-Enabled variables Not-Control-Enabled using the Model Editor*
 
 ### 5. Defining the Phenotype
 

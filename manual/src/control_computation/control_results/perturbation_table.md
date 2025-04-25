@@ -83,7 +83,7 @@ Clicking one of these buttons updates the filter status for all selected variabl
 ![Selection Buttons](../../assets/selection_buttons.png)
 *Button to toggle selected variables (left), select all variables (center), and deselect all variables (right)*
 
-The Selection Buttons provide tools for efficiently selecting multiple variables in the Controllability Editor. There are three buttons, each serving a different selection function:
+The Selection Buttons provide tools for efficiently selecting multiple variables in the Control-Enabled Editor. There are three buttons, each serving a different selection function:
 
 - Toggle Selection (left, toggle switch icon) – Inverts the current selection: selected variables become unselected, and unselected variables become selected.
 - Select All (center, square with lines icon) – Selects all variables in the editor.
@@ -93,14 +93,14 @@ These buttons apply only to unfiltered variables. For example when a Variable Fi
 
 #### Variable Filter
 
-![Variable Filter](../../assets/variable_controllable_filter.png)
-*Input for the varialbe filter*
+![Variable Filter](../../assets/variable_control_enabled_filter.png)
+*Input for the variable filter*
 
 The Variable Filter is a text-based tool used to filter variables in the table of the Fixed Variables filter by name. The filter is case-sensitive and allows multiple variables to be filtered by separating their names with commas (,). It also supports partial matching, enabling searches for variables whose names start with a specific sequence of characters, even if incomplete.
 
 #### Variable Table
 
-The Variable Table within the filter module lists all controllable variables in the model. Variables can be selected by clicking on their row or multi-selected by dragging the left mouse button over them. Selected variables are highlighted in blue.
+The Variable Table within the filter module lists all Control-Enabled variables in the model. Variables can be selected by clicking on their row or multi-selected by dragging the left mouse button over them. Selected variables are highlighted in blue.
 
 Each row in the table contains the variable name and two indicator circles:
 

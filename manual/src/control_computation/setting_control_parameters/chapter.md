@@ -1,10 +1,10 @@
-## Setting Control Parameters
+## Task Settings for Control Computation
 
-This section explains how to configure the necessary parameters for computing control in Aeon. Specifically, we cover controllability of variables and phenotype definition. Additionally, we discuss ways to refine control computation to obtain only the most relevant results and potentially speed up the process.
+This section explains how to configure the necessary settings for computing control in Aeon. Specifically, we cover Control-Enabled status of variables and phenotype definition. Additionally, we discuss ways to refine control computation to obtain only the most relevant results and potentially speed up the process.
 
-### Controllability of Variables
+### Control-Enabled status of Variables
 
-Controllability determines whether a variable can be included in computed perturbations. Only variables explicitly marked as controllable may appear in perturbations. If a variable is not controllable, it remains unaffected by the control process.
+Control-Enabled status determines whether a variable can be included in computed perturbations. Only variables explicitly marked as Control-Enabled may appear in perturbations. If a variable is Not-Control-Enabled, it remains unaffected by the control process.
 
 ### Phenotype
 
