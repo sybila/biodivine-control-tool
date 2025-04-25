@@ -16,7 +16,7 @@
   - [Stability analysis](./attractor_bifurcation/stability_analysis.md)
 - [Control](./control_computation/chapter.md)
   - [Setting Control Parameters](./control_computation/setting_control_parameters/chapter.md)
-    - [Controllable Editor](./control_computation/setting_control_parameters/controllable_editor.md)
+    - [Control-Enabled Editor](./control_computation/setting_control_parameters/control_enabled_editor.md)
     - [Phenotype Editor](./control_computation/setting_control_parameters/phenotype_editor.md)
     - [Setting of Control Parameters with Model Editor](./control_computation/setting_control_parameters/setting_with_model_editor.md)
     - [Limiting the Control Computation](./control_computation/setting_control_parameters/limiting_control_computation.md)
